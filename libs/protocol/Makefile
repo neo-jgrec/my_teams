@@ -41,9 +41,7 @@ UT_TEST		:=	$(DIR_BIN)/unit_test
 RM			:=	rm -rf
 
 CXX			:=	gcc
-CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra	\
-				-L${CURDIR}/../myteams -l:libmyteams.so		\
-				-Wl,-rpath=${CURDIR}/../myteams
+CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra
 CLINKER		:=	ar rc
 
 all:				$(NAME)
