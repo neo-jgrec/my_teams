@@ -97,7 +97,7 @@ tests_unit:			$(UT_TEST)
 
 -include $(DG_DEP)
 $(DEBUG):			CXXFLAGS += -g -DDEBUG
-$(DEBUG):			$(DG_OBJ); 	$(COMPILE)
+$(DEBUG):			$(DG_OBJ); 	$(COMPILE_LIB)
 debug:				$(DEBUG)
 
 tests_run:			tests_functional tests_unit
