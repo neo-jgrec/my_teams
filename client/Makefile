@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME		:=	myteams_cli
+NAME		:=	../myteams_cli
 EXT			:=	.c
 
 DIR			:=	src

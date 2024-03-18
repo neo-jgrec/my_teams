@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME		:=	myteams_server
+NAME		:=	../myteams_server
 EXT			:=	.c
 
 DIR			:=	src
