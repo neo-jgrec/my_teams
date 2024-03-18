@@ -5,36 +5,49 @@
 ## Makefile
 ##
 
-include Makefile_colors.mk
+DIR_BUILD	:=	build
 
-SERVER 	= 	server
-CLIENT 	= 	client
+MAKEFILES	:=	./libs/protocol/Makefile								\
+				./client/Makefile										\
+				./server/Makefile
 
+RM			:=	rm -rf
 
-ECHO        = echo -e
+define EXECUTE
+	@for MAKEFILE in $(MAKEFILES); do									\
+		$(MAKE) -sC $$(dirname $$MAKEFILE) $@;							\
+	done
+endef
 
-all: server client
-	@ $(ECHO) "${_B_GREEN} =================== [ALL] =================== ${_END}"
-	@ $(ECHO) "${_B_GREEN}[SUCCES]${_END} project compiled successfully !"
+all:				; $(EXECUTE)
 
-server:
-	@ $(ECHO) "${_B_BLUE} =================== [SERVER] =================== ${_END}"
-	@ make -s -C $(SERVER)
+tests_functional:	; $(EXECUTE)
 
-client:
-	@ $(ECHO) "${_B_BLUE} =================== [CLIENT] =================== ${_END}"
-	@ make -s -C $(CLIENT)
+tests_unit:			; $(EXECUTE)
 
-clean:
-	@ $(ECHO) "${_B_RED} =================== [CLEAN] =================== ${_END}"
-	@ make clean -s -C $(SERVER)
-	@ make clean -s -C $(CLIENT)
+debug:				; $(EXECUTE)
 
-fclean:
-	@ $(ECHO) "${_B_RED} =================== [FCLEAN] =================== ${_END}"
-	@ make fclean -s -C $(SERVER)
-	@ make fclean -s -C $(CLIENT)
+tests_run:			; $(EXECUTE)
 
-re: fclean all
+$(DIR_BUILD):
+	@[ ! -d $(DIR_BUILD) ]											\
+	&& mkdir -p $(DIR_BUILD) 										\
+	&& printf "\033[93m[CREATED]\033[0m %s\n" $(DIR_BUILD)			\
+	|| printf "\033[31m[ERROR]\033[0m %s\n"   $(DIR_BUILD)
 
-.PHONY: clean fclean re
+docs:				$(DIR_BUILD)
+	doxygen docs/Doxyfile
+	python -m webbrowser -t build/docs/index.html >/dev/null
+
+clean:				; $(EXECUTE)
+	@[ -d $(DIR_BUILD) ]											\
+	&& $(RM) $(DIR_BUILD)											\
+	&& printf "\033[31m[DELETED]\033[0m %s\n" $(DIR_BUILD) || true
+
+fclean:				clean ; $(EXECUTE)
+
+re:					fclean all
+
+.PHONY:				all tests tests_run debug clean fclean re docs
+
+.SILENT:			all tests tests_run debug clean fclean re docs
