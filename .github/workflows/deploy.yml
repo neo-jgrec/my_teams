@@ -36,7 +36,6 @@ jobs:
         run: git submodule update --init --recursive
       - name: Generate Documentation
         run: |
-          git submodule update --init --recursive
           mkdir -p build
           doxygen docs/Doxyfile
       - name: Setup Pages
@@ -44,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: 'build/docs/index.html'
+          path: 'build/docs/'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
