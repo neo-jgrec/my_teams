@@ -36,6 +36,7 @@ $(DIR_BUILD):
 	|| printf "\033[31m[ERROR]\033[0m %s\n"   $(DIR_BUILD)
 
 docs:				$(DIR_BUILD)
+	git submodule update --init --recursive
 	doxygen docs/Doxyfile
 	python -m webbrowser -t build/docs/index.html >/dev/null
 
