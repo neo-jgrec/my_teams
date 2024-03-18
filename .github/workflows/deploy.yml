@@ -4,7 +4,7 @@ name: Deploy static content to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ['docs']
+    branches: [ 'docs' ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,18 +34,17 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y doxygen
       - name: Pull submodules
         run: git submodule update --init --recursive
-      - name: Setup CMake
-        uses: lukka/get-cmake@v3.21.1
       - name: Generate Documentation
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -D_SKIP_SRC=ON
-          make -C build doc_doxygen_action
+          git submodule update --init --recursive
+          mkdir -p build
+          doxygen docs/Doxyfile
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './build/doc_doxygen/doxygen.html.out'
+          path: 'build/docs/index.html'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
