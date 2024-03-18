@@ -42,7 +42,8 @@ RM			:=	rm -rf
 
 CXX			:=	gcc
 CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra	\
-				-L../myteams -lmyteams
+				-L${CURDIR}/../myteams -l:libmyteams.so		\
+				-Wl,-rpath=${CURDIR}/../myteams
 CLINKER		:=	ar rc
 
 all:				$(NAME)

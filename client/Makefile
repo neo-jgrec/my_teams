@@ -11,6 +11,7 @@ EXT			:=	.c
 DIR			:=	src
 SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
+					client.c										\
 				)
 
 FU_DIR		:=	tests/func
@@ -43,7 +44,8 @@ RM			:=	rm -rf
 
 CXX			:=	gcc
 CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra	\
-				-L../libs/myteams -lmyteams -L../libs/protocol -lmyprotocol
+				-L${CURDIR}/../libs/myteams -L${CURDIR}/../libs/protocol -l:libmyteams.so -l:libmyprotocol.a	\
+				-Wl,-rpath=${CURDIR}/../libs/myteams -Wl,-rpath=${CURDIR}/../libs/protocol
 
 all:				$(NAME)
 
