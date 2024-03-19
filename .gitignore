@@ -60,3 +60,4 @@ report
 .vscode
 .idea
 build
+compile_commands.json
