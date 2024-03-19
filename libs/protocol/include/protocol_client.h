@@ -1,0 +1,37 @@
+/*
+** EPITECH PROJECT, 2024
+** my_teams
+** File description:
+** protocol_client
+*/
+
+#ifndef PROTOCOL_CLIENT_H_
+    #define PROTOCOL_CLIENT_H_
+
+typedef enum client_event_e {
+    EVT_LOGIN,
+    EVT_DISCONNECT,
+    EVT_USERS,
+    EVT_USER,
+    EVT_SEND,
+    EVT_MESSAGES,
+    EVT_SUBSCRIBE,
+    EVT_SUBSCRIBED_IN_TEAM,
+    EVT_SUBSCRIBED_TEAMS,
+    EVT_UNSUBSCRIBE,
+    EVT_CREATE_TEAM,
+    EVT_CREATE_CHANNEL,
+    EVT_CREATE_THREAD,
+    EVT_CREATE_REPLY,
+    EVT_LIST_TEAMS,
+    EVT_LIST_CHANNELS,
+    EVT_LIST_THREADS,
+    EVT_LIST_REPLIES,
+    EVT_INFO_USER,
+    EVT_INFO_TEAM,
+    EVT_INFO_CHANNEL,
+    EVT_INFO_THREAD,
+    EVT_PING
+} client_event_t;
+
+#endif /* !PROTOCOL_CLIENT_H_ */
