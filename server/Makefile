@@ -43,8 +43,10 @@ RM			:=	rm -rf
 
 CXX			:=	gcc
 CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra	\
-				-L${CURDIR}/../libs/myteams -L${CURDIR}/../libs/protocol -l:libmyteams.so -l:libmyprotocol.a	\
-				-Wl,-rpath=${CURDIR}/../libs/myteams -Wl,-rpath=${CURDIR}/../libs/protocol
+				-L${CURDIR}/../libs/myteams -L${CURDIR}/../libs/protocol \
+				-l:libmyteams.so -l:libmyprotocol.a	\
+				-Wl,-rpath=${CURDIR}/../libs/myteams \
+				-Wl,-rpath=${CURDIR}/../libs/protocol
 
 all:				$(NAME)
 

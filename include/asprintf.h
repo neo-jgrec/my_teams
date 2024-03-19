@@ -14,7 +14,7 @@
         #endif
         #include <stdio.h>
 
-        int asprintf(char **strp, const char *fmt, ...);
+int asprintf(char **strp, const char *fmt, ...);
     #endif
 
 #endif /* !ASPRINTF_H_ */
