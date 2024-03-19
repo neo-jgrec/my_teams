@@ -5,10 +5,9 @@
 ** main
 */
 
-#include <stdio.h>
+#include "client.h"
 
-int main()
+int main(int ac, char **av)
 {
-    printf("Super le client !\n");
-    return 0;
+    return client(ac, av);
 }
