@@ -14,6 +14,7 @@ The `Payload Length` field is a 2-byte unsigned integer that represents the leng
 
 ## Packet Types
 
+### Client
 | Type | Name | Require login | Payload | Description |
 |------|------|---------------|---------|-------------|
 | 0x00 | Login | No | `username` (string) | The client sends this packet to the server to authenticate itself. |
@@ -39,3 +40,11 @@ The `Payload Length` field is a 2-byte unsigned integer that represents the leng
 | 0x20 | Info channel | Yes | `channel` (string) | The client sends this packet to the server to get the information of a channel. |
 | 0x21 | Info thread | Yes | `thread` (string) | The client sends this packet to the server to get the information of a thread. |
 | 0x22 | Ping | Yes | `timestamp` (number) | The client sends this packet to the server to check if it is still connected. |
+
+### Server
+| Type | Name | Payload | Description |
+|------|------|---------|-------------|
+| 0x00 | Error | `message` (string) | The server sends this packet to the client to notify it that an error has occurred. |
+| 0x01 | Success | `message` (string) | The server sends this packet to the client to notify it that an operation has been successful. |
+| 0x02 | Info user | `username` (string), `user UUID` (string), `status` (string) | The server sends this packet to the client to provide the information of a user. |
+
