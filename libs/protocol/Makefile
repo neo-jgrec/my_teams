@@ -11,6 +11,8 @@ LIB 		= libmyprotocol.a
 CC 			= gcc
 
 VPATH 		:= ./src
+VPATH 		+= ./src/client
+VPATH 		+= ./src/server
 
 vpath %.c $(VPATH)
 
@@ -21,12 +23,11 @@ SRC 		+= p_server_listen.c
 SRC 		+= p_client_send_packet.c
 SRC 		+= p_server_send_packet.c
 
-CFLAGS 		= -Wall -Werror
-
 BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
 
-CFLAGS 		= -iquote./include -iquote../../include -Wall -Wextra -DSMCLN=;
+CFLAGS 		:= -iquote./include -iquote../../include
+CFLAGS		+= -Wall -Wextra -Werror -DSMCLN=;
 AR			= ar
 
 DIE         = exit 1
