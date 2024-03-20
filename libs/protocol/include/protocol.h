@@ -17,10 +17,6 @@
     #include <sys/select.h>
     #include <sys/queue.h>
 
-    #define MAX_NAME_LENGTH 32
-    #define MAX_DESCRIPTION_LENGTH 255
-    #define MAX_BODY_LENGTH 512
-
 typedef struct p_packet_s {
     uint16_t size;
     uint8_t id;
@@ -45,7 +41,7 @@ typedef struct p_client_s {
 typedef struct p_server_s {
     p_network_data_t network_data;
     fd_set set;
-    TAILQ_HEAD(p_client_s, p_client_s) clients;
+    TAILQ_HEAD(, p_client_s) clients;
 } p_server_t;
 
 

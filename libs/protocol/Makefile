@@ -26,7 +26,7 @@ CFLAGS 		= -Wall -Werror
 BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
 
-CFLAGS 		= -iquote./include -iquote../include -Wall -Wextra
+CFLAGS 		= -iquote./include -iquote../../include -Wall -Wextra -DSMCLN=;
 AR			= ar
 
 DIE         = exit 1
@@ -43,7 +43,7 @@ all: $(LIB)
 
 $(BUILD_DIR)/%.o: %.c
 	@ mkdir -p $(@D)
-	@ $(CC) -g $(LIBFLAGS) -c $< -o $@
+	@ $(CC) -g $(LIBFLAGS) -c $< -o $@ $(CFLAGS)
 	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(CC)    $(_U_WHITE)$<$(_END)"
 
 $(LIB): $(OBJ) $(SRC)
