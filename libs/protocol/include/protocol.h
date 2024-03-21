@@ -6,47 +6,90 @@
 */
 
 #ifndef PROTOCOL_H_
-    #define PROTOCOL_H_
+#define PROTOCOL_H_
 
-    #include <stdio.h>
-    #include <stdint.h>
-    #include <netinet/in.h>
-    #include <stdlib.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
-    #include <sys/select.h>
-    #include <sys/queue.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <sys/queue.h>
+#include <signal.h>
+#include <string.h>
 
+/**
+ * @struct p_packet_s
+ * @brief Represents a packet with size and identifier.
+ */
 typedef struct p_packet_s {
-    uint16_t size;
-    uint8_t id;
+    uint16_t size; /**< Size of the packet */
+    uint8_t id;    /**< Identifier of the packet */
 } p_packet_t;
 
-typedef struct p_payload_s {
-    struct p_packet_s packet;
-    void *data;
-} p_payload_t;
-
+/**
+ * @struct p_network_data_s
+ * @brief Represents network data including socket file descriptor and server address.
+ */
 typedef struct p_network_data_s {
-    int sockfd;
-    struct sockaddr_in server_addr;
+    int sockfd;                  /**< Socket file descriptor */
+    struct sockaddr_in server_addr; /**< Server address */
 } p_network_data_t;
 
+/**
+ * @struct p_payload_s
+ * @brief Represents a payload containing packet, network data, and actual data.
+ */
+typedef struct p_payload_s {
+    struct p_packet_s packet;       /**< Packet */
+    struct p_network_data_s network_data; /**< Network data */
+    void *data;                     /**< Actual payload data */
+} p_payload_t;
+
+/**
+ * @struct p_client_s
+ * @brief Represents a client with socket file descriptor and network data.
+ */
 typedef struct p_client_s {
-    int sockfd;
-    p_network_data_t network_data;
-    TAILQ_ENTRY(p_client_s) entries;
+    int sockfd;                  /**< Socket file descriptor */
+    p_network_data_t network_data; /**< Network data */
+    TAILQ_ENTRY(p_client_s) entries; /**< Entry for TAILQ list */
 } p_client_t;
 
+/**
+ * @struct p_server_s
+ * @brief Represents a server with network data, file descriptor set, and list of clients.
+ */
 typedef struct p_server_s {
-    p_network_data_t network_data;
-    fd_set set;
-    TAILQ_HEAD(, p_client_s) clients;
+    p_network_data_t network_data; /**< Network data */
+    fd_set set;                    /**< File descriptor set */
+    TAILQ_HEAD(, p_client_s) clients; /**< List of clients */
 } p_server_t;
 
-
+/**
+ * @brief Create a client with given IP and port.
+ * @param ip IP address of the server.
+ * @param port Port number of the server.
+ * @return Pointer to the created client.
+ */
 p_client_t *p_client_create(const char *ip, int port);
+
+/**
+ * @brief Listen for incoming packets on the client.
+ * @param client Pointer to the client.
+ * @return Pointer to the received payload.
+ */
 p_payload_t* p_client_listen(p_client_t *client);
+
+/**
+ * @brief Send a packet from the client.
+ * @param packet_type Type of the packet.
+ * @param payload_data Data to be sent.
+ * @param payload_size Size of the data.
+ * @param client Pointer to the client.
+ * @return 0 on success, -1 on failure.
+ */
 int p_client_send_packet(
     uint8_t packet_type,
     const void *payload_data,
@@ -54,22 +97,48 @@ int p_client_send_packet(
     p_client_t *client
 );
 
+/**
+ * @brief Create a server with given port.
+ * @param port Port number to bind the server.
+ * @return Pointer to the created server.
+ */
 p_server_t *p_server_create(int port);
+
+/**
+ * @brief Listen for incoming packets on the server.
+ * @param server Pointer to the server.
+ * @return Pointer to the received payload.
+ */
 p_payload_t* p_server_listen(p_server_t *server);
+
+/**
+ * @brief Send a packet from the server to a specific client.
+ * @param packet_type Type of the packet.
+ * @param payload_data Data to be sent.
+ * @param payload_size Size of the data.
+ * @param server Pointer to the server.
+ * @param client_fd File descriptor of the client.
+ * @return 0 on success, -1 on failure.
+ */
 int p_server_send_packet(
     uint8_t packet_type,
     const void *payload_data,
     size_t payload_size,
-    p_server_t *server
+    p_server_t *server,
+    int client_fd
 );
 
-//typedef struct p_u_login_s {
-//    struct p_packet_s packet;
-//    char username[MAX_NAME_LENGTH];
-//};
-//
-//typedef struct p_u_logout_s {
-//    struct p_packet_s packet;
-//};
+/**
+ * @brief Create a payload with given packet type, data, and size.
+ * @param packet_type Type of the packet.
+ * @param payload_data Data to be included in the payload.
+ * @param payload_size Size of the data.
+ * @return Pointer to the created payload.
+ */
+p_payload_t *p_create_payload(
+    uint8_t packet_type,
+    const void *payload_data,
+    size_t payload_size
+);
 
 #endif /* !PROTOCOL_H_ */

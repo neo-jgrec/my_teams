@@ -22,6 +22,7 @@ SRC 		+= p_server_create.c
 SRC 		+= p_server_listen.c
 SRC 		+= p_client_send_packet.c
 SRC 		+= p_server_send_packet.c
+SRC 		+= p_create_payload.c
 
 BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
