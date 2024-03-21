@@ -6,8 +6,9 @@
 */
 
 #include "../include/protocol.h"
+#include "../../../../include/debug_print.h"
 
-p_client_t *p_client_create(const char *ip, int port)
+static p_client_t *client_socket(const char *ip, int port)
 {
     p_client_t *client = (p_client_t *)malloc(sizeof(p_client_t));
 
@@ -17,13 +18,14 @@ p_client_t *p_client_create(const char *ip, int port)
         free(client);
         return NULL;
     }
+    client->network_data.server_addr.sin_addr.s_addr = inet_addr(ip);
     client->network_data.server_addr.sin_family = AF_INET;
     client->network_data.server_addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, ip, &client->network_data.server_addr.sin_addr) <= 0) {
-        perror("Invalid address/ Address not supported");
-        free(client);
-        return NULL;
-    }
+    return client;
+}
+
+static int client_connect(p_client_t *client)
+{
     if (connect(
         client->network_data.sockfd,
         (struct sockaddr *)&client->network_data.server_addr,
@@ -31,8 +33,19 @@ p_client_t *p_client_create(const char *ip, int port)
     ) < 0) {
         perror("Connection failed");
         free(client);
-        return NULL;
+        return -1;
     }
-    printf("Connected to server\n");
+    DEBUG_PRINT("Connected to server\n");
+    return 0;
+}
+
+p_client_t *p_client_create(const char *ip, int port)
+{
+    p_client_t *client = client_socket(ip, port);
+
+    if (client == NULL)
+        return NULL;
+    if (client_connect(client) == -1)
+        return NULL;
     return client;
 }
