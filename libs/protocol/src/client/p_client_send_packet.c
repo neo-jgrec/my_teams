@@ -6,33 +6,90 @@
 */
 
 #include "../include/protocol.h"
+#include "../../../../include/debug_print.h"
+
+static int p_client_send_packet_header(
+    p_client_t *client,
+    p_payload_t *payload
+)
+{
+    size_t size = write(
+        client->network_data.sockfd,
+        &(payload->packet),
+        sizeof(p_packet_t)
+    );
+
+    if (size == (size_t)-1) {
+        perror("Header write failed");
+        return -1;
+    }
+    DEBUG_PRINT("Packet header sent with id %d and size %d\n",
+        payload->packet.id, payload->packet.size);
+    return 0;
+}
+
+static int p_client_send_packet_network_data(
+    p_client_t *client,
+    p_payload_t *payload
+)
+{
+    size_t size = write(
+        client->network_data.sockfd,
+        &(payload->network_data),
+        sizeof(p_network_data_t)
+    );
+
+    if (size == (size_t)-1) {
+        perror("Network data write failed");
+        return -1;
+    }
+    printf("Network data sent with sockfd %d\n", payload->network_data.sockfd);
+    DEBUG_PRINT("Network data sent with sockfd %d\n", payload->network_data.sockfd);
+    return 0;
+}
+
+static int p_client_send_packet_body(
+    p_client_t *client,
+    p_payload_t *payload
+)
+{
+    size_t size = write(
+        client->network_data.sockfd,
+        payload->data,
+        payload->packet.size
+    );
+
+    if (size == (size_t)-1) {
+        perror("Payload data write failed");
+        return -1;
+    }
+    DEBUG_PRINT("Packet body sent with size %d\n", payload->packet.size);
+    return 0;
+}
 
 int p_client_send_packet(
     uint8_t packet_type,
     const void *payload_data,
     size_t payload_size,
     p_client_t *client
-) {
-    p_packet_t packet;
+)
+{
+    p_payload_t *payload = p_create_payload(
+        packet_type, payload_data, payload_size
+    );
+    payload->network_data = client->network_data;
+    printf("Packet header with client fd %d\n", payload->network_data.sockfd);
 
-    if (client == NULL) {
-        fprintf(stderr, "Invalid client\n");
+    if (client == NULL || payload == NULL || payload->data == NULL ||
+    payload->packet.size == 0)
         return -1;
-    }
-    packet.size = htons(payload_size + sizeof(packet_type));
-    packet.id = packet_type;
-    if (send(client->network_data.sockfd, &packet, sizeof(packet), 0) != sizeof(packet)) {
-        perror("Packet sending failed");
+    if (p_client_send_packet_header(client, payload) == -1)
         return -1;
-    }
-    if (send(client->network_data.sockfd, payload_data, payload_size, 0) != (ssize_t)payload_size) {
-        perror("Payload sending failed");
+    if (p_client_send_packet_network_data(client, payload) == -1)
         return -1;
-    }
-    printf("Packet sent\n");
-    printf("Packet type: %d\n", packet_type);
-    printf("Payload size: %ld\n", payload_size);
-    printf("Payload: %s\n", (char*)payload_data);
-    printf("Client socket: %d\n", client->network_data.sockfd);
+    if (p_client_send_packet_body(client, payload) == -1)
+        return -1;
+    free(payload->data);
+    free(payload);
     return 0;
 }
