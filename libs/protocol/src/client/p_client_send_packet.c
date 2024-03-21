@@ -5,7 +5,7 @@
 ** p_client_send_packet
 */
 
-#include "../include/protocol.h"
+#include "../../include/protocol.h"
 #include "../../../../include/debug_print.h"
 
 static int p_client_send_packet_header(
@@ -44,7 +44,8 @@ static int p_client_send_packet_network_data(
         return -1;
     }
     printf("Network data sent with sockfd %d\n", payload->network_data.sockfd);
-    DEBUG_PRINT("Network data sent with sockfd %d\n", payload->network_data.sockfd);
+    DEBUG_PRINT("Network data sent with sockfd %d\n",
+        payload->network_data.sockfd);
     return 0;
 }
 
@@ -77,9 +78,8 @@ int p_client_send_packet(
     p_payload_t *payload = p_create_payload(
         packet_type, payload_data, payload_size
     );
-    payload->network_data = client->network_data;
-    printf("Packet header with client fd %d\n", payload->network_data.sockfd);
 
+    payload->network_data = client->network_data;
     if (client == NULL || payload == NULL || payload->data == NULL ||
     payload->packet.size == 0)
         return -1;

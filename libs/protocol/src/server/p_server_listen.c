@@ -26,46 +26,6 @@
 //    return buffer;
 //}
 
-static void reset_clients(p_server_t *server)
-{
-    p_client_t *current_client;
-
-    FD_ZERO(&server->set);
-    FD_SET(server->network_data.sockfd, &server->set);
-    TAILQ_FOREACH(current_client, &server->clients, entries) {
-        FD_SET(current_client->network_data.sockfd, &server->set);
-    }
-}
-
-static int select_server(p_server_t *server)
-{
-    if (select(FD_SETSIZE, &server->set, NULL, NULL, NULL) == -1) {
-        perror("Select failed");
-        return -1;
-    }
-    return 0;
-}
-
-static int new_client(p_server_t *server)
-{
-    p_client_t *new_client = malloc(sizeof(p_client_t));
-    socklen_t size = sizeof(new_client->network_data.server_addr);
-    int new_socket = accept(
-        server->network_data.sockfd,
-        (struct sockaddr *)&new_client->network_data.server_addr,
-        &size
-    );
-
-    if (new_socket < 0) {
-        perror("Accept failed");
-        return -1;
-    }
-    new_client->network_data.sockfd = new_socket;
-    DEBUG_PRINT("New client connected with sockfd %d\n", new_socket);
-    TAILQ_INSERT_TAIL(&server->clients, new_client, entries);
-    return 0;
-}
-
 static int read_header(int fd, p_payload_t *payload)
 {
     size_t bytes_received = read(fd, &payload->packet, sizeof(p_packet_t));
@@ -82,7 +42,8 @@ static int read_header(int fd, p_payload_t *payload)
 
 static int read_network_data(int fd, p_payload_t *payload)
 {
-    size_t bytes_received = read(fd, &payload->network_data, sizeof(p_network_data_t));
+    size_t bytes_received = read(fd, &payload->network_data,
+        sizeof(p_network_data_t));
 
     if (bytes_received == (size_t)-1) {
         perror("Network data read failed");
@@ -110,7 +71,7 @@ static int read_body(int fd, p_payload_t *payload)
 
 static p_payload_t *receive_packet(int fd)
 {
-    p_payload_t* payload = (p_payload_t*)malloc(sizeof(p_payload_t));
+    p_payload_t *payload = (p_payload_t *)malloc(sizeof(p_payload_t));
 
     if (!payload) {
         perror("Malloc failed");
@@ -131,7 +92,7 @@ static p_payload_t *receive_packet(int fd)
     return payload;
 }
 
-p_payload_t* p_server_listen(p_server_t *server)
+p_payload_t *p_server_listen(p_server_t *server)
 {
     reset_clients(server);
     if (select_server(server) == -1)

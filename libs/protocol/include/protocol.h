@@ -6,18 +6,18 @@
 */
 
 #ifndef PROTOCOL_H_
-#define PROTOCOL_H_
+    #define PROTOCOL_H_
 
-#include <stdio.h>
-#include <stdint.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/queue.h>
-#include <signal.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <stdint.h>
+    #include <netinet/in.h>
+    #include <stdlib.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <sys/select.h>
+    #include <sys/queue.h>
+    #include <signal.h>
+    #include <string.h>
 
 /**
  * @struct p_packet_s
@@ -30,7 +30,8 @@ typedef struct p_packet_s {
 
 /**
  * @struct p_network_data_s
- * @brief Represents network data including socket file descriptor and server address.
+ * @brief Represents network data including socket file descriptor and server
+ * address.
  */
 typedef struct p_network_data_s {
     int sockfd;                  /**< Socket file descriptor */
@@ -39,7 +40,8 @@ typedef struct p_network_data_s {
 
 /**
  * @struct p_payload_s
- * @brief Represents a payload containing packet, network data, and actual data.
+ * @brief Represents a payload containing packet, network data, and actual
+ * data.
  */
 typedef struct p_payload_s {
     struct p_packet_s packet;       /**< Packet */
@@ -59,7 +61,8 @@ typedef struct p_client_s {
 
 /**
  * @struct p_server_s
- * @brief Represents a server with network data, file descriptor set, and list of clients.
+ * @brief Represents a server with network data, file descriptor set,
+ * and list of clients.
  */
 typedef struct p_server_s {
     p_network_data_t network_data; /**< Network data */
@@ -80,7 +83,7 @@ p_client_t *p_client_create(const char *ip, int port);
  * @param client Pointer to the client.
  * @return Pointer to the received payload.
  */
-p_payload_t* p_client_listen(p_client_t *client);
+p_payload_t *p_client_listen(p_client_t *client);
 
 /**
  * @brief Send a packet from the client.
@@ -109,14 +112,13 @@ p_server_t *p_server_create(int port);
  * @param server Pointer to the server.
  * @return Pointer to the received payload.
  */
-p_payload_t* p_server_listen(p_server_t *server);
+p_payload_t *p_server_listen(p_server_t *server);
 
 /**
  * @brief Send a packet from the server to a specific client.
  * @param packet_type Type of the packet.
  * @param payload_data Data to be sent.
  * @param payload_size Size of the data.
- * @param server Pointer to the server.
  * @param client_fd File descriptor of the client.
  * @return 0 on success, -1 on failure.
  */
@@ -124,7 +126,6 @@ int p_server_send_packet(
     uint8_t packet_type,
     const void *payload_data,
     size_t payload_size,
-    p_server_t *server,
     int client_fd
 );
 
@@ -140,5 +141,47 @@ p_payload_t *p_create_payload(
     const void *payload_data,
     size_t payload_size
 );
+
+/**
+ * @brief Create a new client on the server.
+ * @param server Pointer to the server.
+ */
+int new_client(p_server_t *server);
+
+/**
+ * @brief Select the server for incoming packets.
+ * @param server Pointer to the server.
+ */
+int select_server(p_server_t *server);
+
+/**
+ * @brief Reset the clients on the server.
+ * @param server Pointer to the server.
+ */
+void reset_clients(p_server_t *server);
+
+/**
+ * @brief Bind the server to the given port.
+ * @param server Pointer to the server.
+ */
+int server_bind(p_server_t *server);
+
+/**
+ * @brief Listen for incoming connections on the server.
+ * @param server Pointer to the server.
+ */
+int server_listen(p_server_t *server);
+
+/**
+ * @brief Set socket options for the server.
+ * @param server Pointer to the server.
+ */
+int server_setsockopt(p_server_t *server);
+
+/**
+ * @brief Create a socket for the server.
+ * @param port Port number to bind the server.
+ */
+p_server_t *server_socket(int port);
 
 #endif /* !PROTOCOL_H_ */

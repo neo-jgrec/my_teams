@@ -61,20 +61,15 @@ int p_server_send_packet(
     uint8_t packet_type,
     const void *payload_data,
     size_t payload_size,
-    p_server_t *server __attribute__((unused)),
     int client_fd
-) {
-    printf("Sending packet of type %d\n", packet_type);
-    printf("Payload size: %ld\n", payload_size);
-    printf("Payload data: %s\n", (char*)payload_data);
-    printf("Client fd: %d\n", client_fd);
+)
+{
     p_payload_t *payload = p_create_payload(
         packet_type, payload_data, payload_size
     );
 
-    if (server == NULL || payload == NULL)
+    if (payload == NULL)
         return -1;
-
     if (p_server_send_packet_header(payload, client_fd) == -1)
         return -1;
     if (p_server_send_packet_body(payload, client_fd) == -1)

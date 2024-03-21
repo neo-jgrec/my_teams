@@ -6,7 +6,7 @@
 */
 
 #ifndef PROTOCOL_CLIENT_H_
-#define PROTOCOL_CLIENT_H_
+    #define PROTOCOL_CLIENT_H_
 
 /**
  * @enum client_event_e

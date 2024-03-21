@@ -40,7 +40,8 @@ ECHO        = echo -e
 	@ $(DIE)
 
 all: $(LIB)
-	@ $(ECHO) "${_B_GREEN}[OK]${_END} Compilation of ${_B_WHITE}$(LIB)${_END} done."
+	@ $(ECHO) "${_B_GREEN}[OK]${_END} Compilation of ${_B_WHITE}$(LIB)${_END} \
+	done."
 	@ $(ECHO) "${_B_GREEN}===============> $(LIB) <================${_END}\n\n"
 
 $(BUILD_DIR)/%.o: %.c

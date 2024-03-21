@@ -33,8 +33,9 @@ static int read_body(int fd, p_payload_t *payload)
     return 0;
 }
 
-p_payload_t* p_client_listen(p_client_t *client) {
-    p_payload_t* payload = (p_payload_t*)malloc(sizeof(p_payload_t));
+p_payload_t *p_client_listen(p_client_t *client)
+{
+    p_payload_t *payload = (p_payload_t *)malloc(sizeof(p_payload_t));
 
     if (!payload) {
         perror("Malloc failed");
