@@ -6,6 +6,7 @@
 */
 
 #include "../../../include/protocol.h"
+#include "../../../../../include/debug_print.h"
 
 int new_client(p_server_t *server)
 {

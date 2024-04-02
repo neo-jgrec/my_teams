@@ -68,6 +68,7 @@ int p_server_send_packet(
         packet_type, payload_data, payload_size
     );
 
+    printf("Sending packet to client %d\n", client_fd);
     if (payload == NULL)
         return -1;
     if (p_server_send_packet_header(payload, client_fd) == -1)

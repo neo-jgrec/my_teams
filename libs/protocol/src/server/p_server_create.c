@@ -5,8 +5,8 @@
 ** p_server_create
 */
 
-#include "../include/protocol.h"
-#include "../include/protocol_server.h"
+#include "../../include/protocol.h"
+#include "../../include/protocol_server.h"
 
 static void p_server_stop(int sig)
 {
