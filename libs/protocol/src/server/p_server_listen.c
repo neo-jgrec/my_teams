@@ -40,10 +40,11 @@ static int read_header(int fd, p_payload_t *payload)
     return 0;
 }
 
-static int read_network_data(int fd, p_payload_t *payload)
+static int read_network_data(int fd, p_payload_t *payload, p_server_t *server)
 {
     size_t bytes_received = read(fd, &payload->network_data,
         sizeof(p_network_data_t));
+    p_client_t *client;
 
     if (bytes_received == (size_t)-1) {
         perror("Network data read failed");
@@ -52,6 +53,10 @@ static int read_network_data(int fd, p_payload_t *payload)
     }
     DEBUG_PRINT("Network data received with sockfd %d\n",
         payload->network_data.sockfd);
+    TAILQ_FOREACH(client, &server->clients, entries) {
+        if (client->network_data.sockfd == fd)
+            client->sockfd = payload->network_data.sockfd;
+    }
     return 0;
 }
 
@@ -69,7 +74,7 @@ static int read_body(int fd, p_payload_t *payload)
     return 0;
 }
 
-static p_payload_t *receive_packet(int fd)
+static p_payload_t *receive_packet(int fd, p_server_t *server)
 {
     p_payload_t *payload = (p_payload_t *)malloc(sizeof(p_payload_t));
 
@@ -79,7 +84,7 @@ static p_payload_t *receive_packet(int fd)
     }
     if (read_header(fd, payload) == -1)
         return NULL;
-    if (read_network_data(fd, payload) == -1)
+    if (read_network_data(fd, payload, server) == -1)
         return NULL;
     payload->data = malloc(payload->packet.size);
     if (payload->data == NULL) {
@@ -102,6 +107,6 @@ p_payload_t *p_server_listen(p_server_t *server)
             return NULL;
     for (int fd = 0; fd < FD_SETSIZE; fd++)
         if (FD_ISSET(fd, &server->set))
-            return receive_packet(fd);
+            return receive_packet(fd, server);
     return NULL;
 }

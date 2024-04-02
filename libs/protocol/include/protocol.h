@@ -116,17 +116,15 @@ p_payload_t *p_server_listen(p_server_t *server);
 
 /**
  * @brief Send a packet from the server to a specific client.
- * @param packet_type Type of the packet.
- * @param payload_data Data to be sent.
- * @param payload_size Size of the data.
+ * @param payload Pointer to the packet payload.
  * @param client_fd File descriptor of the client.
+ * @param server Pointer to the server.
  * @return 0 on success, -1 on failure.
  */
 int p_server_send_packet(
-    uint8_t packet_type,
-    const void *payload_data,
-    size_t payload_size,
-    int client_fd
+    p_payload_t *payload,
+    int client_fd,
+    p_server_t *server
 );
 
 /**

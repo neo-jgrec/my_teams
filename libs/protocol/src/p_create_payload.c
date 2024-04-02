@@ -13,13 +13,13 @@ p_payload_t *p_create_payload(
     size_t payload_size
 )
 {
-    p_payload_t *payload = malloc(sizeof(p_payload_t));
+    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
 
     if (payload == NULL)
         return NULL;
     payload->packet.id = packet_type;
     payload->packet.size = payload_size;
-    payload->data = malloc(payload_size);
+    payload->data = calloc(payload_size, sizeof(char));
     if (payload->data == NULL) {
         free(payload);
         return NULL;
