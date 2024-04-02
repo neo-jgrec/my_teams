@@ -6,6 +6,7 @@
 */
 
 #include "../../../include/protocol.h"
+#include "../../../../../include/debug_print.h"
 
 p_server_t *server_socket(int port)
 {
@@ -13,7 +14,7 @@ p_server_t *server_socket(int port)
 
     server->network_data.sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (server->network_data.sockfd < 0) {
-        perror("Socket creation failed");
+        DEBUG_PRINT("Socket creation failed: %s\n", strerror(errno));
         free(server);
         return NULL;
     }

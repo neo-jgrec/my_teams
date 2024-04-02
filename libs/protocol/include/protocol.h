@@ -18,6 +18,8 @@
     #include <sys/queue.h>
     #include <signal.h>
     #include <string.h>
+    #include <stdbool.h>
+    #include <errno.h>
 
 /**
  * @struct p_packet_s
@@ -181,5 +183,13 @@ int server_setsockopt(p_server_t *server);
  * @param port Port number to bind the server.
  */
 p_server_t *server_socket(int port);
+
+/**
+ * @brief Get the client with the given file descriptor.
+ * @param fd File descriptor of the client.
+ * @param server Pointer to the server.
+ * @return Pointer to the client.
+ */
+p_client_t *get_client(int fd, p_server_t *server);
 
 #endif /* !PROTOCOL_H_ */

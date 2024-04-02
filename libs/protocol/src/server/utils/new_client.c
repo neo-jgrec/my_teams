@@ -19,7 +19,7 @@ int new_client(p_server_t *server)
     );
 
     if (new_socket < 0) {
-        perror("Accept failed");
+        DEBUG_PRINT("Accept failed: %s\n", strerror(errno));
         return -1;
     }
     new_client->network_data.sockfd = new_socket;

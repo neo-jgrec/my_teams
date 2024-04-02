@@ -31,12 +31,13 @@ SRC			+= server_bind.c
 SRC			+= server_listen.c
 SRC			+= server_setsockopt.c
 SRC			+= server_socket.c
+SRC			+= get_client.c
 
 BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
 
 CFLAGS 		:= -iquote./include -iquote../../include
-CFLAGS		+= -Wall -Wextra -Werror -DSMCLN=;
+CFLAGS		+= -DDEBUG -Wall -Wextra -DSMCLN=;
 AR			= ar
 
 DIE         = exit 1

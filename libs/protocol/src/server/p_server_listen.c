@@ -8,30 +8,12 @@
 #include "../include/protocol.h"
 #include "../../../include/debug_print.h"
 
-//static char *get_buffer(int fd)
-//{
-//    int read_size;
-//    char *buffer = calloc(1024, sizeof(char));
-//
-//    if (buffer == NULL) {
-//        perror("Calloc failed");
-//        return NULL;
-//    }
-//    read_size = read(fd, buffer, 1024);
-//    if (read_size == -1) {
-//        perror("Read failed");
-//        return NULL;
-//    }
-//    buffer[read_size] = '\0';
-//    return buffer;
-//}
-
 static int read_header(int fd, p_payload_t *payload)
 {
     size_t bytes_received = read(fd, &payload->packet, sizeof(p_packet_t));
 
-    if (bytes_received == (size_t)-1) {
-        perror("Header read failed");
+    if (bytes_received <= 0) {
+        DEBUG_PRINT("Packet header read failed: %s\n", strerror(errno));
         free(payload);
         return -1;
     }
@@ -46,8 +28,8 @@ static int read_network_data(int fd, p_payload_t *payload, p_server_t *server)
         sizeof(p_network_data_t));
     p_client_t *client;
 
-    if (bytes_received == (size_t)-1) {
-        perror("Network data read failed");
+    if (bytes_received <= 0) {
+        DEBUG_PRINT("Network data read failed: %s\n", strerror(errno));
         free(payload);
         return -1;
     }
@@ -64,8 +46,8 @@ static int read_body(int fd, p_payload_t *payload)
 {
     size_t bytes_received = read(fd, payload->data, payload->packet.size);
 
-    if (bytes_received == (size_t)-1) {
-        perror("Payload data read failed");
+    if (bytes_received <= 0) {
+        DEBUG_PRINT("Packet body read failed: %s\n", strerror(errno));
         free(payload->data);
         free(payload);
         return -1;
@@ -76,10 +58,10 @@ static int read_body(int fd, p_payload_t *payload)
 
 static p_payload_t *receive_packet(int fd, p_server_t *server)
 {
-    p_payload_t *payload = (p_payload_t *)malloc(sizeof(p_payload_t));
+    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
 
     if (!payload) {
-        perror("Malloc failed");
+        DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
         return NULL;
     }
     if (read_header(fd, payload) == -1)
@@ -88,7 +70,7 @@ static p_payload_t *receive_packet(int fd, p_server_t *server)
         return NULL;
     payload->data = malloc(payload->packet.size);
     if (payload->data == NULL) {
-        perror("Malloc failed");
+        DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
         free(payload);
         return NULL;
     }

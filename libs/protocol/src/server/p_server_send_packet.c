@@ -20,7 +20,7 @@ static int p_server_send_packet_header(
     );
 
     if (size == (size_t)-1) {
-        perror("Header write failed");
+        DEBUG_PRINT("Packet header write failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet header sent with id %d and size %d\n",
@@ -40,7 +40,7 @@ static int p_server_send_packet_body(
     );
 
     if (size == (size_t)-1) {
-        perror("Payload data write failed");
+        DEBUG_PRINT("Packet body write failed: %s\n", strerror(errno));
         return -1;
     }
     printf("Packet body sent with size %d\n", payload->packet.size);

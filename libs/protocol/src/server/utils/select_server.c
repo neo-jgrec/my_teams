@@ -6,11 +6,12 @@
 */
 
 #include "../../../include/protocol.h"
+#include "../../../../../include/debug_print.h"
 
 int select_server(p_server_t *server)
 {
     if (select(FD_SETSIZE, &server->set, NULL, NULL, NULL) == -1) {
-        perror("Select failed");
+        DEBUG_PRINT("Select failed: %s\n", strerror(errno));
         return -1;
     }
     return 0;

@@ -13,7 +13,7 @@ static int read_header(int fd, p_payload_t *payload)
     size_t size = read(fd, &(payload->packet), sizeof(p_packet_t));
 
     if (size == (size_t)-1) {
-        perror("Header read failed");
+        DEBUG_PRINT("Header read failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet header received with id %d and size %d\n",
@@ -26,7 +26,7 @@ static int read_body(int fd, p_payload_t *payload)
     size_t size = read(fd, payload->data, payload->packet.size);
 
     if (size == (size_t)-1) {
-        perror("Payload data read failed");
+        DEBUG_PRINT("Body read failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet body received with size %d\n", payload->packet.size);
@@ -38,14 +38,14 @@ p_payload_t *p_client_listen(p_client_t *client)
     p_payload_t *payload = (p_payload_t *)malloc(sizeof(p_payload_t));
 
     if (!payload) {
-        perror("Malloc failed");
+        DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
         return NULL;
     }
     if (read_header(client->network_data.sockfd, payload) == -1)
         return NULL;
     payload->data = malloc(payload->packet.size);
     if (payload->data == NULL) {
-        perror("Malloc failed");
+        DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
         free(payload);
         return NULL;
     }

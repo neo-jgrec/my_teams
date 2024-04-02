@@ -20,7 +20,7 @@ static int p_client_send_packet_header(
     );
 
     if (size == (size_t)-1) {
-        perror("Header write failed");
+        DEBUG_PRINT("Header write failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet header sent with id %d and size %d\n",
@@ -40,7 +40,7 @@ static int p_client_send_packet_network_data(
     );
 
     if (size == (size_t)-1) {
-        perror("Network data write failed");
+        DEBUG_PRINT("Network data write failed: %s\n", strerror(errno));
         return -1;
     }
     printf("Network data sent with sockfd %d\n", payload->network_data.sockfd);
@@ -61,7 +61,7 @@ static int p_client_send_packet_body(
     );
 
     if (size == (size_t)-1) {
-        perror("Payload data write failed");
+        DEBUG_PRINT("Payload data write failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet body sent with size %d\n", payload->packet.size);

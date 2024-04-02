@@ -14,7 +14,7 @@ static p_client_t *client_socket(const char *ip, int port)
 
     client->network_data.sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (client->network_data.sockfd < 0) {
-        perror("Socket creation failed");
+        DEBUG_PRINT("Socket creation failed: %s\n", strerror(errno));
         free(client);
         return NULL;
     }
@@ -31,7 +31,7 @@ static int client_connect(p_client_t *client)
         (struct sockaddr *)&client->network_data.server_addr,
         sizeof(client->network_data.server_addr)
     ) < 0) {
-        perror("Connection failed");
+        DEBUG_PRINT("Connection failed: %s\n", strerror(errno));
         free(client);
         return -1;
     }
