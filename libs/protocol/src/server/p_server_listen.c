@@ -58,31 +58,47 @@ static int read_body(int fd, p_payload_t *payload)
 static p_payload_t *receive_packet(int fd, p_server_t *server)
 {
     p_payload_t *payload = calloc(1, sizeof(p_payload_t));
+    p_client_t *current_client;
 
     if (!payload) {
         DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
         return NULL;
     }
-    if (read_header(fd, payload) == -1)
-        return NULL;
-    if (read_network_data(fd, payload, server) == -1)
-        return NULL;
-    memset(payload->data, 0, DATA_SIZE);
-    if (read_body(fd, payload) == -1)
-        return NULL;
-    return payload;
+    TAILQ_FOREACH(current_client, &server->clients, entries) {
+        if (current_client->network_data.sockfd != fd)
+            continue;
+        if (read_header(fd, payload) == -1)
+            return NULL;
+        if (read_network_data(fd, payload, server) == -1)
+            return NULL;
+        memset(payload->data, 0, DATA_SIZE);
+        if (read_body(fd, payload) == -1)
+            return NULL;
+        return payload;
+    }
+    return NULL;
 }
 
 p_payload_t *p_server_listen(p_server_t *server)
 {
+    p_client_t *current_client;
+
     reset_clients(server);
     if (select_server(server) == -1)
         return NULL;
-    if (FD_ISSET(server->network_data.sockfd, &server->set))
+    if (FD_ISSET(server->network_data.sockfd, &server->read_fds))
         if (new_client(server) == -1)
             return NULL;
     for (int fd = 0; fd < FD_SETSIZE; fd++)
-        if (FD_ISSET(fd, &server->set))
+        if (FD_ISSET(fd, &server->read_fds))
             return receive_packet(fd, server);
+    TAILQ_FOREACH(current_client, &server->clients, entries)
+        if (FD_ISSET(
+            current_client->network_data.sockfd,
+            &server->write_fds
+        )) {
+            FD_CLR(current_client->network_data.sockfd, &server->write_fds);
+            return NULL;
+        }
     return NULL;
 }

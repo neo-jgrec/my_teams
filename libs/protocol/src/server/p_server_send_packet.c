@@ -43,7 +43,6 @@ static int p_server_send_packet_body(
         DEBUG_PRINT("Packet body write failed: %s\n", strerror(errno));
         return -1;
     }
-    printf("Packet body sent with size %d\n", payload->packet.size);
     DEBUG_PRINT("Packet body sent with size %d\n", payload->packet.size);
     return 0;
 }
@@ -59,8 +58,10 @@ int p_server_send_packet(
     if (payload == NULL)
         return -1;
     TAILQ_FOREACH(client, &server->clients, entries) {
-        if (client->sockfd == client_fd)
+        if (client->sockfd == client_fd) {
+            FD_SET(client->network_data.sockfd, &server->write_fds);
             break;
+        }
     }
     if (p_server_send_packet_header(payload,
         client->network_data.sockfd) == -1)

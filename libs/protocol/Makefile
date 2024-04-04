@@ -37,7 +37,7 @@ BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
 
 CFLAGS 		:= -iquote./include -iquote../../include
-CFLAGS		+= -DDEBUG -Wall -Wextra -DSMCLN=;
+CFLAGS		+= -Wall -Wextra -DSMCLN=;
 AR			= ar
 
 DIE         = exit 1
@@ -64,6 +64,8 @@ $(LIB): $(OBJ) $(SRC)
 	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(AR)    $(_U_WHITE)$@$(_END)"
 	@ $(ECHO) "$(_B_PURPLE)[STATS]$(_END)	-> \
 	$(shell echo "$?" | wc -w) file(s) compiled${_END}."
+
+debug: CFLAGS += -DDEBUG -g
 
 clean:
 	@ $(RM) *.gcda

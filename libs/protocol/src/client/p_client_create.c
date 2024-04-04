@@ -18,6 +18,7 @@ static p_client_t *client_socket(const char *ip, int port)
         free(client);
         return NULL;
     }
+    printf("Socket created with fd %d\n", client->network_data.sockfd);
     client->network_data.server_addr.sin_addr.s_addr = inet_addr(ip);
     client->network_data.server_addr.sin_family = AF_INET;
     client->network_data.server_addr.sin_port = htons(port);

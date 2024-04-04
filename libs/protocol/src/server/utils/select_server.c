@@ -10,7 +10,12 @@
 
 int select_server(p_server_t *server)
 {
-    if (select(FD_SETSIZE, &server->set, NULL, NULL, NULL) == -1) {
+    if (select(
+        FD_SETSIZE,
+        &server->read_fds,
+        &server->write_fds,
+        NULL, NULL
+    ) == -1) {
         DEBUG_PRINT("Select failed: %s\n", strerror(errno));
         return -1;
     }

@@ -70,7 +70,8 @@ typedef struct p_client_s {
  */
 typedef struct p_server_s {
     p_network_data_t network_data; /**< Network data */
-    fd_set set;                    /**< File descriptor set */
+    fd_set read_fds;            /**< File descriptor set */
+    fd_set write_fds;           /**< File descriptor set */
     TAILQ_HEAD(, p_client_s) clients; /**< List of clients */
 } p_server_t;
 

@@ -5,14 +5,6 @@
 ** main
 */
 
-#include "../include/client.h"
-#include "../../../libs/protocol/include/protocol.h"
-#include "../../../libs/protocol/include/protocol_client.h"
-#include "../../../libs/protocol/include/protocol_server.h"
-#include "../../../include/debug_print.h"
-
-#define MAX_NAME_LENGTH 32
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +15,8 @@
 #include "../../../include/debug_print.h"
 
 #define MAX_NAME_LENGTH 32
+
+
 
 int main(void)
 {
@@ -35,13 +29,12 @@ int main(void)
     p_client_send_packet(EVT_LOGIN, "Hello", 6, client);
     printf("Sent login packet\n");
     while (1) {
-        printf("fd %d\n", client->network_data.sockfd);
         p_payload_t* payload = p_client_listen(client);
         if (payload) {
             printf("Received packet of type %d\n", payload->packet.id);
             printf("Received payload of size %d\n", payload->packet.size);
             printf("Received payload: %s\n", (char*)payload->data);
-            printf("Received from client %d\n", payload->network_data.sockfd);
+            printf("Received from client %d\n\n", payload->network_data.sockfd);
             free(payload);
         }
     }
