@@ -35,7 +35,7 @@ int main(void)
             printf("Received from client %d\n", payload->network_data.sockfd);
             if (payload->packet.id == EVT_LOGIN)
                 p_server_send_packet(payload_resp, payload->network_data.sockfd, server);
-            free(payload->data);
+            //free(payload->data);
             free(payload);
         }
     }

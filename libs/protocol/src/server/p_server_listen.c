@@ -48,7 +48,7 @@ static int read_body(int fd, p_payload_t *payload)
 
     if (bytes_received <= 0) {
         DEBUG_PRINT("Packet body read failed: %s\n", strerror(errno));
-        free(payload->data);
+        //free(payload->data);
         free(payload);
         return -1;
     }
@@ -68,12 +68,12 @@ static p_payload_t *receive_packet(int fd, p_server_t *server)
         return NULL;
     if (read_network_data(fd, payload, server) == -1)
         return NULL;
-    payload->data = malloc(payload->packet.size);
-    if (payload->data == NULL) {
-        DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
-        free(payload);
-        return NULL;
-    }
+    //payload->data = malloc(payload->packet.size);
+    //if (payload->data == NULL) {
+    //    DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
+    //    free(payload);
+    //    return NULL;
+    //}
     if (read_body(fd, payload) == -1)
         return NULL;
     return payload;

@@ -67,7 +67,7 @@ int p_server_send_packet(
         return -1;
     if (p_server_send_packet_body(payload, client->network_data.sockfd) == -1)
         return -1;
-    free(payload->data);
+    //free(payload->data);
     free(payload);
     return 0;
 }

@@ -48,7 +48,7 @@ typedef struct p_network_data_s {
 typedef struct p_payload_s {
     struct p_packet_s packet;       /**< Packet */
     struct p_network_data_s network_data; /**< Network data */
-    void *data;                     /**< Actual payload data */
+    char data[4096];                /**< Data */
 } p_payload_t;
 
 /**

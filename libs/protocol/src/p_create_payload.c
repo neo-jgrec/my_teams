@@ -19,11 +19,11 @@ p_payload_t *p_create_payload(
         return NULL;
     payload->packet.id = packet_type;
     payload->packet.size = payload_size;
-    payload->data = calloc(payload_size, sizeof(char));
-    if (payload->data == NULL) {
-        free(payload);
-        return NULL;
-    }
+    //payload->data = calloc(payload_size, sizeof(char));
+    //if (payload->data == NULL) {
+    //    free(payload);
+    //    return NULL;
+    //}
     memcpy(payload->data, payload_data, payload_size);
     return payload;
 }

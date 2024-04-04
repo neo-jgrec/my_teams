@@ -80,8 +80,7 @@ int p_client_send_packet(
     );
 
     payload->network_data = client->network_data;
-    if (client == NULL || payload == NULL || payload->data == NULL ||
-    payload->packet.size == 0)
+    if (client == NULL || payload == NULL || payload->packet.size == 0)
         return -1;
     if (p_client_send_packet_header(client, payload) == -1)
         return -1;
@@ -89,7 +88,7 @@ int p_client_send_packet(
         return -1;
     if (p_client_send_packet_body(client, payload) == -1)
         return -1;
-    free(payload->data);
+    //free(payload->data);
     free(payload);
     return 0;
 }
