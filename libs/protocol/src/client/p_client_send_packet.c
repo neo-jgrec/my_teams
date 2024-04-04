@@ -5,8 +5,8 @@
 ** p_client_send_packet
 */
 
-#include "../../include/protocol.h"
 #include "../../../../include/debug_print.h"
+#include "protocol.h"
 
 static int p_client_send_packet_header(
     p_client_t *client,
@@ -88,7 +88,7 @@ int p_client_send_packet(
         return -1;
     if (p_client_send_packet_body(client, payload) == -1)
         return -1;
-    //free(payload->data);
+    memset(payload->data, 0, DATA_SIZE);
     free(payload);
     return 0;
 }

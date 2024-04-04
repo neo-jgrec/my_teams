@@ -42,7 +42,6 @@ int main(void)
             printf("Received payload of size %d\n", payload->packet.size);
             printf("Received payload: %s\n", (char*)payload->data);
             printf("Received from client %d\n", payload->network_data.sockfd);
-            //free(payload->data);
             free(payload);
         }
     }

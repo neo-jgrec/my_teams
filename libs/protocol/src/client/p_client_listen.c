@@ -43,12 +43,7 @@ p_payload_t *p_client_listen(p_client_t *client)
     }
     if (read_header(client->network_data.sockfd, payload) == -1)
         return NULL;
-    //payload->data = malloc(payload->packet.size);
-    //if (payload->data == NULL) {
-    //    DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));
-    //    free(payload);
-    //    return NULL;
-    //}
+    memset(payload->data, 0, DATA_SIZE);
     if (read_body(client->network_data.sockfd, payload) == -1)
         return NULL;
     return payload;

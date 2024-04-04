@@ -21,6 +21,8 @@
     #include <stdbool.h>
     #include <errno.h>
 
+    #define DATA_SIZE 4096
+
 /**
  * @struct p_packet_s
  * @brief Represents a packet with size and identifier.
@@ -48,7 +50,7 @@ typedef struct p_network_data_s {
 typedef struct p_payload_s {
     struct p_packet_s packet;       /**< Packet */
     struct p_network_data_s network_data; /**< Network data */
-    char data[4096];                /**< Data */
+    char data[DATA_SIZE];                /**< Data */
 } p_payload_t;
 
 /**
