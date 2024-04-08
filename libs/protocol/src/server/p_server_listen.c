@@ -67,27 +67,41 @@ static p_payload_t *receive_packet(const int fd, const p_server_t *server)
     return NULL;
 }
 
+static void add_payload_to_queue(p_payload_t *payload, p_server_t *server)
+{
+    TAILQ_INSERT_TAIL(&server->payloads, payload, entries);
+}
+
+static bool server_listen_handle_payload(const int fd, p_server_t *server)
+{
+    p_payload_t *payload = NULL;
+
+    if (fd == server->network_data.sockfd)
+        new_client(server);
+    else {
+        payload = receive_packet(fd, server);
+        if (!payload) {
+            free(payload);
+            FD_CLR(fd, &server->master_read_fds);
+            FD_CLR(fd, &server->master_write_fds);
+            return true;
+        }
+        add_payload_to_queue(payload, server);
+        free(payload);
+    }
+    return false;
+}
+
 p_payload_t *p_server_listen(p_server_t *server)
 {
+    TAILQ_INIT(&server->payloads);
     if (!select_server(server))
         return NULL;
     for (int fd = 0; fd < FD_SETSIZE; fd++) {
         if (!FD_ISSET(fd, &server->read_fds))
             continue;
-        if (fd == server->network_data.sockfd)
-            new_client(server);
-        else {
-            p_payload_t *payload = receive_packet(fd, server);
-            if (!payload) {
-                free(payload);
-                FD_CLR(fd, &server->master_read_fds);
-                FD_CLR(fd, &server->master_write_fds);
-                continue;
-            }
-            // TODO: add to TAILQ (of payloads)
-            free(payload);
-        }
+        if (server_listen_handle_payload(fd, server))
+            continue;
     }
-    // TODO: return TAILQ of payloads
-    return NULL;
+    return TAILQ_FIRST(&server->payloads);
 }

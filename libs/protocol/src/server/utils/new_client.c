@@ -10,10 +10,13 @@
 bool new_client(p_server_t *server)
 {
     p_client_t *new_client = malloc(sizeof(p_client_t));
+    socklen_t size;
+    int new_socket;
+
     if (!new_client)
         return false;
-    socklen_t size = sizeof(new_client->network_data.server_addr);
-    int new_socket = accept(
+    size = sizeof(new_client->network_data.server_addr);
+    new_socket = accept(
         server->network_data.sockfd,
         (struct sockaddr*)&new_client->network_data.server_addr,
         &size

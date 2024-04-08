@@ -7,7 +7,7 @@
 
 #include "protocol.h"
 
-bool server_listen(p_server_t* server)
+bool server_listen(p_server_t *server)
 {
     if (listen(server->network_data.sockfd, SOMAXCONN) == -1) {
         close(server->network_data.sockfd);

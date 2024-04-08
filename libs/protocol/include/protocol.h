@@ -51,6 +51,7 @@ typedef struct p_payload_s {
     struct p_packet_s packet;       /**< Packet */
     struct p_network_data_s network_data; /**< Network data */
     char data[DATA_SIZE];                /**< Data */
+    TAILQ_ENTRY(p_payload_s) entries; /**< Entry for TAILQ list */
 } p_payload_t;
 
 /**
@@ -75,6 +76,7 @@ typedef struct p_server_s {
     fd_set read_fds;            /**< File descriptor set */
     fd_set write_fds;           /**< File descriptor set */
     TAILQ_HEAD(, p_client_s) clients; /**< List of clients */
+    TAILQ_HEAD(, p_payload_s) payloads; /**< List of payloads */
 } p_server_t;
 
 /**

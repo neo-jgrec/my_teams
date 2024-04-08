@@ -27,7 +27,7 @@ int main(void)
     );
 
     while (1) {
-        p_payload_t* payload = p_server_listen(server);
+        p_payload_t *payload = p_server_listen(server);
         if (payload) {
             printf("Received packet of type %d\n", payload->packet.id);
             printf("Received payload of size %d\n", payload->packet.size);

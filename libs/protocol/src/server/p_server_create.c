@@ -14,9 +14,9 @@ static void p_server_stop(const int sig)
     exit(0);
 }
 
-p_server_t* p_server_create(const int port)
+p_server_t *p_server_create(const int port)
 {
-    p_server_t* server = server_socket(port);
+    p_server_t *server = server_socket(port);
     struct sigaction sig = {0};
 
     if (!server || !server_setsockopt(server) || !server_bind(server))

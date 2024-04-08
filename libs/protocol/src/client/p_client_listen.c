@@ -8,7 +8,7 @@
 #include "protocol.h"
 #include "debug_print.h"
 
-static int read_header(int fd, p_payload_t* payload)
+static int read_header(int fd, p_payload_t *payload)
 {
     size_t size = read(fd, &(payload->packet), sizeof(p_packet_t));
 
@@ -21,7 +21,7 @@ static int read_header(int fd, p_payload_t* payload)
     return 0;
 }
 
-static int read_body(int fd, p_payload_t* payload)
+static int read_body(int fd, p_payload_t *payload)
 {
     size_t size = read(fd, payload->data, payload->packet.size);
 
@@ -33,9 +33,9 @@ static int read_body(int fd, p_payload_t* payload)
     return 0;
 }
 
-p_payload_t* p_client_listen(p_client_t* client)
+p_payload_t *p_client_listen(p_client_t *client)
 {
-    p_payload_t* payload = malloc(sizeof(p_payload_t));
+    p_payload_t *payload = malloc(sizeof(p_payload_t));
 
     if (!payload) {
         DEBUG_PRINT("Malloc failed: %s\n", strerror(errno));

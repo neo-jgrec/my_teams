@@ -7,7 +7,7 @@
 
 #include "protocol.h"
 
-bool server_bind(p_server_t* server)
+bool server_bind(p_server_t *server)
 {
     if (bind(
         server->network_data.sockfd,

@@ -7,9 +7,9 @@
 
 #include "protocol.h"
 
-p_server_t* server_socket(const int port)
+p_server_t *server_socket(const int port)
 {
-    p_server_t* server = calloc(1, sizeof(p_server_t));
+    p_server_t *server = calloc(1, sizeof(p_server_t));
 
     if (!server)
         return NULL;

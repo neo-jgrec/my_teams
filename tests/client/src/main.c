@@ -29,7 +29,7 @@ int main(void)
     p_client_send_packet(EVT_LOGIN, "Hello", 6, client);
     printf("Sent login packet\n");
     while (1) {
-        p_payload_t* payload = p_client_listen(client);
+        p_payload_t *payload = p_client_listen(client);
         if (payload) {
             printf("Received packet of type %d\n", payload->packet.id);
             printf("Received payload of size %d\n", payload->packet.size);
