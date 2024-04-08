@@ -5,21 +5,25 @@
 ** server_socket
 */
 
-#include "../../../include/protocol.h"
-#include "../../../../../include/debug_print.h"
+#include "protocol.h"
 
-p_server_t *server_socket(int port)
+p_server_t* server_socket(const int port)
 {
-    p_server_t *server = (p_server_t *)malloc(sizeof(p_server_t));
+    p_server_t* server = calloc(1, sizeof(p_server_t));
 
+    if (!server)
+        return NULL;
     server->network_data.sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (server->network_data.sockfd < 0) {
-        DEBUG_PRINT("Socket creation failed: %s\n", strerror(errno));
         free(server);
         return NULL;
     }
-    server->network_data.server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server->network_data.server_addr.sin_family = AF_INET;
-    server->network_data.server_addr.sin_port = htons(port);
+    server->network_data.server_addr = (struct sockaddr_in){
+        AF_INET, htons(port), {INADDR_ANY}, {0}
+    };
+    FD_ZERO(&server->master_read_fds);
+    FD_ZERO(&server->master_write_fds);
+    FD_SET(server->network_data.sockfd, &server->master_read_fds);
+    FD_SET(server->network_data.sockfd, &server->master_write_fds);
     return server;
 }

@@ -70,6 +70,8 @@ typedef struct p_client_s {
  */
 typedef struct p_server_s {
     p_network_data_t network_data; /**< Network data */
+    fd_set master_read_fds;     /**< Master file descriptor set */
+    fd_set master_write_fds;    /**< Master file descriptor set */
     fd_set read_fds;            /**< File descriptor set */
     fd_set write_fds;           /**< File descriptor set */
     TAILQ_HEAD(, p_client_s) clients; /**< List of clients */
@@ -124,9 +126,9 @@ p_payload_t *p_server_listen(p_server_t *server);
  * @param payload Pointer to the packet payload.
  * @param client_fd File descriptor of the client.
  * @param server Pointer to the server.
- * @return 0 on success, -1 on failure.
+ * @return true on success, false on failure.
  */
-int p_server_send_packet(
+bool p_server_send_packet(
     p_payload_t *payload,
     int client_fd,
     p_server_t *server
@@ -148,38 +150,37 @@ p_payload_t *p_create_payload(
 /**
  * @brief Create a new client on the server.
  * @param server Pointer to the server.
+ * @return true on success, false on failure.
  */
-int new_client(p_server_t *server);
+bool new_client(p_server_t *server);
 
 /**
  * @brief Select the server for incoming packets.
  * @param server Pointer to the server.
+ * @return true on success, false on failure.
  */
-int select_server(p_server_t *server);
-
-/**
- * @brief Reset the clients on the server.
- * @param server Pointer to the server.
- */
-void reset_clients(p_server_t *server);
+bool select_server(p_server_t *server);
 
 /**
  * @brief Bind the server to the given port.
  * @param server Pointer to the server.
+ * @return true on success, false on failure.
  */
-int server_bind(p_server_t *server);
+bool server_bind(p_server_t *server);
 
 /**
  * @brief Listen for incoming connections on the server.
  * @param server Pointer to the server.
+ * @return true on success, false on failure.
  */
-int server_listen(p_server_t *server);
+bool server_listen(p_server_t *server);
 
 /**
  * @brief Set socket options for the server.
  * @param server Pointer to the server.
+ * @return true on success, false on failure.
  */
-int server_setsockopt(p_server_t *server);
+bool server_setsockopt(p_server_t *server);
 
 /**
  * @brief Create a socket for the server.
@@ -193,6 +194,6 @@ p_server_t *server_socket(int port);
  * @param server Pointer to the server.
  * @return Pointer to the client.
  */
-p_client_t *get_client(int fd, p_server_t *server);
+p_client_t *get_client(int fd, const p_server_t *server);
 
 #endif /* !PROTOCOL_H_ */

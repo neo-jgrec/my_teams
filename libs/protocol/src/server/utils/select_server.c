@@ -5,19 +5,16 @@
 ** select_server
 */
 
-#include "../../../include/protocol.h"
-#include "../../../../../include/debug_print.h"
+#include "protocol.h"
 
-int select_server(p_server_t *server)
+bool select_server(p_server_t* server)
 {
-    if (select(
+    memcpy(&server->read_fds, &server->master_read_fds, sizeof(fd_set));
+    memcpy(&server->write_fds, &server->master_write_fds, sizeof(fd_set));
+    return select(
         FD_SETSIZE,
         &server->read_fds,
         &server->write_fds,
         NULL, NULL
-    ) == -1) {
-        DEBUG_PRINT("Select failed: %s\n", strerror(errno));
-        return -1;
-    }
-    return 0;
+    ) != -1;
 }

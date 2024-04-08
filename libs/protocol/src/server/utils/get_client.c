@@ -5,17 +5,14 @@
 ** get_client
 */
 
-#include "../include/protocol.h"
+#include "protocol.h"
 
-p_client_t *get_client(int fd, p_server_t *server)
+p_client_t* get_client(const int fd, const p_server_t* server)
 {
-    p_client_t *client;
+    p_client_t* client;
 
-    TAILQ_FOREACH(client, &server->clients, entries) {
-        if (!client->sockfd)
-            continue;
-        if (client->sockfd == fd)
+    TAILQ_FOREACH(client, &server->clients, entries)
+        if (client->sockfd && client->sockfd == fd)
             break;
-    }
     return NULL;
 }

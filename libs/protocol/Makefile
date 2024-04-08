@@ -25,7 +25,6 @@ SRC 		+= p_client_send_packet.c
 SRC 		+= p_server_send_packet.c
 SRC 		+= p_create_payload.c
 SRC 		+= new_client.c
-SRC 		+= reset_clients.c
 SRC			+= select_server.c
 SRC			+= server_bind.c
 SRC			+= server_listen.c
