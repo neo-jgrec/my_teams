@@ -11,6 +11,7 @@
 static int read_header(int fd, p_payload_t *payload)
 {
     size_t size = read(fd, &(payload->packet), sizeof(p_packet_t));
+    printf("size = %ld\n", size);
 
     if (size == (size_t)-1) {
         DEBUG_PRINT("Header read failed: %s\n", strerror(errno));

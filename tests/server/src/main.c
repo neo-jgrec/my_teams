@@ -33,8 +33,9 @@ int main(void)
             printf("Received payload of size %d\n", payload->packet.size);
             printf("Received payload: %s\n", (char*)payload->data);
             printf("Received from client %d\n\n", payload->network_data.sockfd);
+            printf("Received from client2 %d\n\n", payload->client_fd);
             if (payload->packet.id == EVT_LOGIN)
-                p_server_send_packet(payload_resp, payload->network_data.sockfd, server);
+                p_server_send_packet(payload_resp, payload->client_fd, server);
             free(payload);
         }
     }

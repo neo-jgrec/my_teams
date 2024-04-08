@@ -48,9 +48,10 @@ typedef struct p_network_data_s {
  * data.
  */
 typedef struct p_payload_s {
+    int client_fd; /**< File descriptor of the client */
     struct p_packet_s packet;       /**< Packet */
     struct p_network_data_s network_data; /**< Network data */
-    char data[DATA_SIZE];                /**< Data */
+    uint8_t data[DATA_SIZE];                /**< Data */
     TAILQ_ENTRY(p_payload_s) entries; /**< Entry for TAILQ list */
 } p_payload_t;
 

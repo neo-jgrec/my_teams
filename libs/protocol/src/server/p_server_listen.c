@@ -50,7 +50,7 @@ static int read_body(const int fd, p_payload_t *payload)
 
 static p_payload_t *receive_packet(const int fd, const p_server_t *server)
 {
-    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
+    p_payload_t *payload = malloc(sizeof(p_payload_t));
     p_client_t *current_client;
 
     if (!payload)
@@ -67,9 +67,19 @@ static p_payload_t *receive_packet(const int fd, const p_server_t *server)
     return NULL;
 }
 
-static void add_payload_to_queue(p_payload_t *payload, p_server_t *server)
+static void add_payload_to_queue(p_payload_t *payload, p_server_t *server, const int fd)
 {
+    payload->client_fd = fd;
     TAILQ_INSERT_TAIL(&server->payloads, payload, entries);
+}
+
+static void respond_to_client(const p_payload_t *payload, const int fd)
+{
+    write(
+        fd,
+        &payload->packet,
+        sizeof(p_packet_t)
+    );
 }
 
 static bool server_listen_handle_payload(const int fd, p_server_t *server)
@@ -81,13 +91,11 @@ static bool server_listen_handle_payload(const int fd, p_server_t *server)
     else {
         payload = receive_packet(fd, server);
         if (!payload) {
-            free(payload);
             FD_CLR(fd, &server->master_read_fds);
             FD_CLR(fd, &server->master_write_fds);
             return true;
         }
-        add_payload_to_queue(payload, server);
-        free(payload);
+        add_payload_to_queue(payload, server, fd);
     }
     return false;
 }
