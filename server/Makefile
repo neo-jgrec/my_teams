@@ -11,6 +11,17 @@ EXT			:=	.c
 DIR			:=	src
 SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
+					server.c										\
+					uuid.c											\
+				)
+
+DIR			+=	src/commands
+SRC			+=	$(addprefix $(lastword $(DIR))/,					\
+					created.c										\
+					info.c											\
+					list.c											\
+					logged.c										\
+					miscellaneous.c									\
 				)
 
 FU_DIR		:=	tests/func
@@ -41,12 +52,16 @@ UT_TEST		:=	$(DIR_BIN)/unit_test
 
 RM			:=	rm -rf
 
-CXX			:=	gcc
-CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra	\
-				-L${CURDIR}/../libs/myteams -L${CURDIR}/../libs/protocol \
-				-l:libmyteams.so -l:libmyprotocol.a	\
-				-Wl,-rpath=${CURDIR}/../libs/myteams \
-				-Wl,-rpath=${CURDIR}/../libs/protocol
+CC			:=	gcc
+CFLAGS		:=	-iquote./include -iquote../include							\
+				-iquote../libs/protocol/include								\
+				-iquote../libs/myteams										\
+				-Wall -Wextra
+LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../libs/myteams						\
+				-L../libs/myteams -lmyteams									\
+				-L../libs/protocol -lmyprotocol								\
+				-luuid
+
 
 all:				$(NAME)
 
@@ -62,7 +77,7 @@ define BUILD_OBJ
 	@$(RM) $(patsubst %.o,%.gcda,$@)
 	@$(RM) $(patsubst %.o,%.gcno,$@)
 	$(CREATE_DIR)
-	@$(CXX) $(CXXFLAGS) -MMD -c $< -o $@							\
+	@$(CC) $(CFLAGS) -MMD -c $< -o $@								\
 	&& printf "\033[32m[OK]\033[0m %s\n" $<							\
 	|| printf "\033[31m[KO]\033[0m %s\n" $<
 endef
@@ -73,7 +88,7 @@ $(DG_DIR_OBJ)/%.o:	%$(EXT); $(BUILD_OBJ)
 
 define COMPILE
 	$(CREATE_DIR)
-	@$(CXX) $(CXXFLAGS) -o $@ $^			 						\
+	@$(CC) -o $@ $^ $(LDFLAGS)			 							\
 	&& printf "\033[32m[SUCCES]\033[0m %s\n" $@						\
 	|| printf "\033[31m[ERROR]\033[0m %s\n"  $@
 endef

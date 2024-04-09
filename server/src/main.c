@@ -5,12 +5,14 @@
 ** main
 */
 
-#include <stdio.h>
-#include "debug_print.h"
+#include <stdlib.h>
 
-int main(void)
+#include "server.h"
+
+int main(const int ac, char **av)
 {
-    printf("Super le server !\n");
-    DEBUG_PRINT("Super debug du %d\n", 42);
-    return 0;
+    if (ac != 2)
+        return EXIT_FAILURE;
+    server(av[1]);
+    return EXIT_SUCCESS;
 }
