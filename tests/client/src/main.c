@@ -7,39 +7,37 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "../include/client.h"
-#include "../../../libs/protocol/include/protocol.h"
-#include "../../../libs/protocol/include/protocol_client.h"
-#include "../../../libs/protocol/include/protocol_server.h"
-#include "../../../include/debug_print.h"
+
+#include "protocol.h"
+#include "protocol_client.h"
 
 #define MAX_NAME_LENGTH 32
 
-
-
 int main(void)
 {
-    p_client_t* client = p_client_create("127.0.0.1", 1235);
+    const char ip[] = "127.0.0.1";
+    const int port = 1235;
+
+    printf("[CLIENT] Opening client on %s:%i\n", ip, port);
+    p_client_t *client = p_client_create(ip, port);
     if (!client) {
-        fprintf(stderr, "Client creation failed\n");
-        return 1;
+        fprintf(stderr, "[CLIENT] Client creation failed\n\n");
+        return EXIT_FAILURE;
     }
+    printf("[CLIENT] Client created\n\n");
 
+    printf("[CLIENT] Sent login packet\n\n");
     p_client_send_packet(EVT_LOGIN, "Hello", 6, client);
-    printf("Sent login packet\n");
-    while (1) {
+    while (true) {
         p_payload_t *payload = p_client_listen(client);
-        if (payload) {
-            printf("Received packet of type %d\n", payload->packet.id);
-            printf("Received payload of size %d\n", payload->packet.size);
-            printf("Received payload: %s\n", (char*)payload->data);
-            printf("Received from client %d\n\n", payload->network_data.sockfd);
-            free(payload);
-        }
+        if (!payload)
+            continue;
+        printf("[CLIENT] Received packet of type %d\n", payload->packet.id);
+        printf("[CLIENT] Received payload of size %d\n", payload->packet.size);
+        printf("[CLIENT] Received payload: %s\n", (char*)payload->data);
+        printf("[CLIENT] Received from client %d\n\n",
+            payload->network_data.sockfd);
+        free(payload);
     }
-
-    close(client->network_data.sockfd);
-    free(client);
-    return 0;
+    return EXIT_SUCCESS;
 }

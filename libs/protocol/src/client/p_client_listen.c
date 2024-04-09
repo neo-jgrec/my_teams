@@ -11,14 +11,13 @@
 static int read_header(int fd, p_payload_t *payload)
 {
     size_t size = read(fd, &(payload->packet), sizeof(p_packet_t));
-    printf("size = %ld\n", size);
 
     if (size == (size_t)-1) {
         DEBUG_PRINT("Header read failed: %s\n", strerror(errno));
         return -1;
     }
     DEBUG_PRINT("Packet header received with id %d and size %d\n",
-                payload->packet.id, payload->packet.size);
+        payload->packet.id, payload->packet.size);
     return 0;
 }
 

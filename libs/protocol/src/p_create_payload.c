@@ -15,11 +15,10 @@ p_payload_t *p_create_payload(
 {
     p_payload_t *payload = calloc(1, sizeof(p_payload_t));
 
-    if (payload == NULL)
+    if (!payload)
         return NULL;
     payload->packet.id = packet_type;
     payload->packet.size = payload_size;
-    memset(payload->data, 0, DATA_SIZE);
     memcpy(payload->data, payload_data, payload_size);
     return payload;
 }

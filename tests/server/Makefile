@@ -22,7 +22,9 @@ LDFLAGS		:=	-L../../libs/protocol -lmyprotocol
 BUILD_DIR	:=	build
 OBJ			:=	$(SRC:%.c=$(BUILD_DIR)/%.o)
 
-CFLAGS		:=	-iquote./include -iquote../include -Wall -Wextra
+CFLAGS		:=	-iquote./include -iquote../include \
+				-iquote../../libs/protocol/include \
+				-Wall -Wextra
 AR			:=	ar
 
 DIE			:=	exit 1

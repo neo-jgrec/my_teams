@@ -43,7 +43,6 @@ static int p_client_send_packet_network_data(
         DEBUG_PRINT("Network data write failed: %s\n", strerror(errno));
         return -1;
     }
-    printf("Network data sent with sockfd %d\n", payload->network_data.sockfd);
     DEBUG_PRINT("Network data sent with sockfd %d\n",
         payload->network_data.sockfd);
     return 0;
