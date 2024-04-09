@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "protocol.h"
-#include "protocol_client.h"
+#include "events.h"
 
 #define MAX_NAME_LENGTH 32
 

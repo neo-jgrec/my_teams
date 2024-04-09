@@ -8,8 +8,7 @@
 #include <stdio.h>
 
 #include "protocol.h"
-#include "protocol_client.h"
-#include "protocol_server.h"
+#include "events.h"
 
 int main(void)
 {

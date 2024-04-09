@@ -2,11 +2,11 @@
 ** EPITECH PROJECT, 2024
 ** my_teams
 ** File description:
-** protocol_client
+** events
 */
 
-#ifndef PROTOCOL_CLIENT_H_
-    #define PROTOCOL_CLIENT_H_
+#ifndef EVENTS_H_
+    #define EVENTS_H_
 
 /**
  * @enum client_event_e
@@ -38,4 +38,21 @@ typedef enum client_event_e {
     EVTC_PING /**< Event: Ping */
 } client_event_t;
 
-#endif /* !PROTOCOL_CLIENT_H_ */
+/**
+ * @enum server_event_e
+ * @brief Represents various events that can occur on the server side.
+ */
+typedef enum server_event_e {
+    EVTS_ERROR, /**< Event: Error */
+    EVTS_SUCCESS, /**< Event: Success */
+    EVTS_INFO_USER, /**< Event: User Info */
+    EVTS_INFO_TEAM, /**< Event: Team Info */
+    EVTS_INFO_CHANNEL, /**< Event: Channel Info */
+    EVTS_INFO_THREAD, /**< Event: Thread Info */
+    EVTS_INFO_REPLY, /**< Event: Reply Info */
+    EVTS_INFO_MESSAGE, /**< Event: Message Info */
+    EVTS_INFO_SUBSCRIPTION, /**< Event: Subscription Info */
+    EVTS_INFO_UNSUBSCRIBE /**< Event: Unsubscribe Info */
+} server_event_t;
+
+#endif /* !EVENTS_H_ */

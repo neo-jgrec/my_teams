@@ -24,6 +24,7 @@ OBJ			:=	$(SRC:%.c=$(BUILD_DIR)/%.o)
 
 CFLAGS		:=	-iquote./include -iquote../include \
 				-iquote../../libs/protocol/include \
+				-iquote../../include \
 				-Wall -Wextra
 AR			:=	ar
 
