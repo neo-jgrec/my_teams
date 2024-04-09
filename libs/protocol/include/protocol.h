@@ -200,4 +200,10 @@ void p_server_close(p_server_t *server);
  */
 bool p_server_is_open(void);
 
+/**
+ * @brief Close the client.
+ * @param client Pointer to the client.
+ */
+void p_client_close(p_client_t *client);
+
 #endif /* !PROTOCOL_H_ */

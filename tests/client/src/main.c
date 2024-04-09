@@ -17,6 +17,7 @@ int main(void)
 {
     const char ip[] = "127.0.0.1";
     const int port = 1235;
+    bool is_running = true;
 
     printf("[CLIENT] Opening client on %s:%i\n", ip, port);
     p_client_t *client = p_client_create(ip, port);
@@ -27,8 +28,8 @@ int main(void)
     printf("[CLIENT] Client created\n\n");
 
     printf("[CLIENT] Sent login packet\n\n");
-    p_client_send_packet(EVT_LOGIN, "Hello", client);
-    while (true) {
+    p_client_send_packet(EVTC_LOGIN, "Hello", client);
+    while (is_running) {
         p_payload_t *payload = p_client_listen(client);
         if (!payload)
             continue;
@@ -37,6 +38,8 @@ int main(void)
         printf("[CLIENT] Received from client %d\n\n",
             payload->network_data.sockfd);
         free(payload);
+        //is_running = false;
     }
+    p_client_close(client);
     return EXIT_SUCCESS;
 }
