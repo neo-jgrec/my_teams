@@ -27,13 +27,12 @@ int main(void)
     printf("[CLIENT] Client created\n\n");
 
     printf("[CLIENT] Sent login packet\n\n");
-    p_client_send_packet(EVT_LOGIN, "Hello", 6, client);
+    p_client_send_packet(EVT_LOGIN, "Hello", client);
     while (true) {
         p_payload_t *payload = p_client_listen(client);
         if (!payload)
             continue;
-        printf("[CLIENT] Received packet of type %d\n", payload->packet.id);
-        printf("[CLIENT] Received payload of size %d\n", payload->packet.size);
+        printf("[CLIENT] Received packet of type %d\n", payload->packet_type);
         printf("[CLIENT] Received payload: %s\n", (char*)payload->data);
         printf("[CLIENT] Received from client %d\n\n",
             payload->network_data.sockfd);

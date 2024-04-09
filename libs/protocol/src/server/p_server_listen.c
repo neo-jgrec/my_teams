@@ -7,10 +7,10 @@
 
 #include "protocol.h"
 
-static bool read_header(const int fd, p_payload_t *payload)
+static bool read_type(const int fd, p_payload_t *payload)
 {
     const size_t bytes_received =
-        read(fd, &payload->packet, sizeof(p_packet_t));
+        read(fd, &payload->packet_type, sizeof(uint8_t));
 
     if (bytes_received <= 0) {
         free(payload);
@@ -38,8 +38,7 @@ static bool read_network_data(const int fd, p_payload_t *payload,
 
 static int read_body(const int fd, p_payload_t *payload)
 {
-    const size_t bytes_received =
-        read(fd, payload->data, payload->packet.size);
+    const size_t bytes_received = read(fd, payload->data, DATA_SIZE);
 
     if (bytes_received <= 0) {
         free(payload);
@@ -58,7 +57,7 @@ static p_payload_t *receive_packet(const int fd, const p_server_t *server)
     TAILQ_FOREACH(current_client, &server->clients, entries) {
         if (current_client->network_data.sockfd != fd)
             continue;
-        if (!read_header(fd, payload)
+        if (!read_type(fd, payload)
             || !read_network_data(fd, payload, server))
             return NULL;
         return !read_body(fd, payload) ? NULL : payload;
