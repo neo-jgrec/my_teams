@@ -9,14 +9,12 @@
 
 void p_server_close(p_server_t *server)
 {
-    p_payload_t *payload;
-    p_client_t *client;
-
-    TAILQ_FOREACH(payload, &server->payloads, entries) {
-        if (payload)
-            free(payload);
+    for (p_client_t *client = TAILQ_FIRST(&server->clients); client;
+         client = TAILQ_FIRST(&server->clients)) {
+        TAILQ_REMOVE(&server->clients, client, entries);
+        close(client->network_data.sockfd);
+        free(client);
     }
     close(server->network_data.sockfd);
-    server->network_data.sockfd = -1;
     free(server);
 }

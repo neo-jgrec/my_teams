@@ -24,23 +24,32 @@ int main(void)
     printf("[SERVER] Server created\n\n");
 
     p_payload_t *payload_resp = p_create_payload(
-        EVTS_SUCCESS, "Tamere\n"
-    );
+        EVTC_LOGIN, "Tamere\n");
 
     while (p_server_is_open()) {
         p_payload_t *payload = p_server_listen(server);
         if (!payload)
             continue;
-        TAILQ_FOREACH(payload, &server->payloads, entries) {
+
+        p_payload_t *next;
+        for (payload = TAILQ_FIRST(&server->payloads); payload; payload =
+             next) {
+            next = TAILQ_NEXT(payload, entries);
+
             printf("[SERVER] Received packet of type: %d\n",
                 payload->packet_type);
             printf("[SERVER] Received payload: %s\n", (char*)payload->data);
             printf("[SERVER] Received from client: %d\n\n", payload->client_fd);
+
             if (payload->packet_type == EVTC_LOGIN)
                 p_server_send_packet(payload_resp, payload->client_fd, server);
+
+            TAILQ_REMOVE(&server->payloads, payload, entries);
+            free(payload);
         }
     }
     p_server_close(server);
+    free(payload_resp);
     printf("[SERVER] Server closed\n");
     return EXIT_SUCCESS;
 }

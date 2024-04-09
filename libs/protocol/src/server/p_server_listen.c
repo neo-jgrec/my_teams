@@ -7,29 +7,18 @@
 
 #include "protocol.h"
 
-static bool read_type(const int fd, p_payload_t *payload)
+static bool read_header(const int fd, p_payload_t *payload)
 {
-    const size_t bytes_received =
-        read(fd, &payload->packet_type, sizeof(uint8_t));
-
-    if (bytes_received <= 0) {
-        free(payload);
-        return false;
-    }
-    return true;
+    return read(fd, &payload->packet_type, sizeof(uint8_t)) > 0;
 }
 
 static bool read_network_data(const int fd, p_payload_t *payload,
     const p_server_t *server)
 {
     p_client_t *client;
-    const size_t bytes_received =
-        read(fd, &payload->network_data, sizeof(p_network_data_t));
 
-    if (bytes_received <= 0) {
-        free(payload);
+    if (read(fd, &payload->network_data, sizeof(p_network_data_t)) <= 0)
         return false;
-    }
     TAILQ_FOREACH(client, &server->clients, entries)
         if (client->network_data.sockfd == fd)
             client->sockfd = payload->network_data.sockfd;
@@ -38,13 +27,7 @@ static bool read_network_data(const int fd, p_payload_t *payload,
 
 static int read_body(const int fd, p_payload_t *payload)
 {
-    const size_t bytes_received = read(fd, payload->data, DATA_SIZE);
-
-    if (bytes_received <= 0) {
-        free(payload);
-        return false;
-    }
-    return true;
+    return read(fd, payload->data, DATA_SIZE) > 0;
 }
 
 static p_payload_t *receive_packet(const int fd, const p_server_t *server)
@@ -57,33 +40,42 @@ static p_payload_t *receive_packet(const int fd, const p_server_t *server)
     TAILQ_FOREACH(current_client, &server->clients, entries) {
         if (current_client->network_data.sockfd != fd)
             continue;
-        if (!read_type(fd, payload)
-            || !read_network_data(fd, payload, server))
+        if (!read_header(fd, payload)
+            || !read_network_data(fd, payload, server)
+            || !read_body(fd, payload)) {
+            free(payload);
             return NULL;
-        return !read_body(fd, payload) ? NULL : payload;
+        }
+        return payload;
     }
+    free(payload);
     return NULL;
 }
 
 static void server_listen_handle_payload(const int fd, p_server_t *server)
 {
+    p_client_t *client;
     p_payload_t *payload = receive_packet(fd, server);
 
-    if (!payload) {
-        FD_CLR(fd, &server->master_read_fds);
-        FD_CLR(fd, &server->master_write_fds);
+    if (payload) {
+        payload->client_fd = fd;
+        TAILQ_INSERT_TAIL(&server->payloads, payload, entries);
         return;
     }
-    payload->client_fd = fd;
-    TAILQ_INSERT_TAIL(&server->payloads, payload, entries);
+    FD_CLR(fd, &server->master_read_fds);
+    FD_CLR(fd, &server->master_write_fds);
+    TAILQ_FOREACH(client, &server->clients, entries)
+        if (client->network_data.sockfd == fd) {
+            TAILQ_REMOVE(&server->clients, client, entries);
+            break;
+        }
+    free(client);
+    close(fd);
 }
 
 p_payload_t *p_server_listen(p_server_t *server)
 {
-    p_payload_t *payload;
-
-    TAILQ_FOREACH(payload, &server->payloads, entries)
-        TAILQ_REMOVE(&server->payloads, payload, entries);
+    TAILQ_INIT(&server->payloads);
     if (!select_server(server))
         return NULL;
     for (int fd = 0; fd < FD_SETSIZE; fd++) {

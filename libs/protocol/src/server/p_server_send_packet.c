@@ -7,7 +7,6 @@
 
 #include "protocol.h"
 
-// TODO: Free payload
 bool p_server_send_packet(p_payload_t *payload, const int client_fd,
     p_server_t *server)
 {
@@ -20,12 +19,7 @@ bool p_server_send_packet(p_payload_t *payload, const int client_fd,
             FD_SET(client->network_data.sockfd, &server->write_fds);
             break;
         }
-    if (client
-        && write(client_fd, &payload->packet_type, sizeof(uint8_t) != -1)
-        && write(client_fd, payload->data, DATA_SIZE) != -1) {
-            free(payload);
-            return false;
-        }
-    free(payload);
-    return true;
+    return client
+        && write(client_fd, &payload->packet_type, sizeof(uint8_t)) != -1
+        && write(client_fd, payload->data, DATA_SIZE) != -1;
 }
