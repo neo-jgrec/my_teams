@@ -7,11 +7,13 @@
 
 #include "protocol.h"
 
-static void p_server_stop(const int sig)
+bool p_server_stop(const int sig)
 {
-    if (sig != SIGINT)
-        return;
-    exit(0);
+    static bool running = true;
+
+    if (sig == SIGINT)
+        running = false;
+    return running;
 }
 
 p_server_t *p_server_create(const int port)

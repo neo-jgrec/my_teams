@@ -27,7 +27,7 @@ int main(void)
         EVT_SUCCES, "Tamere\n", 8
     );
 
-    while (true) {
+    while (p_server_stop(0)) {
         p_payload_t *payload = p_server_listen(server);
         if (!payload)
             continue;
@@ -42,5 +42,7 @@ int main(void)
                 p_server_send_packet(payload_resp, payload->client_fd, server);
         }
     }
+    p_server_close(server);
+    free(payload_resp);
     return EXIT_SUCCESS;
 }

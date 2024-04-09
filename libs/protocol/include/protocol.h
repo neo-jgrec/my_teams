@@ -199,4 +199,17 @@ p_server_t *server_socket(int port);
  */
 p_client_t *get_client(int fd, const p_server_t *server);
 
+/**
+ * @brief Close the server.
+ * @param server Pointer to the server.
+ */
+void p_server_close(p_server_t *server);
+
+/**
+ * @brief Stop the server.
+ * @param sig Signal to stop the server.
+ * @return true if the server is running, false otherwise.
+ */
+bool p_server_stop(const int sig);
+
 #endif /* !PROTOCOL_H_ */
