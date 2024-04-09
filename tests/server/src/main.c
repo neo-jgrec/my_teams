@@ -27,7 +27,7 @@ int main(void)
         EVT_SUCCES, "Tamere\n", 8
     );
 
-    while (p_server_stop(0)) {
+    while (p_server_is_open()) {
         p_payload_t *payload = p_server_listen(server);
         if (!payload)
             continue;
@@ -44,5 +44,6 @@ int main(void)
     }
     p_server_close(server);
     free(payload_resp);
+    printf("[SERVER] Server closed\n");
     return EXIT_SUCCESS;
 }

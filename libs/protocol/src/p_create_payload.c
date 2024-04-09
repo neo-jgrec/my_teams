@@ -5,12 +5,12 @@
 ** p_create_payload
 */
 
-#include "../include/protocol.h"
+#include "protocol.h"
 
 p_payload_t *p_create_payload(
-    uint8_t packet_type,
+    const uint8_t packet_type,
     const void *payload_data,
-    size_t payload_size
+    const size_t payload_size
 )
 {
     p_payload_t *payload = calloc(1, sizeof(p_payload_t));

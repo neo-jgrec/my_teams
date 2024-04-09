@@ -7,13 +7,24 @@
 
 #include "protocol.h"
 
-bool p_server_stop(const int sig)
+static bool p_server_open_state(const bool new_state, const bool set)
 {
-    static bool running = true;
+    static bool state = false;
 
+    if (set)
+        state = new_state;
+    return state;
+}
+
+static void p_server_stop(const int sig)
+{
     if (sig == SIGINT)
-        running = false;
-    return running;
+        p_server_open_state(false, true);
+}
+
+bool p_server_is_open(void)
+{
+    return p_server_open_state(false, false);
 }
 
 p_server_t *p_server_create(const int port)
@@ -29,5 +40,6 @@ p_server_t *p_server_create(const int port)
     signal(SIGPIPE, SIG_IGN);
     sig.sa_handler = p_server_stop;
     sigaction(SIGINT, &sig, NULL);
+    p_server_open_state(true, true);
     return server;
 }

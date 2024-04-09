@@ -7,12 +7,12 @@
 
 #include "protocol.h"
 
+// TODO: Free payload
 bool p_server_send_packet(p_payload_t *payload, const int client_fd,
     p_server_t *server)
 {
     p_client_t *client;
 
-    printf("[PROTOCOL] Sending packet to client %d\n\n", client_fd);
     if (!payload)
         return false;
     TAILQ_FOREACH(client, &server->clients, entries)
@@ -23,6 +23,5 @@ bool p_server_send_packet(p_payload_t *payload, const int client_fd,
     if (client && write(client_fd, &payload->packet, sizeof(p_packet_t)) != -1
         && write(client_fd, payload->data, DATA_SIZE) != -1)
         return false;
-    // free(payload);
     return true;
 }

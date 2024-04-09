@@ -206,10 +206,9 @@ p_client_t *get_client(int fd, const p_server_t *server);
 void p_server_close(p_server_t *server);
 
 /**
- * @brief Stop the server.
- * @param sig Signal to stop the server.
- * @return true if the server is running, false otherwise.
+ * @brief Check if the server is open.
+ * @return true if the server is open, false otherwise.
  */
-bool p_server_stop(const int sig);
+bool p_server_is_open(void);
 
 #endif /* !PROTOCOL_H_ */
