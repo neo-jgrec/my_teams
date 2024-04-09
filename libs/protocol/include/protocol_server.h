@@ -8,17 +8,21 @@
 #ifndef PROTOCOL_SERVER_H_
     #define PROTOCOL_SERVER_H_
 
+/**
+ * @enum server_event_e
+ * @brief Represents various events that can occur on the server side.
+ */
 typedef enum server_event_e {
-    EVT_ERROR,
-    EVT_SUCCESS,
-    EVT_INFO_USER,
-    EVT_INFO_TEAM,
-    EVT_INFO_CHANNEL,
-    EVT_INFO_THREAD,
-    EVT_INFO_REPLY,
-    EVT_INFO_MESSAGE,
-    EVT_INFO_SUBSCRIPTION,
-    EVT_INFO_UNSUBSCRIBE
+    EVTS_ERROR, /**< Event: Error */
+    EVTS_SUCCESS, /**< Event: Success */
+    EVTS_INFO_USER, /**< Event: User Info */
+    EVTS_INFO_TEAM, /**< Event: Team Info */
+    EVTS_INFO_CHANNEL, /**< Event: Channel Info */
+    EVTS_INFO_THREAD, /**< Event: Thread Info */
+    EVTS_INFO_REPLY, /**< Event: Reply Info */
+    EVTS_INFO_MESSAGE, /**< Event: Message Info */
+    EVTS_INFO_SUBSCRIPTION, /**< Event: Subscription Info */
+    EVTS_INFO_UNSUBSCRIBE /**< Event: Unsubscribe Info */
 } server_event_t;
 
 #endif /* !PROTOCOL_SERVER_H_ */
