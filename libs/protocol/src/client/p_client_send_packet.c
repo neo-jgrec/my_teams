@@ -44,10 +44,15 @@ int p_client_send_packet(
 )
 {
     p_payload_t *payload = p_create_payload(packet_type, payload_data);
+    int result;
 
+    if (!payload)
+        return -1;
     payload->network_data = client->network_data;
-    return client && payload
+    result = client && payload
         && p_client_send_packet_type(client, payload)
         && p_client_send_packet_network_data(client, payload)
         && p_client_send_packet_body(client, payload) ? 0 : -1;
+    free(payload);
+    return result;
 }

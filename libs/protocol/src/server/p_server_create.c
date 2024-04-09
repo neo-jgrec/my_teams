@@ -35,6 +35,7 @@ p_server_t *p_server_create(const int port)
     if (!server || !server_setsockopt(server) || !server_bind(server))
         return NULL;
     TAILQ_INIT(&server->clients);
+    TAILQ_INIT(&server->payloads);
     if (!server_listen(server))
         return NULL;
     signal(SIGPIPE, SIG_IGN);

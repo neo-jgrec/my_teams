@@ -80,7 +80,10 @@ static void server_listen_handle_payload(const int fd, p_server_t *server)
 
 p_payload_t *p_server_listen(p_server_t *server)
 {
-    TAILQ_INIT(&server->payloads);
+    p_payload_t *payload;
+
+    TAILQ_FOREACH(payload, &server->payloads, entries)
+        TAILQ_REMOVE(&server->payloads, payload, entries);
     if (!select_server(server))
         return NULL;
     for (int fd = 0; fd < FD_SETSIZE; fd++) {

@@ -9,7 +9,7 @@
 
 bool new_client(p_server_t *server)
 {
-    p_client_t *new_client = malloc(sizeof(p_client_t));
+    p_client_t *new_client = calloc(1, sizeof(p_client_t));
     socklen_t size;
     int new_socket;
 

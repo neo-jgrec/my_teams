@@ -22,7 +22,10 @@ bool p_server_send_packet(p_payload_t *payload, const int client_fd,
         }
     if (client
         && write(client_fd, &payload->packet_type, sizeof(uint8_t) != -1)
-        && write(client_fd, payload->data, DATA_SIZE) != -1)
-        return false;
+        && write(client_fd, payload->data, DATA_SIZE) != -1) {
+            free(payload);
+            return false;
+        }
+    free(payload);
     return true;
 }

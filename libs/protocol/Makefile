@@ -32,6 +32,7 @@ SRC			+= server_setsockopt.c
 SRC			+= server_socket.c
 SRC			+= get_client.c
 SRC			+= p_server_close.c
+SRC			+= p_client_close.c
 
 BUILD_DIR 	= build
 OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
