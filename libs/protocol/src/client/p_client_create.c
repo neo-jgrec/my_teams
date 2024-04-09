@@ -8,7 +8,7 @@
 #include "protocol.h"
 #include "debug_print.h"
 
-static p_client_t *client_socket(const char *ip, int port)
+static p_client_t *client_socket(const char *ip, const int port)
 {
     p_client_t *client = calloc(1, sizeof(p_client_t));
 
@@ -24,7 +24,7 @@ static p_client_t *client_socket(const char *ip, int port)
     return client;
 }
 
-static int client_connect(p_client_t *client)
+static bool client_connect(p_client_t *client)
 {
     if (connect(
         client->network_data.sockfd,
@@ -33,19 +33,15 @@ static int client_connect(p_client_t *client)
     ) < 0) {
         DEBUG_PRINT("Connection failed: %s\n", strerror(errno));
         free(client);
-        return -1;
+        return false;
     }
     DEBUG_PRINT("Connected to server\n");
-    return 0;
+    return true;
 }
 
-p_client_t *p_client_create(const char *ip, int port)
+p_client_t *p_client_create(const char *ip, const int port)
 {
     p_client_t *client = client_socket(ip, port);
 
-    if (client == NULL)
-        return NULL;
-    if (client_connect(client) == -1)
-        return NULL;
-    return client;
+    return client && client_connect(client) ? client : NULL;
 }

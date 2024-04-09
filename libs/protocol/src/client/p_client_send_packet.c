@@ -49,7 +49,7 @@ int p_client_send_packet(
 
     payload->network_data = client->network_data;
     return client && payload && payload->packet.size != 0
-           && p_client_send_packet_header(client, payload)
-           && p_client_send_packet_network_data(client, payload)
-           && p_client_send_packet_body(client, payload) ? 0 : -1;
+        && p_client_send_packet_header(client, payload)
+        && p_client_send_packet_network_data(client, payload)
+        && p_client_send_packet_body(client, payload) ? 0 : -1;
 }
