@@ -93,7 +93,7 @@ p_client_t *p_client_create(const char *ip, int port);
  * @param client Pointer to the client.
  * @return Pointer to the received payload.
  */
-p_payload_t *p_client_listen(p_client_t *client);
+p_payload_t *p_client_listen(const p_client_t *client);
 
 /**
  * @brief Send a packet from the client.
@@ -107,7 +107,7 @@ int p_client_send_packet(
     uint8_t packet_type,
     const void *payload_data,
     size_t payload_size,
-    p_client_t *client
+    const p_client_t *client
 );
 
 /**

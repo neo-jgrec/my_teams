@@ -10,7 +10,7 @@
 
 static p_client_t *client_socket(const char *ip, int port)
 {
-    p_client_t *client = malloc(sizeof(p_client_t));
+    p_client_t *client = calloc(1, sizeof(p_client_t));
 
     client->network_data.sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (client->network_data.sockfd < 0) {
