@@ -33,10 +33,12 @@ void server(const char *str_port)
 
     if (port < 1024 || port > 65535)
         exit(EXIT_FAILURE);
+    printf("Server started on port %d\n", port);
     server.socket = p_server_create(port);
     if (!server.socket)
         exit(EXIT_FAILURE);
     while (p_server_is_open())
         s_listen(server);
     p_server_close(server.socket);
+    printf("Server closed\n");
 }
