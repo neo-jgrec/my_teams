@@ -20,6 +20,7 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					created.c										\
 					info.c											\
 					list.c											\
+					list_team.c										\
 					logged.c										\
 					miscellaneous.c									\
 				)

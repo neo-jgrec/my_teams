@@ -10,7 +10,57 @@
 
     #include "protocol.h"
 
-typedef struct {} s_server_t;
+typedef struct {
+    char uuid[37];
+    char name[32];
+} user_t;
+
+typedef struct {
+    user_t user;
+    TAILQ_ENTRY(s_user_s) entries;
+} s_user_t;
+
+typedef struct {
+    char uuid[37];
+    char name[32];
+    char description[255];
+} team_t;
+
+typedef struct {
+    team_t team;
+    TAILQ_ENTRY(s_team_s) entries;
+} s_team_t;
+
+typedef struct {
+    char uuid[37];
+    char name[32];
+    char description[255];
+} channel_t;
+
+typedef struct {
+    channel_t channel;
+    TAILQ_ENTRY(s_channel_s) entries;
+} s_channel_t;
+
+typedef struct {
+    char uuid[37];
+    char title[32];
+    char body[37];
+} thread_t;
+
+typedef struct {
+    thread_t thread;
+    TAILQ_ENTRY(s_thread_s) entries;
+} s_thread_t;
+
+typedef struct {
+    s_user_t users;
+    s_team_t teams;
+    s_channel_t channels;
+    s_thread_t threads;
+
+    p_server_t *socket;
+} s_server_t;
 
 /**
  * @brief Create a server
@@ -24,15 +74,8 @@ void server(const char *str_port);
  */
 char *get_uuid(void);
 
-typedef char name_t[32];
-typedef char description_t[255];
-typedef char body_t[37];
-
-typedef char uuid_t[37];
-typedef uint8_t data_t[DATA_SIZE];
-
 typedef struct {
-    name_t user_name;
+    char user_name[32];
 } login_t;
 
 /**
@@ -43,7 +86,7 @@ typedef struct {
 void s_server_event_logged_in(s_server_t *server, const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
+    char user_uuid[37];
 } logout_t;
 
 /**
@@ -61,8 +104,8 @@ void s_server_event_logged_out(s_server_t *server, const p_payload_t *payload);
 void s_server_event_list_users(s_server_t *server, const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
-    body_t message_body;
+    char user_uuid[37];
+    char message_body[37];
 } send_message_t;
 
 /**
@@ -74,7 +117,7 @@ void s_server_event_send_message(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
+    char user_uuid[37];
 } list_messages_t;
 
 /**
@@ -86,8 +129,8 @@ void s_server_event_list_messages(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
-    uuid_t team_uuid;
+    char user_uuid[37];
+    char team_uuid[37];
 } subscribe_t;
 
 /**
@@ -98,7 +141,7 @@ typedef struct {
 void s_server_event_subscribe(s_server_t *server, const p_payload_t *payload);
 
 typedef struct {
-    uuid_t team_uuid;
+    char team_uuid[37];
 } list_subscribed_users_in_team_t;
 
 /**
@@ -110,7 +153,7 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
+    char user_uuid[37];
 } list_subscribed_teams_t;
 
 /**
@@ -122,8 +165,8 @@ void s_server_event_list_subscribed_teams(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
-    uuid_t team_uuid;
+    char user_uuid[37];
+    char team_uuid[37];
 } unsubscribe_t;
 
 /**
@@ -131,11 +174,12 @@ typedef struct {
  * @param server The server
  * @param payload The payload
  */
-void s_server_event_unsubscribe(s_server_t *server, const p_payload_t *payload);
+void s_server_event_unsubscribe(s_server_t *server,
+    const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
-    name_t team_name;
+    char user_uuid[37];
+    char team_name[32];
 } team_create_t;
 
 /**
@@ -147,8 +191,8 @@ void s_server_event_team_created(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t team_uuid;
-    name_t channel_name;
+    char team_uuid[37];
+    char channel_name[32];
 } channel_create_t;
 
 /**
@@ -160,10 +204,10 @@ void s_server_event_channel_created(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t channel_uuid;
-    uuid_t user_uuid;
-    name_t thread_title;
-    body_t thread_body;
+    char channel_uuid[37];
+    char user_uuid[37];
+    char thread_title[32];
+    char thread_body[37];
 } thread_create_t;
 
 /**
@@ -175,9 +219,9 @@ void s_server_event_thread_created(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t channel_uuid;
-    uuid_t user_uuid;
-    body_t reply_body;
+    char channel_uuid[37];
+    char user_uuid[37];
+    char reply_body[37];
 } reply_create_t;
 
 /**
@@ -189,7 +233,7 @@ void s_server_event_reply_created(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
+    char user_uuid[37];
 } list_teams_t;
 
 /**
@@ -200,7 +244,7 @@ typedef struct {
 void s_server_event_list_teams(s_server_t *server, const p_payload_t *payload);
 
 typedef struct {
-    uuid_t team_uuid;
+    char team_uuid[37];
 } list_channels_t;
 
 /**
@@ -212,7 +256,7 @@ void s_server_event_list_channels(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t channel_uuid;
+    char channel_uuid[37];
 } list_threads_t;
 
 /**
@@ -224,7 +268,7 @@ void s_server_event_list_threads(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t thread_uuid;
+    char thread_uuid[37];
 } list_replies_t;
 
 /**
@@ -236,7 +280,7 @@ void s_server_event_list_replies(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t user_uuid;
+    char user_uuid[37];
 } user_info_t;
 
 /**
@@ -248,7 +292,7 @@ void s_server_event_get_user_info(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t team_uuid;
+    char team_uuid[37];
 } team_info_t;
 
 /**
@@ -260,7 +304,7 @@ void s_server_event_get_team_info(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t channel_uuid;
+    char channel_uuid[37];
 } channel_info_t;
 
 /**
@@ -272,7 +316,7 @@ void s_server_event_get_channel_info(s_server_t *server,
     const p_payload_t *payload);
 
 typedef struct {
-    uuid_t thread_uuid;
+    char thread_uuid[37];
 } thread_info_t;
 
 /**

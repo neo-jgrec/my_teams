@@ -10,7 +10,8 @@
 
 void s_server_event_ping(UNUSED s_server_t *server,
     UNUSED const p_payload_t *payload)
-{}
+{
+}
 
 void s_server_event_send_message(UNUSED s_server_t *server,
     const p_payload_t *payload)
