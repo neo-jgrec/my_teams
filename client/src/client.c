@@ -40,10 +40,16 @@ static char *get_client_input(void)
 
 static char **get_args_from_input(char *input)
 {
-    char **args = malloc(sizeof(char *) * 10);
-    char *token = strtok(input, " \n");
+    int space_count = 0;
+    char **args = NULL;
+    char *token = NULL;
     int i = 0;
 
+    for (int j = 0; input[j]; j++)
+        if (input[j] == ' ')
+            space_count++;
+    args = malloc(sizeof(char *) * (space_count + 2));
+    token = strtok(input, " \n");
     for (; token; i++) {
         args[i] = strdup(token);
         token = strtok(NULL, " \n");
