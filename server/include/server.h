@@ -402,4 +402,13 @@ void send_error(const s_server_t *server, const p_payload_t *payload);
 void send_uuid(const s_server_t *server, const p_payload_t *payload,
     const char *uuid);
 
+/**
+ * @brief Send a UUID process response
+ * @param server The server
+ * @param payload The payload
+ * @param uuid The UUID
+ */
+void send_uuid_process(const s_server_t *server, const p_payload_t *payload,
+    const char *uuid);
+
 #endif /* !SERVER_H_ */

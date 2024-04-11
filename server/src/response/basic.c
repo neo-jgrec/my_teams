@@ -34,3 +34,13 @@ void send_uuid(const s_server_t *server, const p_payload_t *payload,
     memcpy(response.data, uuid, UUID_LENGTH);
     p_server_send_packet(&response, payload->client_fd, server->socket);
 }
+
+void send_uuid_process(const s_server_t *server, const p_payload_t *payload,
+    const char *uuid)
+{
+    p_payload_t response = {0};
+
+    response.packet_type = EVT_CONTINUE;
+    memcpy(response.data, uuid, UUID_LENGTH);
+    p_server_send_packet(&response, payload->client_fd, server->socket);
+}

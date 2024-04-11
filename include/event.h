@@ -35,6 +35,7 @@ typedef enum {
 } client_event_t;
 
 typedef enum {
+    EVT_CONTINUE, /**< Event: Continue */
     EVT_SUCCESS, /**< Event: Success */
     EVT_ERROR, /**< Event: Error */
 } server_event_t;
