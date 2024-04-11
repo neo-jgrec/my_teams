@@ -90,14 +90,14 @@ tests_functional:	$(FU_TEST) $(NAME)
 	@$^
 
 -include $(UT_DEP)
-$(UT_TEST):			CXXFLAGS += -lcriterion --coverage
+$(UT_TEST):			CFLAGS += -lcriterion --coverage
 $(UT_TEST):			$(UT_OBJ);	$(COMPILE)
 tests_unit:			$(UT_TEST)
 	@cp $(UT_TEST) $(UT_DIR_OBJ)
 	@$(UT_DIR_OBJ)/$(notdir $<)
 
 -include $(DG_DEP)
-$(DEBUG):			CXXFLAGS += -g -DDEBUG
+$(DEBUG):			CFLAGS += -g -DDEBUG
 $(DEBUG):			$(DG_OBJ); 	$(COMPILE)
 debug:				$(DEBUG)
 
