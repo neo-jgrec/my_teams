@@ -70,7 +70,7 @@ RM			:=	rm -rf
 
 CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../../include				\
-				-Wall -Wextra -fPIC
+				-Wall -Wextra
 LDFLAGS		:=
 
 all:				$(NAME)
