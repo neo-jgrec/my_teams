@@ -9,27 +9,28 @@
 
 #include "logging_server.h"
 #include "server.h"
-#include "unused.h"
 
-static void new_user(s_server_t *server, const login_t *body)
+static void new_user(s_server_t *server, const p_payload_t *payload,
+    const login_t *body)
 {
     s_user_t *user = malloc(sizeof(s_user_t));
     const char *user_uuid;
 
     if (!user)
-        return;
+        return send_error(server, payload);
     user_uuid = get_uuid();
     if (!user_uuid) {
         free(user);
-        return;
+        return send_error(server, payload);
     }
     strcpy(user->user.uuid, user_uuid);
     strcpy(user->user.name, body->user_name);
     TAILQ_INSERT_TAIL(&server->users, user, entries);
     server_event_user_logged_in(user_uuid);
+    send_uuid(server, payload, user_uuid);
 }
 
-void s_server_event_logged_in(UNUSED s_server_t *server,
+void s_server_event_logged_in(s_server_t *server,
     const p_payload_t *payload)
 {
     s_user_t *user;
@@ -39,19 +40,18 @@ void s_server_event_logged_in(UNUSED s_server_t *server,
     TAILQ_FOREACH(user, &server->users, entries) {
         if (strcmp(body.user_name, user->user.name) == 0) {
             server_event_user_logged_in(user->user.uuid);
-            return;
+            return send_uuid(server, payload, user->user.uuid);
         }
     }
-    new_user(server, &body);
+    new_user(server, payload, &body);
 }
 
-void s_server_event_logged_out(UNUSED s_server_t *server,
+void s_server_event_logged_out(s_server_t *server,
     const p_payload_t *payload)
 {
     logout_t body;
 
-    if (!payload)
-        return;
     memcpy(&body, payload->data, sizeof(logout_t));
     server_event_user_logged_out(body.user_uuid);
+    send_success(server, payload);
 }

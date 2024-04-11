@@ -72,6 +72,27 @@ typedef struct s_reply_s {
 } s_reply_t;
 
 typedef struct {
+    char sender_uuid[UUID_LENGTH];
+    char receiver_uuid[UUID_LENGTH];
+    char body[MAX_BODY_LENGTH];
+} private_message_t;
+
+typedef struct s_private_message_s {
+    private_message_t message;
+    TAILQ_ENTRY(s_private_message_s) entries;
+} s_private_message_t;
+
+typedef struct {
+    char user_uuid[UUID_LENGTH];
+    char team_uuid[UUID_LENGTH];
+} subscribe_t;
+
+typedef struct s_subscribe_s {
+    subscribe_t subscribe;
+    TAILQ_ENTRY(s_subscribe_s) entries;
+} s_subscribe_t;
+
+typedef struct {
     TAILQ_HEAD(, s_user_s) users;
 
     TAILQ_HEAD(, s_team_s) teams;
@@ -82,7 +103,12 @@ typedef struct {
 
     TAILQ_HEAD(, s_reply_s) replies;
 
+    TAILQ_HEAD(, s_private_message_s) private_messages;
+
+    TAILQ_HEAD(, s_subscribe_s) subscribes;
+
     p_server_t *socket;
+    int current_client;
 } s_server_t;
 
 /**
@@ -127,7 +153,8 @@ void s_server_event_logged_out(s_server_t *server, const p_payload_t *payload);
 void s_server_event_list_users(s_server_t *server, const p_payload_t *payload);
 
 typedef struct {
-    char user_uuid[UUID_LENGTH];
+    char sender_uuid[UUID_LENGTH];
+    char receiver_uuid[UUID_LENGTH];
     char message_body[MAX_BODY_LENGTH];
 } send_message_t;
 
@@ -150,11 +177,6 @@ typedef struct {
  */
 void s_server_event_list_messages(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-    char team_uuid[UUID_LENGTH];
-} subscribe_t;
 
 /**
  * @brief Handle subscribe event
@@ -356,5 +378,28 @@ void s_server_event_get_thread_info(s_server_t *server,
  * @param payload The payload
  */
 void s_server_event_ping(s_server_t *server, const p_payload_t *payload);
+
+/**
+ * @brief Send a success response
+ * @param server The server
+ * @param payload The payload
+ */
+void send_success(const s_server_t *server, const p_payload_t *payload);
+
+/**
+ * @brief Send an error response
+ * @param server The server
+ * @param payload The payload
+ */
+void send_error(const s_server_t *server, const p_payload_t *payload);
+
+/**
+ * @brief Send a UUID response
+ * @param server The server
+ * @param payload The payload
+ * @param uuid The UUID
+ */
+void send_uuid(const s_server_t *server, const p_payload_t *payload,
+    const char *uuid);
 
 #endif /* !SERVER_H_ */

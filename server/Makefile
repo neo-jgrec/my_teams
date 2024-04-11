@@ -25,6 +25,11 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					miscellaneous.c									\
 				)
 
+DIR			+=	src/response
+SRC			+=	$(addprefix $(lastword $(DIR))/,					\
+					basic.c											\
+				)
+
 FU_DIR		:=	tests/func
 
 UT_DIR		:=	tests/unit

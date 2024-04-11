@@ -34,4 +34,9 @@ typedef enum {
     NB_EVT /**< Number of Events */
 } client_event_t;
 
+typedef enum {
+    EVT_SUCCESS, /**< Event: Success */
+    EVT_ERROR, /**< Event: Error */
+} server_event_t;
+
 #endif //EVENT_H
