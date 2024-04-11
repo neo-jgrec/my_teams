@@ -5,9 +5,9 @@
 The header of each packet follows the following structure:
 
 ```
-|----------------------------|----------------------|-------------------|
-| Payload Length (2 bytes)   | Packet Type (1 byte) | Payload (n bytes) |
-|----------------------------|----------------------|-------------------|
+|----------------------------|--------------------------------------|----------------------|
+| Packet Type (1 byte)       | Network Data (p_network_data_t size) | Payload (4096 bytes) |
+|----------------------------|--------------------------------------|----------------------|
 ```
 
 The `Payload Length` field is a 2-byte unsigned integer that represents the length of the `Payload` field. The `Packet Type` field is a 1-byte unsigned integer that represents the type of the packet. The `Payload` field is a variable-length field that contains the actual data of the packet.

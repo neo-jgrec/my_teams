@@ -1,0 +1,278 @@
+micro-ondes Working group                                           J-Y. Jeffroy
+                                                                         R. Hure
+                                                                     L. Langanay
+Epitech                                                               April 2024
+
+                        MYTEAMS PROTOCOL SPECIFICATION
+
+Status of this Memo
+    This memo is the official specification of the MyTeams protocol.
+    Distribution of this memo is unlimited.
+    This document is a product of the Epitech project's my_teams.
+
+1. Introduction
+    The objectives of the Protocol are to facilitate efficient communication
+    and collaboration among users by enabling seamless exchange of messages and
+    information across distributed systems. Inspired by the principles of
+    openness and interoperability, the Protocol aims to provide a
+    standardized framework for real-time messaging, team collaboration, and
+    information dissemination.
+
+    Similar to its predecessor protocols, the Protocol is designed to serve
+    both human users and automated systems. While individuals can interact with
+    the protocol directly through client applications, its primary focus is to
+    support programmatic communication, enabling seamless integration with
+    various software applications and systems.
+
+    This document endeavors to outline the specifications and guidelines for
+    implementing the Protocol, catering to a diverse range of network
+    environments and computing platforms.
+
+                                                                        [Page 1]
+
+MyTeams Protocol Specification                                        April 2024
+
+
+2. Protocol Overview
+    The MyTeams protocol is a text-based protocol that enables real-time
+    messaging and team collaboration. It is designed to be simple, lightweight,
+    and extensible, making it suitable for a wide range of applications and
+    environments.
+
+    The Protocol is built on the principles of simplicity and efficiency,
+    offering a minimalistic set of commands and data structures. It supports
+    various messaging operations, including sending and receiving messages,
+    creating and managing teams, channels, and users, and retrieving
+    information about teams and channels.
+
+    The Protocol is designed to be platform-independent, allowing it to be
+    implemented on a wide range of devices and operating systems. It is
+    transport-agnostic, meaning it can be used over any network transport
+    protocol, such as TCP, UDP, or WebSockets.
+
+    The Protocol is extensible, allowing developers to define custom commands
+    and data structures to suit their specific requirements. It is designed to
+    be easy to implement and integrate with existing systems, enabling seamless
+    communication and collaboration across distributed environments.
+
+                                                                        [Page 2]
+
+MyTeams Protocol Specification                                        April 2024
+
+3. Protocol Specification
+
+    The header of each packet follows the following structure:
+
+    +-------------+-------------------------+--------------+
+    | Packet Type |      Network Data       |   Payload    |
+    |   (1 byte)  | (p_network_data_t size) | (4096 bytes) |
+    +-------------+-------------------------+--------------+
+
+    The packet type is a single byte that indicates the type of packet being
+    sent. The network data is a structure that contains information about the
+    sender and receiver of the packet, as well as the timestamp of the packet.
+    The payload contains the actual data being sent, such as messages, commands,
+    or responses.
+
+    The payload of the packet is a uint8_t array of 4096 bytes, which can be
+    used to send messages, commands, or responses. The payload can be of
+    variable length, depending on the type of data being sent.
+
+    The following network data structure is defined in the Protocol:
+    /**
+     * @struct p_network_data_s
+     * @brief Represents network data including socket file descriptor and
+     * server address.
+     */
+    typedef struct p_network_data_s {
+        int sockfd;                  /**< Socket file descriptor */
+        struct sockaddr_in server_addr; /**< Server address */
+    } p_network_data_t;
+
+
+                                                                        [Page 3]
+
+MyTeams Protocol Specification                                        April 2024
+
+4. Client Behavior
+
+    The client application is responsible for establishing a connection to the
+    server, sending and receiving packets, and processing the data received from
+    the server. The client application should follow the following steps:
+
+    1. Create a socket and connect to the server.
+    2. Send a packet to the server.
+    3. Receive a packet from the server.
+    4. Process the data received from the server.
+    5. Repeat steps 2-4 as needed.
+
+    The client application should handle errors and exceptions gracefully, such
+    as connection failures, packet loss, or server timeouts. It should also
+    implement appropriate error handling and recovery mechanisms to ensure
+    reliable communication with the server.
+
+5. Server Behavior
+
+        The server application is responsible for accepting incoming connections
+        from clients, receiving and processing packets, and sending responses to
+        clients. The server application should follow the following steps:
+
+        1. Create a socket and bind it to a port.
+        2. Listen for incoming connections from clients.
+        3. Accept incoming connections from clients.
+        4. Receive a packet from a client.
+        5. Process the data received from the client.
+        6. Send a response packet to the client.
+        7. Repeat steps 4-6 as needed.
+
+        The server application should handle errors and exceptions gracefully,
+        such as connection failures, packet loss, or client timeouts. It should
+        also implement appropriate error handling and recovery mechanisms to
+        ensure reliable communication with clients.
+
+                                                                        [Page 4]
+
+MyTeams Protocol Specification                                        April 2024
+
+6. General information
+    MAX_NAME_LENGTH 32
+    MAX_DESCRIPTION_LENGTH 255
+    MAX_BODY_LENGTH 512
+
+7. Commands
+
+    The following commands are defined in the Protocol:
+
+    /HELP
+        Description:
+            Display help information about available commands.
+        Action:
+            Prints out a list of available commands and their descriptions.
+
+        Syntax:
+            /help
+
+        Return Code:
+            0 - Success
+            1 - Error
+
+        Return Value:
+            None
+
+    /LOGIN
+        Description:
+            Authenticate the user with the server.
+        Action:
+            Authenticates the user with the server using the specified username.
+
+        Syntax:
+            /login <username>
+
+        Return Code:
+            0 - Success
+            1 - Error
+
+        Return Value:
+            user_uuid - The UUID of the authenticated user
+            username - The username of the authenticated user
+
+
+                                                                        [Page 5]
+
+MyTeams Protocol Specification                                        April 2024
+
+
+    /LOGOUT
+        Description:
+            Deauthenticate the user with the server.
+        Action:
+            Deauthenticates the user with the server.
+
+        Syntax:
+            /logout
+
+        Return Code:
+            0 - Success
+            1 - Error
+
+        Return Value:
+            None
+
+                                                                        [Page 6]
+
+MyTeams Protocol Specification                                        April 2024
+
+
+8. Return Codes
+
+8.1 Client
+
+Type    Description
+0x00    The client sends this packet to the server to authenticate itself.
+0x01    The client sends this packet to the server to disconnect from the server.
+0x02    The server sends this packet to the client to update the list of users.
+0x03    The server sends this packet to the client to notify it that a new user
+        has connected.
+0x04    The client sends this packet to the server to send a message to another
+        user. The server sends this packet to the client to notify it that a
+        new message has been received.
+0x05    The server sends this packet to the client to update the list of
+        messages.
+0x06    The client sends this packet to the server to subscribe to the messages
+        of another user.
+0x07    The server sends this packet to the client to notify it that a new user
+        has subscribed to its messages.
+0x08    The server sends this packet to the client to update the list of teams.
+0x09    The client sends this packet to the server to unsubscribe from the
+        messages of another user.
+0x10    The client sends this packet to the server to create a new team.
+0x11    The client sends this packet to the server to create a new channel.
+0x12    The client sends this packet to the server to create a new thread.
+0x13    The client sends this packet to the server to create a new reply.
+0x14    The client sends this packet to the server to list the teams.
+0x15    The client sends this packet to the server to list the channels.
+0x16    The client sends this packet to the server to list the threads.
+0x17    The client sends this packet to the server to list the replies.
+0x18    The client sends this packet to the server to get the information
+        of a user.
+0x19    The client sends this packet to the server to get the information
+        of a team.
+0x20    The client sends this packet to the server to get the information
+        of a channel.
+0x21    The client sends this packet to the server to get the information
+        of a thread.
+0x22    The client sends this packet to the server to check if it is still
+        connected.
+
+                                                                        [Page 7]
+
+MyTeams Protocol Specification                                        April 2024
+
+
+8.2 Server
+
+Type    Description
+0x00    The server sends this packet to the client to notify it that an error
+        has occurred.
+0x01    The server sends this packet to the client to notify it that an
+        operation has been successful.
+0x02    The server sends this packet to the client to provide the information
+        of a user.
+0x03    The server sends this packet to the client to provide the information
+        of a team.
+0x04    The server sends this packet to the client to provide the information
+        of a channel.
+0x05    The server sends this packet to the client to provide the information
+        of a thread.
+0x06    The server sends this packet to the client to provide the information
+        of a reply.
+0x07    The server sends this packet to the client to provide the information
+        of a message.
+0x08    The server sends this packet to the client to provide the information
+        of a subscription.
+0x09    The server sends this packet to the client to provide the information
+        of an unsubscription.
+
+                                                                        [Page 8]
+
+MyTeams Protocol Specification                                        April 2024
