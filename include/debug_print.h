@@ -13,6 +13,8 @@
 #endif
 
 #ifdef DEBUG
+    #warning "Debug mode enabled"
+
     #ifndef fprintf
         #include <stdio.h>
     #endif
