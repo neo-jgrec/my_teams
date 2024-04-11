@@ -23,7 +23,7 @@
     #define D_S _D_GREEN_ANSII "[DEBUG] " _D_END_ANSII "%s:%d:%s():"
     #define D_VA __FILE__, __LINE__, __func__
 
-    #define DEBUG_PRINT(fmt, ...) fprintf(stderr, D_S fmt, D_VA, ##__VA_ARGS__)
+    #define DEBUG_PRINT(fmt, ...) fprintf(stdout, D_S fmt, D_VA, ##__VA_ARGS__)
 #else
     #define DEBUG_PRINT(fmt, ...)
 #endif
