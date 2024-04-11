@@ -46,21 +46,20 @@ static char **get_args_from_input(char *input)
     return args;
 }
 
-static void process_response_from_command(response_t response)
+static void process_response_from_command(p_payload_t response)
 {
-    if (response.status == 200 && response.data) {
-        dprintf(STDOUT_FILENO, "%d %s\n%s", response.status,
-            response.message, (char *)response.data);
-        free(response.data);
-    } else
-        dprintf(STDOUT_FILENO, "%d %s\n", response.status, response.message);
+    if (response.packet_type == EVT_ERROR) {
+        fprintf(stdout, "Error: %s\n", response.data);
+    } else {
+        fprintf(stdout, "%s\n", response.data);
+    }
 }
 
 static void process_command(char *input)
 {
     char **args = get_args_from_input(input);
     char *command = args[0];
-    response_t response;
+    p_payload_t response;
 
     DEBUG_PRINT("Processing command: %s\n", command);
     for (int i = 0; args[i]; i++)

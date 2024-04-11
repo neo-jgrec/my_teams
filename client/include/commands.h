@@ -15,34 +15,30 @@
     #define MAX_DESCRIPTION_LENGTH 255
     #define MAX_BODY_LENGTH 512
 
-typedef struct {
-    int status;
-    char *message;
-    bool is_success;
-    void *data;
-} response_t;
+    #include "protocol.h"
+    #include "events.h"
 
 typedef struct command_s {
     char *name;
     char *description;
-    response_t (*func)(char **args, void *data);
+    p_payload_t (*func)(char **args, void *data);
     bool need_login;
 } command_t;
 
-response_t cmd_help(char **args, void *data);
-response_t cmd_login(char **args, void *data);
-response_t cmd_logout(char **args, void *data);
-response_t cmd_users(char **args, void *data);
-response_t cmd_user(char **args, void *data);
-response_t cmd_send(char **args, void *data);
-response_t cmd_messages(char **args, void *data);
-response_t cmd_subscribe(char **args, void *data);
-response_t cmd_subscribed(char **args, void *data);
-response_t cmd_unsubscribe(char **args, void *data);
-response_t cmd_use(char **args, void *data);
-response_t cmd_create(char **args, void *data);
-response_t cmd_list(char **args, void *data);
-response_t cmd_info(char **args, void *data);
+p_payload_t cmd_help(char **args, void *data);
+p_payload_t cmd_login(char **args, void *data);
+p_payload_t cmd_logout(char **args, void *data);
+p_payload_t cmd_users(char **args, void *data);
+p_payload_t cmd_user(char **args, void *data);
+p_payload_t cmd_send(char **args, void *data);
+p_payload_t cmd_messages(char **args, void *data);
+p_payload_t cmd_subscribe(char **args, void *data);
+p_payload_t cmd_subscribed(char **args, void *data);
+p_payload_t cmd_unsubscribe(char **args, void *data);
+p_payload_t cmd_use(char **args, void *data);
+p_payload_t cmd_create(char **args, void *data);
+p_payload_t cmd_list(char **args, void *data);
+p_payload_t cmd_info(char **args, void *data);
 
 static const command_t commands[] = {
     {
