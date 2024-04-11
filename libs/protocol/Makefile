@@ -1,120 +1,89 @@
 ##
 ## EPITECH PROJECT, 2024
-## my_teams
+## Arcade
 ## File description:
 ## Makefile
 ##
 
-NAME		:=	libmyprotocol.a
-EXT			:=	.c
+include Makefile_colors.mk
 
-DIR			:=	src
-SRC			:=	$(addprefix $(DIR)/,								\
-				)
+LIB 		= libmyprotocol.a
+CC 			= gcc
 
-FU_DIR		:=	tests/func
+VPATH 		:= ./src
+VPATH 		+= ./src/client
+VPATH 		+= ./src/server
+VPATH 		+= ./src/server/utils
 
-UT_DIR		:=	tests/unit
-UT_SRC		:=	$(filter-out src/main.c, $(SRC))
-UT_SRC		+=	$(addprefix $(UT_DIR)/,								\
-				)
+vpath %.c $(VPATH)
 
-DIR_BUILD	:=	build
-DIR_BIN		:=	$(DIR_BUILD)/bin
+SRC 		:= p_client_create.c
+SRC 		+= p_client_listen.c
+SRC 		+= p_server_create.c
+SRC 		+= p_server_listen.c
+SRC 		+= p_client_send_packet.c
+SRC 		+= p_server_send_packet.c
+SRC 		+= p_create_payload.c
+SRC 		+= new_client.c
+SRC			+= select_server.c
+SRC			+= server_bind.c
+SRC			+= server_listen.c
+SRC			+= server_setsockopt.c
+SRC			+= server_socket.c
+SRC			+= get_client.c
+SRC			+= p_server_close.c
+SRC			+= p_client_close.c
 
-DIR_OBJ		:=	$(DIR_BUILD)/obj
-OBJ			:=	$(patsubst %$(EXT),$(DIR_OBJ)/%.o,$(SRC))
-DEP			:=	$(OBJ:.o=.d)
+BUILD_DIR 	= build
+OBJ 		:= $(SRC:%.c=$(BUILD_DIR)/%.o)
 
-UT_DIR_OBJ	:=	$(DIR_BUILD)/tests/unit
-UT_OBJ		:=	$(patsubst %$(EXT),$(UT_DIR_OBJ)/%.o,$(UT_SRC))
-UT_DEP		:=	$(UT_OBJ:.o=.d)
+CFLAGS 		:= -iquote./include -iquote../../include
+CFLAGS		+= -Wall -Wextra -DSMCLN=;
+AR			= ar
 
-DG_DIR_OBJ	:=	$(DIR_BUILD)/debug
-DG_OBJ		:=	$(patsubst %$(EXT),$(DG_DIR_OBJ)/%.o,$(SRC))
-DG_DEP		:=	$(DG_OBJ:.o=.d)
+DIE         = exit 1
+ECHO        = echo -e
 
-DEBUG		:=	$(DIR_BIN)/debug
-FU_TEST		:=	$(FU_DIR)/tester.sh
-UT_TEST		:=	$(DIR_BIN)/unit_test
+%.c:
+	@ $(ECHO) "${_B_RED}[ERROR]${_END} File ${_B_WHITE}$@${_END} not found."
+	@ $(ECHO) "${_B_RED}===============> $(LIB) <================${_END}\n\n"
+	@ $(DIE)
 
-RM			:=	rm -rf
+all: $(LIB)
+	@ $(ECHO) "${_B_GREEN}[OK]${_END} Compilation of ${_B_WHITE}$(LIB)${_END} \
+	done."
+	@ $(ECHO) "${_B_GREEN}===============> $(LIB) <================${_END}\n\n"
 
-CXX			:=	gcc
-CXXFLAGS	:=	-iquote./include -iquote../include -Wall -Wextra
-CLINKER		:=	ar rc
+$(BUILD_DIR)/%.o: %.c
+	@ mkdir -p $(@D)
+	@ $(CC) $(LIBFLAGS) -c $< -o $@ $(CFLAGS)
+	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(CC)    $(_U_WHITE)$<$(_END)"
 
-all:				$(NAME)
+$(LIB): $(OBJ) $(SRC)
+	@ mkdir -p $(BUILD_DIR)
+	@ $(AR) rc $(LIB) $(OBJ)
+	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(AR)    $(_U_WHITE)$@$(_END)"
+	@ $(ECHO) "$(_B_PURPLE)[STATS]$(_END)	-> \
+	$(shell echo "$?" | wc -w) file(s) compiled${_END}."
 
-define CREATE_DIR
-	@if [ ! -d $(dir $@) ]; then									\
-		mkdir -p $(dir $@) 											\
-		&& printf "\033[93m[CREATED]\033[0m %s\n" $(dir $@)			\
-		|| printf "\033[31m[ERROR]\033[0m %s\n"   $(dir $@);		\
-	fi
-endef
-
-define BUILD_OBJ
-	@$(RM) $(patsubst %.o,%.gcda,$@)
-	@$(RM) $(patsubst %.o,%.gcno,$@)
-	$(CREATE_DIR)
-	@$(CXX) $(CXXFLAGS) -MMD -c $< -o $@							\
-	&& printf "\033[32m[OK]\033[0m %s\n" $<							\
-	|| printf "\033[31m[KO]\033[0m %s\n" $<
-endef
-
-$(DIR_OBJ)/%.o:		%$(EXT); $(BUILD_OBJ)
-$(UT_DIR_OBJ)/%.o:	%$(EXT); $(BUILD_OBJ)
-$(DG_DIR_OBJ)/%.o:	%$(EXT); $(BUILD_OBJ)
-
-define COMPILE
-	$(CREATE_DIR)
-	@$(CXX) $(CXXFLAGS) -o $@ $^			 						\
-	&& printf "\033[32m[SUCCES]\033[0m %s\n" $@						\
-	|| printf "\033[31m[ERROR]\033[0m %s\n"  $@
-endef
-
-define COMPILE_LIB
-	$(CREATE_DIR)
-	@$(CLINKER) $@ $^												\
-	&& printf "\033[32m[SUCCES]\033[0m %s\n" $@						\
-	|| printf "\033[31m[ERROR]\033[0m %s\n"  $@
-endef
-
--include $(DEP)
-$(NAME):			$(OBJ); 	$(COMPILE_LIB)
-
-tests_functional:	$(FU_TEST) $(NAME)
-	@$^
-
--include $(UT_DEP)
-$(UT_TEST):			CXXFLAGS += -lcriterion --coverage
-$(UT_TEST):			$(UT_OBJ);	$(COMPILE)
-tests_unit:			$(UT_TEST)
-	@cp $(UT_TEST) $(UT_DIR_OBJ)
-	@$(UT_DIR_OBJ)/$(notdir $<)
-
--include $(DG_DEP)
-$(DEBUG):			CXXFLAGS += -g -DDEBUG
-$(DEBUG):			$(DG_OBJ); 	$(COMPILE_LIB)
-debug:				$(DEBUG)
-
-tests_run:			tests_functional tests_unit
-	gcovr $(UT_DIR_OBJ) --exclude tests/
-	gcovr $(UT_DIR_OBJ) --exclude tests/ --branches
+debug: CFLAGS += -DDEBUG -g
 
 clean:
-	@[ -d $(DIR_BUILD) ]											\
-	&& $(RM) $(DIR_BUILD)											\
-	&& printf "\033[31m[DELETED]\033[0m %s\n" $(DIR_BUILD) || true
+	@ $(RM) *.gcda
+	@ $(RM) *.gcno
+	@ $(RM) *.gcov
+	@ $(RM) vgcore.*
+	@ $(RM) -rf $(BUILD_DIR)
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	*.gcda${_END}"
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	*.gcno${_END}"
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	*.gcov${_END}"
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	vgcore.*${_END}"
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	$(BUILD_DIR)${_END}"
 
-fclean:				clean
-	@[ -f $(NAME) ]													\
-	&& $(RM) $(NAME)												\
-	&& printf "\033[31m[DELETED]\033[0m %s\n" $(NAME) || true
+fclean: clean
+	@ $(RM) $(LIB)
+	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	$(LIB)${_END}"
 
-re:					fclean all
+re: fclean all
 
-.PHONY:				all tests tests_run debug clean fclean re doc
-
-.SILENT:			all tests tests_run debug clean fclean re doc
+.PHONY: all clean fclean re
