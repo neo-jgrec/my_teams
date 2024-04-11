@@ -5,24 +5,33 @@
 ## Makefile
 ##
 
-LIB 		= ../libs/protocol
+MAKEFILES	:=	./client/Makefile										\
+				./server/Makefile
 
-CLIENT 		= ./client
-SERVER 		= ./server
+define EXECUTE
+	@for MAKEFILE in $(MAKEFILES); do									\
+		$(MAKE) -sC $${MAKEFILE%/*} $@;									\
+	done
+endef
 
-all:
-	@ $(MAKE) -s -C $(LIB)
-	@ $(MAKE) -s -C $(CLIENT)
-	@ $(MAKE) -s -C $(SERVER)
+all:				; $(EXECUTE)
 
-clean:
-	@ $(MAKE) clean -s -C $(LIB)
-	@ $(MAKE) clean -s -C $(CLIENT)
-	@ $(MAKE) clean -s -C $(SERVER)
+debug:				; $(EXECUTE)
 
-fclean:
-	@ $(MAKE) fclean -s -C $(LIB)
-	@ $(MAKE) fclean -s -C $(CLIENT)
-	@ $(MAKE) fclean -s -C $(SERVER)
+tests_functional:	; $(EXECUTE)
 
-re: fclean all
+tests_unit:			; $(EXECUTE)
+
+tests_run:			; $(EXECUTE)
+
+clean:				; $(EXECUTE)
+
+fclean:				clean ; $(EXECUTE)
+
+re:					fclean all
+
+.PHONY:				all debug tests_functional tests_unit tests_run	\
+					clean fclean re
+
+.SILENT:			all debug tests_functional tests_unit tests_run	\
+					clean fclean re

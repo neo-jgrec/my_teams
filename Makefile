@@ -15,7 +15,7 @@ RM			:=	rm -rf
 
 define EXECUTE
 	@for MAKEFILE in $(MAKEFILES); do									\
-		$(MAKE) -sC $$(dirname $$MAKEFILE) $@;							\
+		$(MAKE) -sC $${MAKEFILE%/*} $@;									\
 	done
 endef
 
