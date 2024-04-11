@@ -64,10 +64,10 @@ CFLAGS		:=	-iquote./include -iquote../include							\
 				-iquote../libs/myteams										\
 				-Wall -Wextra
 LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../libs/myteams						\
+				-Wl,-rpath=${CURDIR}/../libs/protocol						\
 				-L../libs/myteams -lmyteams									\
 				-L../libs/protocol -lmyprotocol								\
 				-luuid
-
 
 all:				$(NAME)
 

@@ -5,67 +5,113 @@
 ## Makefile
 ##
 
-include Makefile_colors.mk
+NAME		:=	../myteams_server
+EXT			:=	.c
 
-NAME		:=	myteams_server
+DIR			:=	src
+SRC			:=	$(addprefix $(DIR)/,								\
+					main.c											\
+				)
+
+FU_DIR		:=	tests/func
+
+UT_DIR		:=	tests/unit
+UT_SRC		:=	$(filter-out src/main.c, $(SRC))
+UT_SRC		+=	$(addprefix $(UT_DIR)/,								\
+				)
+
+DIR_BUILD	:=	build
+DIR_BIN		:=	$(DIR_BUILD)/bin
+
+DIR_OBJ		:=	$(DIR_BUILD)/obj
+OBJ			:=	$(patsubst %$(EXT),$(DIR_OBJ)/%.o,$(SRC))
+DEP			:=	$(OBJ:.o=.d)
+
+UT_DIR_OBJ	:=	$(DIR_BUILD)/tests/unit
+UT_OBJ		:=	$(patsubst %$(EXT),$(UT_DIR_OBJ)/%.o,$(UT_SRC))
+UT_DEP		:=	$(UT_OBJ:.o=.d)
+
+DG_DIR_OBJ	:=	$(DIR_BUILD)/debug
+DG_OBJ		:=	$(patsubst %$(EXT),$(DG_DIR_OBJ)/%.o,$(SRC))
+DG_DEP		:=	$(DG_OBJ:.o=.d)
+
+DEBUG		:=	$(DIR_BIN)/debug
+FU_TEST		:=	$(FU_DIR)/tester.sh
+UT_TEST		:=	$(DIR_BIN)/unit_test
+
+RM			:=	rm -rf
+
 CC			:=	gcc
-
-VPATH		:=	./src
-
-vpath %.c $(VPATH)
-
-SRC			:=	main.c
-
-CFLAGS		:=	-Wall -Wextra -Werror -iquote./include -iquote../include
-LDFLAGS		:=	-L../../libs/protocol -lmyprotocol
-
-BUILD_DIR	:=	build
-OBJ			:=	$(SRC:%.c=$(BUILD_DIR)/%.o)
-
-CFLAGS		:=	-iquote./include -iquote../include \
-				-iquote../../libs/protocol/include \
-				-iquote../../include \
+CFLAGS		:=	-iquote./include -iquote../../include					\
+				-iquote../../libs/protocol/include						\
 				-Wall -Wextra
-AR			:=	ar
+LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../../libs/protocol				\
+				-L../../libs/protocol -lmyprotocol
 
-DIE			:=	exit 1
-ECHO		:=	echo -e
+all:				$(NAME)
 
-%.c:
-	@ $(ECHO) "${_B_RED}[ERROR]${_END} File ${_B_WHITE}$@${_END} not found."
-	@ $(ECHO) "${_B_RED}===============> $(NAME) <================${_END}\n\n"
-	@ $(DIE)
+define CREATE_DIR
+	@if [ ! -d $(dir $@) ]; then									\
+		mkdir -p $(dir $@) 											\
+		&& printf "\033[93m[CREATED]\033[0m %s\n" $(dir $@)			\
+		|| printf "\033[31m[ERROR]\033[0m %s\n"   $(dir $@);		\
+	fi
+endef
 
-all: $(NAME)
-	@ $(ECHO) "${_B_GREEN}[OK]${_END} Compilation of ${_B_WHITE}$(NAME)${_END} done."
-	@ mv $(NAME) ../$(NAME)
-	@ $(ECHO) "${_B_GREEN}[OK]${_END} Binary moved to ${_B_WHITE}../${_END}."
-	@ $(ECHO) "${_B_GREEN}===============> $(NAME) <================${_END}\n\n"
+define BUILD_OBJ
+	@$(RM) $(patsubst %.o,%.gcda,$@)
+	@$(RM) $(patsubst %.o,%.gcno,$@)
+	$(CREATE_DIR)
+	@$(CC) $(CFLAGS) -MMD -c $< -o $@								\
+	&& printf "\033[32m[OK]\033[0m %s\n" $<							\
+	|| printf "\033[31m[KO]\033[0m %s\n" $<
+endef
 
-$(BUILD_DIR)/%.o: %.c
-	@ mkdir -p $(@D)
-	@ $(CC) -g $(CFLAGS) -c $< -o $@
-	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(CC)    $(_U_WHITE)$<$(_END)"
+$(DIR_OBJ)/%.o:		%$(EXT); $(BUILD_OBJ)
+$(UT_DIR_OBJ)/%.o:	%$(EXT); $(BUILD_OBJ)
+$(DG_DIR_OBJ)/%.o:	%$(EXT); $(BUILD_OBJ)
 
-$(NAME): $(OBJ) $(SRC)
-	@ mkdir -p $(BUILD_DIR)
-	@ $(CC) -o $(NAME) $(OBJ) $(LDFLAGS)
-	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(CC)    $(_U_WHITE)$@$(_END)"
-	@ $(ECHO) "$(_B_PURPLE)[STATS]$(_END)	-> \
-	$(shell echo "$?" | wc -w) file(s) compiled${_END}."
-	@ $(ECHO) "$(_B_PURPLE)[STATS]$(_END)	-> \
-	$(shell du -sh $(BUILD_DIR) | cut -f1) build directory size${_END}."
+define COMPILE
+	$(CREATE_DIR)
+	@$(CC) -o $@ $^ $(LDFLAGS)			 							\
+	&& printf "\033[32m[SUCCES]\033[0m %s\n" $@						\
+	|| printf "\033[31m[ERROR]\033[0m %s\n"  $@
+endef
+
+-include $(DEP)
+$(NAME):			$(OBJ); 	$(COMPILE)
+
+tests_functional:	$(FU_TEST) $(NAME)
+	@$^
+
+-include $(UT_DEP)
+$(UT_TEST):			LDFLAGS += -lcriterion --coverage
+$(UT_TEST):			$(UT_OBJ);	$(COMPILE)
+tests_unit:			$(UT_TEST)
+	@cp $(UT_TEST) $(UT_DIR_OBJ)
+	@$(UT_DIR_OBJ)/$(notdir $<)
+
+-include $(DG_DEP)
+$(DEBUG):			CFLAGS += -g -DDEBUG
+$(DEBUG):			$(DG_OBJ); 	$(COMPILE)
+debug:				$(DEBUG)
+
+tests_run:			tests_functional tests_unit
+	gcovr $(UT_DIR_OBJ) --exclude tests/
+	gcovr $(UT_DIR_OBJ) --exclude tests/ --branches
 
 clean:
-	@ $(RM) *.gcda
-	@ $(RM) *.gcno
-	@ $(RM) -r $(BUILD_DIR)
-	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	*.gcda${_END}"
-	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	*.gcno${_END}"
-	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	-r $(BUILD_DIR)${_END}"
+	@[ -d $(DIR_BUILD) ]											\
+	&& $(RM) $(DIR_BUILD)											\
+	&& printf "\033[31m[DELETED]\033[0m %s\n" $(DIR_BUILD) || true
 
-fclean: clean
-	@ $(RM) $(NAME)
-	@ $(ECHO) "${_BLACK}${_BB_WHITE}-> $(RM)	$(NAME)${_END}"
+fclean:				clean
+	@[ -f $(NAME) ]													\
+	&& $(RM) $(NAME)												\
+	&& printf "\033[31m[DELETED]\033[0m %s\n" $(NAME) || true
 
-re: fclean all
+re:					fclean all
+
+.PHONY:				all tests tests_run debug clean fclean re doc
+
+.SILENT:			all tests tests_run debug clean fclean re doc
