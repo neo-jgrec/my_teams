@@ -12,47 +12,40 @@
  * @enum client_event_e
  * @brief Represents various events that can occur on the client side.
  */
-typedef enum client_event_e {
-    EVTC_LOGIN, /**< Event: Login */
-    EVTC_DISCONNECT, /**< Event: Disconnect */
-    EVTC_USERS, /**< Event: List Users */
-    EVTC_USER, /**< Event: Get User */
-    EVTC_SEND, /**< Event: Send Message */
-    EVTC_MESSAGES, /**< Event: List Messages */
-    EVTC_SUBSCRIBE, /**< Event: Subscribe to a User */
-    EVTC_SUBSCRIBED_IN_TEAM, /**< Event: List Subscribed Users in Team */
-    EVTC_SUBSCRIBED_TEAMS, /**< Event: List Subscribed Teams */
-    EVTC_UNSUBSCRIBE, /**< Event: Unsubscribe from a User */
-    EVTC_CREATE_TEAM, /**< Event: Create Team */
-    EVTC_CREATE_CHANNEL, /**< Event: Create Channel */
-    EVTC_CREATE_THREAD, /**< Event: Create Thread */
-    EVTC_CREATE_REPLY, /**< Event: Create Reply */
-    EVTC_LIST_TEAMS, /**< Event: List Teams */
-    EVTC_LIST_CHANNELS, /**< Event: List Channels */
-    EVTC_LIST_THREADS, /**< Event: List Threads */
-    EVTC_LIST_REPLIES, /**< Event: List Replies */
-    EVTC_INFO_USER, /**< Event: Get User Info */
-    EVTC_INFO_TEAM, /**< Event: Get Team Info */
-    EVTC_INFO_CHANNEL, /**< Event: Get Channel Info */
-    EVTC_INFO_THREAD, /**< Event: Get Thread Info */
-    EVTC_PING /**< Event: Ping */
+typedef enum {
+    EVT_LOGIN, /**< Event: Login */
+    EVT_DISCONNECT, /**< Event: Disconnect */
+    EVT_LIST_USERS, /**< Event: List Users */
+    EVT_SEND, /**< Event: Send Message */
+    EVT_LIST_MESSAGES, /**< Event: List Messages */
+    EVT_SUBSCRIBE, /**< Event: Subscribe to a User */
+    EVT_LIST_SUBSCRIBED_IN_TEAM, /**< Event: List Subscribed Users in Team */
+    EVT_LIST_SUBSCRIBED_TEAMS, /**< Event: List Subscribed Teams */
+    EVT_UNSUBSCRIBE, /**< Event: Unsubscribe from a User */
+    EVT_CREATE_TEAM, /**< Event: Create Team */
+    EVT_CREATE_CHANNEL, /**< Event: Create Channel */
+    EVT_CREATE_THREAD, /**< Event: Create Thread */
+    EVT_CREATE_REPLY, /**< Event: Create Reply */
+    EVT_LIST_TEAMS, /**< Event: List Teams */
+    EVT_LIST_CHANNELS, /**< Event: List Channels */
+    EVT_LIST_THREADS, /**< Event: List Threads */
+    EVT_LIST_REPLIES, /**< Event: List Replies */
+    EVT_INFO_USER, /**< Event: Get User Info */
+    EVT_INFO_TEAM, /**< Event: Get Team Info */
+    EVT_INFO_CHANNEL, /**< Event: Get Channel Info */
+    EVT_INFO_THREAD, /**< Event: Get Thread Info */
+    EVT_PING, /**< Event: Ping */
+    NB_EVT /**< Number of Events */
 } client_event_t;
 
 /**
  * @enum server_event_e
  * @brief Represents various events that can occur on the server side.
  */
-typedef enum server_event_e {
-    EVTS_ERROR, /**< Event: Error */
-    EVTS_SUCCESS, /**< Event: Success */
-    EVTS_INFO_USER, /**< Event: User Info */
-    EVTS_INFO_TEAM, /**< Event: Team Info */
-    EVTS_INFO_CHANNEL, /**< Event: Channel Info */
-    EVTS_INFO_THREAD, /**< Event: Thread Info */
-    EVTS_INFO_REPLY, /**< Event: Reply Info */
-    EVTS_INFO_MESSAGE, /**< Event: Message Info */
-    EVTS_INFO_SUBSCRIPTION, /**< Event: Subscription Info */
-    EVTS_INFO_UNSUBSCRIBE /**< Event: Unsubscribe Info */
+typedef enum {
+    EVT_CONTINUE, /**< Event: Continue */
+    EVT_SUCCESS, /**< Event: Success */
+    EVT_ERROR, /**< Event: Error */
 } server_event_t;
 
 #endif /* !EVENTS_H_ */

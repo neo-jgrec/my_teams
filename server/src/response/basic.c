@@ -7,7 +7,7 @@
 
 #include "protocol.h"
 #include "server.h"
-#include "event.h"
+#include "events.h"
 
 void send_success(const s_server_t *server, const p_payload_t *payload)
 {

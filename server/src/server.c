@@ -9,7 +9,7 @@
 
 #include "protocol.h"
 #include "commands.h"
-#include "event.h"
+#include "events.h"
 
 static void s_listen(s_server_t server)
 {

@@ -9,7 +9,7 @@
     #define COMMANDS_H
 
     #include "server.h"
-    #include "event.h"
+    #include "events.h"
 
 static struct {
     uint8_t event;

@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "server.h"
-#include "event.h"
+#include "events.h"
 
 void s_server_event_list_users(s_server_t *server,
     const p_payload_t *payload)

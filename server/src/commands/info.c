@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "server.h"
-#include "event.h"
+#include "events.h"
 
 static void send_user_info(const s_server_t *server,
     const p_payload_t *payload, const s_user_t *user)
