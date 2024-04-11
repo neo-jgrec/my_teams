@@ -56,7 +56,7 @@ all: $(LIB)
 
 $(BUILD_DIR)/%.o: %.c
 	@ mkdir -p $(@D)
-	@ $(CC) -g $(LIBFLAGS) -c $< -o $@ $(CFLAGS)
+	@ $(CC) $(LIBFLAGS) -c $< -o $@ $(CFLAGS)
 	@ $(ECHO) "${_CYAN}[OK]$(_END)	-> $(CC)    $(_U_WHITE)$<$(_END)"
 
 $(LIB): $(OBJ) $(SRC)
