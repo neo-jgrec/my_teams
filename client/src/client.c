@@ -20,6 +20,12 @@ static const char *HELP = "USAGE:"
 "\tip\tis the server ip address on which the server should connect\n"
 "\tport\tis the port number on which the server should connect\n";
 
+static void handle_sigint_program(int sig)
+{
+    (void)sig;
+    fprintf(stdout, "Must Ctrl-D to exit\n");
+}
+
 static char *get_client_input(void)
 {
     char *input = NULL;
@@ -84,6 +90,7 @@ static void start_cli(void)
     char *input = NULL;
 
     for (;;) {
+        signal(SIGINT, handle_sigint_program);
         input = get_client_input();
         if (!input)
             break;
