@@ -9,7 +9,7 @@
 
 static bool read_header(const int fd, p_payload_t *payload)
 {
-    return read(fd, &payload->packet_type, sizeof(uint8_t)) > 0;
+    return read(fd, &payload->packet_type, sizeof(uint16_t)) > 0;
 }
 
 static bool read_network_data(const int fd, p_payload_t *payload,
