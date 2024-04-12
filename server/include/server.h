@@ -107,8 +107,9 @@ typedef struct {
 
     TAILQ_HEAD(, s_subscribe_s) subscribes;
 
+    TAILQ_HEAD(, s_user_s) logged;
+
     p_server_t *socket;
-    int current_client;
 } s_server_t;
 
 /**

@@ -9,8 +9,8 @@
     #define EVENTS_H_
 
 /**
- * @enum client_event_e
- * @brief Represents various events that can occur on the client side.
+ * @enum client_event_t
+ * @brief Type of events that can be send to the server
  */
 typedef enum {
     EVT_LOGIN, /**< Event: Login */
@@ -35,17 +35,22 @@ typedef enum {
     EVT_INFO_CHANNEL, /**< Event: Get Channel Info */
     EVT_INFO_THREAD, /**< Event: Get Thread Info */
     EVT_PING, /**< Event: Ping */
-    NB_EVT /**< Number of Events */
+    NB_EVT          /**< Number of Events */
 } client_event_t;
 
 /**
- * @enum server_event_e
- * @brief Represents various events that can occur on the server side.
+ * @enum server_event_t
+ * @brief Type of events that can be received from the server
  */
 typedef enum {
+    EVT_ERROR, /**< Event: Error */
     EVT_CONTINUE, /**< Event: Continue */
     EVT_SUCCESS, /**< Event: Success */
-    EVT_ERROR, /**< Event: Error */
+    EVT_MESSAGE_RECEIVE,
+    EVT_REPLY_CREATE,
+    EVT_TEAM_CREATE,
+    EVT_THREAD_CREATE,
+    EVT_CHANNEL_CREATE
 } server_event_t;
 
 #endif /* !EVENTS_H_ */

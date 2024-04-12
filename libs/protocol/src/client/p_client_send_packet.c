@@ -13,7 +13,7 @@ static bool p_client_send_packet_type(const p_client_t *client,
     return write(
         client->network_data.sockfd,
         &(payload->packet_type),
-        sizeof(uint8_t)
+        sizeof(uint16_t)
     ) != -1;
 }
 
@@ -38,7 +38,7 @@ static bool p_client_send_packet_body(const p_client_t *client,
 }
 
 int p_client_send_packet(
-    const uint8_t packet_type,
+    const uint16_t packet_type,
     const void *payload_data,
     const p_client_t *client
 )
