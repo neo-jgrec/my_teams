@@ -93,6 +93,16 @@ typedef struct s_subscribe_s {
 } s_subscribe_t;
 
 typedef struct {
+    char uuid[UUID_LENGTH];
+    int socket;
+} logged_user;
+
+typedef struct s_logged_user_s {
+    logged_user user;
+    TAILQ_ENTRY(s_logged_user_s) entries;
+} s_logged_user_t;
+
+typedef struct {
     TAILQ_HEAD(, s_user_s) users;
 
     TAILQ_HEAD(, s_team_s) teams;
@@ -107,7 +117,7 @@ typedef struct {
 
     TAILQ_HEAD(, s_subscribe_s) subscribes;
 
-    TAILQ_HEAD(, s_user_s) logged;
+    TAILQ_HEAD(, s_logged_user_s) logged;
 
     p_server_t *socket;
 } s_server_t;
