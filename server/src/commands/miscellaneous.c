@@ -6,12 +6,11 @@
 */
 
 #include "server.h"
-#include "events.h"
 
 void s_server_event_ping(s_server_t *server,
     const p_payload_t *payload)
 {
-    send_success(server, payload);
+    send_event(server, payload, EVT_PING);
 }
 
 static void ping_user_message(const s_server_t *server,
@@ -35,14 +34,14 @@ void s_server_event_send_message(s_server_t *server,
     s_private_message_t *message = malloc(sizeof(s_private_message_t));
 
     if (!message)
-        return send_error(server, payload);
+        return send_event(server, payload, EVT_ERROR);
     memcpy(&body, payload->data, sizeof(send_message_t));
     strcpy(message->message.sender_uuid, body.sender_uuid);
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
     strcpy(message->message.body, body.message_body);
     TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
     ping_user_message(server, &body);
-    send_success(server, payload);
+    send_event(server, payload, EVT_SEND);
 }
 
 void s_server_event_subscribe(s_server_t *server,
@@ -55,14 +54,14 @@ void s_server_event_subscribe(s_server_t *server,
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (strcmp(subscribe->subscribe.user_uuid, body.user_uuid) == 0
             && strcmp(subscribe->subscribe.team_uuid, body.team_uuid) == 0)
-            return send_error(server, payload);
+            return send_event(server, payload, EVT_ERROR);
     subscribe = malloc(sizeof(s_subscribe_t));
     if (!subscribe)
-        return send_error(server, payload);
+        return send_event(server, payload, EVT_ERROR);
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
-    send_success(server, payload);
+    send_event(server, payload, EVT_SUBSCRIBE);
 }
 
 void s_server_event_unsubscribe(s_server_t *server,
@@ -77,7 +76,7 @@ void s_server_event_unsubscribe(s_server_t *server,
             && strcmp(subscribe->subscribe.team_uuid, body.team_uuid) == 0) {
             TAILQ_REMOVE(&server->subscribes, subscribe, entries);
             free(subscribe);
-            return send_success(server, payload);
+            return send_event(server, payload, EVT_UNSUBSCRIBE);
         }
-    send_error(server, payload);
+    send_event(server, payload, EVT_ERROR);
 }
