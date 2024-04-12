@@ -8,7 +8,7 @@
 #include <uuid/uuid.h>
 #include <stdlib.h>
 
-#include "server.h"
+#include "../../include/server.h"
 
 char *get_uuid(void)
 {

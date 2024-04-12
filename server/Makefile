@@ -12,7 +12,6 @@ DIR			:=	src
 SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					server.c										\
-					uuid.c											\
 				)
 
 DIR			+=	src/commands
@@ -25,9 +24,11 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					miscellaneous.c									\
 				)
 
-DIR			+=	src/response
+DIR			+=	src/utils
 SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					basic.c											\
+					uuid.c											\
+					is_in.c											\
 				)
 
 FU_DIR		:=	tests/func
