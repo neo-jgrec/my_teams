@@ -6,11 +6,26 @@
 */
 
 #include "server.h"
+#include "events.h"
 
 void s_server_event_ping(s_server_t *server,
     const p_payload_t *payload)
 {
     send_success(server, payload);
+}
+
+static void ping_user_message(const s_server_t *server,
+    const send_message_t *body)
+{
+    s_logged_user_t *user;
+    p_payload_t *payload;
+
+    TAILQ_FOREACH(user, &server->logged, entries) {
+        if (strcmp(user->user.uuid, body->receiver_uuid) != 0)
+            continue;
+        payload = p_create_payload(EVT_MESSAGE_RECEIVE, body);
+        p_server_send_packet(payload, user->user.socket, server->socket);
+    }
 }
 
 void s_server_event_send_message(s_server_t *server,
@@ -26,6 +41,7 @@ void s_server_event_send_message(s_server_t *server,
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
     strcpy(message->message.body, body.message_body);
     TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
+    ping_user_message(server, &body);
     send_success(server, payload);
 }
 

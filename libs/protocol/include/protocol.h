@@ -40,7 +40,7 @@ typedef struct p_network_data_s {
  */
 typedef struct p_payload_s {
     int client_fd; /**< File descriptor of the client */
-    uint8_t packet_type; /**< Type of the packet */
+    uint16_t packet_type; /**< Type of the packet */
     struct p_network_data_s network_data; /**< Network data */
     uint8_t data[DATA_SIZE];                /**< Data */
     TAILQ_ENTRY(p_payload_s) entries; /**< Entry for TAILQ list */
@@ -90,12 +90,11 @@ p_payload_t *p_client_listen(const p_client_t *client);
  * @brief Send a packet from the client.
  * @param packet_type Type of the packet.
  * @param payload_data Data to be sent.
- * @param payload_size Size of the data.
  * @param client Pointer to the client.
  * @return 0 on success, -1 on failure.
  */
 int p_client_send_packet(
-    uint8_t packet_type,
+    uint16_t packet_type,
     const void *payload_data,
     const p_client_t *client
 );
@@ -131,11 +130,10 @@ bool p_server_send_packet(
  * @brief Create a payload with given packet type, data, and size.
  * @param packet_type Type of the packet.
  * @param payload_data Data to be included in the payload.
- * @param payload_size Size of the data.
  * @return Pointer to the created payload.
  */
 p_payload_t *p_create_payload(
-    uint8_t packet_type,
+    uint16_t packet_type,
     const void *payload_data
 );
 

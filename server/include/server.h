@@ -93,6 +93,16 @@ typedef struct s_subscribe_s {
 } s_subscribe_t;
 
 typedef struct {
+    char uuid[UUID_LENGTH];
+    int socket;
+} logged_user_t;
+
+typedef struct s_logged_user_s {
+    logged_user_t user;
+    TAILQ_ENTRY(s_logged_user_s) entries;
+} s_logged_user_t;
+
+typedef struct {
     TAILQ_HEAD(, s_user_s) users;
 
     TAILQ_HEAD(, s_team_s) teams;
@@ -107,8 +117,9 @@ typedef struct {
 
     TAILQ_HEAD(, s_subscribe_s) subscribes;
 
+    TAILQ_HEAD(, s_logged_user_s) logged;
+
     p_server_t *socket;
-    int current_client;
 } s_server_t;
 
 /**
@@ -410,5 +421,35 @@ void send_uuid(const s_server_t *server, const p_payload_t *payload,
  */
 void send_uuid_process(const s_server_t *server, const p_payload_t *payload,
     const char *uuid);
+
+/**
+ * @brief Check if a user is in a team
+ * @param server The server
+ * @param user_uuid The user UUID
+ * @param team_uuid The team UUID
+ * @return true if the user is in the team, false otherwise
+ */
+bool is_in_teams(const s_server_t *server, const char *user_uuid,
+    const char *team_uuid);
+
+/**
+ * @brief Check if a user is in a channel
+ * @param server The server
+ * @param user_uuid The user UUID
+ * @param channel_uuid The channel UUID
+ * @return true if the user is in the channel, false otherwise
+ */
+bool is_in_channels(const s_server_t *server, const char *user_uuid,
+    const char *channel_uuid);
+
+/**
+ * @brief Check if a user is in a thread
+ * @param server The server
+ * @param user_uuid The user UUID
+ * @param thread_uuid The thread UUID
+ * @return true if the user is in the thread, false otherwise
+ */
+bool is_in_threads(const s_server_t *server, const char *user_uuid,
+    const char *thread_uuid);
 
 #endif /* !SERVER_H_ */

@@ -8,7 +8,7 @@
 #include "protocol.h"
 
 p_payload_t *p_create_payload(
-    const uint8_t packet_type,
+    const uint16_t packet_type,
     const void *payload_data
 )
 {

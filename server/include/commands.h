@@ -12,7 +12,7 @@
     #include "events.h"
 
 static struct {
-    uint8_t event;
+    uint16_t event;
     void (*callback)(s_server_t *, const p_payload_t *);
 } const events[] = {
     {EVT_LOGIN, &s_server_event_logged_in},
