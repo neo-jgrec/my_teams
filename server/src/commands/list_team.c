@@ -34,7 +34,7 @@ void s_server_event_list_channels(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_channels_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.team_uuid, body.team_uuid) != 0)
+        if (strcmp(channel->channel.team_uuid, body.team_uuid))
             continue;
         if (tmp)
             send_event_body(server, payload, tmp, EVT_CONTINUE);
@@ -54,7 +54,7 @@ void s_server_event_list_threads(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_threads_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.uuid, body.channel_uuid) != 0)
+        if (strcmp(channel->channel.uuid, body.channel_uuid))
             continue;
         if (tmp)
             send_event_body(server, payload, tmp, EVT_CONTINUE);
@@ -74,7 +74,7 @@ void s_server_event_list_replies(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_replies_t));
     TAILQ_FOREACH(thread, &server->threads, entries) {
-        if (strcmp(thread->thread.uuid, body.thread_uuid) != 0)
+        if (strcmp(thread->thread.uuid, body.thread_uuid))
             continue;
         if (tmp)
             send_event_body(server, payload, tmp, EVT_CONTINUE);

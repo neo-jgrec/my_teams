@@ -11,10 +11,14 @@
 #include "server.h"
 
 static void add_logged_user(s_server_t *server, const p_payload_t *payload,
-    const s_user_t *user)
+    s_user_t *user)
 {
     s_logged_user_t *logged = malloc(sizeof(s_logged_user_t));
 
+    if (!logged) {
+        free(user);
+        return send_event(server, payload, EVT_ERROR);
+    }
     logged->user.socket = payload->client_fd;
     strcpy(logged->user.uuid, user->user.uuid);
     TAILQ_INSERT_TAIL(&server->logged, logged, entries);
@@ -48,13 +52,12 @@ void s_server_event_logged_in(s_server_t *server,
     login_t body;
 
     memcpy(&body, payload->data, sizeof(login_t));
-    TAILQ_FOREACH(user, &server->users, entries) {
-        if (strcmp(body.user_name, user->user.name) == 0) {
+    TAILQ_FOREACH(user, &server->users, entries)
+        if (!strcmp(body.user_name, user->user.name)) {
             add_logged_user(server, payload, user);
             server_event_user_logged_in(user->user.uuid);
             return send_event_body(server, payload, &user->user, EVT_LOGIN);
         }
-    }
     new_user(server, payload, &body);
 }
 
@@ -65,12 +68,11 @@ void s_server_event_logged_out(s_server_t *server,
     logout_t body;
 
     memcpy(&body, payload->data, sizeof(logout_t));
-    TAILQ_FOREACH(user, &server->logged, entries) {
-        if (strcmp(body.user_uuid, user->user.uuid) == 0) {
+    TAILQ_FOREACH(user, &server->logged, entries)
+        if (!strcmp(body.user_uuid, user->user.uuid)) {
             TAILQ_REMOVE(&server->logged, user, entries);
             break;
         }
-    }
     if (!user)
         return send_event(server, payload, EVT_ERROR_ALREADY);
     server_event_user_logged_out(body.user_uuid);
