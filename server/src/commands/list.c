@@ -92,5 +92,6 @@ void s_server_event_list_subscribed_teams(s_server_t *server,
     }
     if (!tmp)
         return send_event(server, payload, EVT_ERROR);
-    send_event_body(server, payload, tmp->team_uuid, EVT_LIST_SUBSCRIBED_TEAMS);
+    send_event_body(server, payload, tmp->team_uuid,
+        EVT_LIST_SUBSCRIBED_TEAMS);
 }

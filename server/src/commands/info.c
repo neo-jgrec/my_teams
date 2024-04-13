@@ -18,7 +18,8 @@ void s_server_event_get_user_info(s_server_t *server,
     memcpy(&body, payload->data, sizeof(user_info_t));
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.user_uuid, user->user.uuid))
-            return send_event_body(server, payload, &user->user, EVT_INFO_USER);
+            return send_event_body(server, payload, &user->user,
+                EVT_INFO_USER);
     send_event(server, payload, EVT_ERROR_UNKNOWN);
 }
 
@@ -31,7 +32,8 @@ void s_server_event_get_team_info(s_server_t *server,
     memcpy(&body, payload->data, sizeof(team_info_t));
     TAILQ_FOREACH(team, &server->teams, entries)
         if (!strcmp(body.team_uuid, team->team.uuid))
-            return send_event_body(server, payload, &team->team, EVT_INFO_TEAM);
+            return send_event_body(server, payload, &team->team,
+                EVT_INFO_TEAM);
     send_event(server, payload, EVT_ERROR_UNKNOWN);
 }
 
