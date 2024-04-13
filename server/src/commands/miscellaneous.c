@@ -57,14 +57,14 @@ void s_server_event_subscribe(s_server_t *server,
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
-            return send_event(server, payload, EVT_ERROR);
+            return send_event(server, payload, EVT_ERROR_ALREADY);
     subscribe = malloc(sizeof(s_subscribe_t));
     if (!subscribe)
         return send_event(server, payload, EVT_ERROR);
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
-    send_event(server, payload, EVT_SUBSCRIBE);
+    send_event_body(server, payload, &subscribe->subscribe, EVT_SUBSCRIBE);
 }
 
 void s_server_event_unsubscribe(s_server_t *server,
@@ -79,7 +79,7 @@ void s_server_event_unsubscribe(s_server_t *server,
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid)) {
             TAILQ_REMOVE(&server->subscribes, subscribe, entries);
             free(subscribe);
-            return send_event(server, payload, EVT_UNSUBSCRIBE);
+            return send_event_body(server, payload, &body, EVT_UNSUBSCRIBE);
         }
-    send_event(server, payload, EVT_ERROR);
+    send_event(server, payload, EVT_ERROR_ALREADY);
 }
