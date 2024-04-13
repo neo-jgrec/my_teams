@@ -401,14 +401,14 @@ void send_event(const s_server_t *server, const p_payload_t *payload,
     event_t type);
 
 /**
- * @brief Send a UUID response
+ * @brief Send an event with a UUID
  * @param server The server
  * @param payload The payload
- * @param uuid The UUID
+ * @param body The body
  * @param type The event type
  */
-void send_event_uuid(const s_server_t *server, const p_payload_t *payload,
-    const char *uuid, event_t type);
+void send_event_body(const s_server_t *server, const p_payload_t *payload,
+    const void *body, event_t type);
 
 /**
  * @brief Check if a user is in a team

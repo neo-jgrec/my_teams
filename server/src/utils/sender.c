@@ -18,12 +18,12 @@ void send_event(const s_server_t *server, const p_payload_t *payload,
     p_server_send_packet(&response, payload->client_fd, server->socket);
 }
 
-void send_event_uuid(const s_server_t *server, const p_payload_t *payload,
-    const char *uuid, const event_t type)
+void send_event_body(const s_server_t *server, const p_payload_t *payload,
+    const void *body, const event_t type)
 {
     p_payload_t response = {0};
 
     response.packet_type = type;
-    memcpy(response.data, uuid, UUID_LENGTH);
+    memcpy(response.data, body, sizeof(body));
     p_server_send_packet(&response, payload->client_fd, server->socket);
 }

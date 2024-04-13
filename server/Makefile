@@ -26,9 +26,9 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 
 DIR			+=	src/utils
 SRC			+=	$(addprefix $(lastword $(DIR))/,					\
-					basic.c											\
-					uuid.c											\
 					is_in.c											\
+					sender.c										\
+					uuid.c											\
 				)
 
 FU_DIR		:=	tests/func

@@ -40,7 +40,7 @@ void s_server_event_team_created(s_server_t *server,
     TAILQ_INSERT_TAIL(&server->teams, team, entries);
     ping_user_team(server, &body);
     server_event_team_created(team_uuid, body.team_name, body.user_uuid);
-    send_event_uuid(server, payload, team_uuid, EVT_TEAM_CREATE);
+    send_event_body(server, payload, &team->team, EVT_TEAM_CREATE);
 }
 
 static void ping_user_channel(const s_server_t *server,
@@ -75,7 +75,7 @@ void s_server_event_channel_created(s_server_t *server,
     ping_user_channel(server, &body);
     server_event_channel_created(body.team_uuid, channel_uuid,
         body.channel_name);
-    send_event_uuid(server, payload, channel_uuid, EVT_CHANNEL_CREATE);
+    send_event_body(server, payload, &channel->channel, EVT_CHANNEL_CREATE);
 }
 
 static void ping_user_thread(const s_server_t *server,
@@ -118,7 +118,7 @@ void s_server_event_thread_created(s_server_t *server,
     ping_user_thread(server, &body);
     server_event_thread_created(body.channel_uuid, thread_uuid, body.user_uuid,
         body.thread_title, body.thread_body);
-    send_event_uuid(server, payload, thread_uuid, EVT_THREAD_CREATE);
+    send_event_body(server, payload, &thread->thread, EVT_THREAD_CREATE);
 }
 
 static void ping_user_reply(const s_server_t *server,

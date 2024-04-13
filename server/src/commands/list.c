@@ -17,11 +17,11 @@ void s_server_event_list_users(s_server_t *server,
     TAILQ_FOREACH(user, &server->users, entries) {
         if (TAILQ_NEXT(user, entries) == NULL)
             break;
-        send_event_uuid(server, payload, user->user.uuid, EVT_CONTINUE);
+        send_event_body(server, payload, &user->user, EVT_CONTINUE);
     }
     if (!user)
         return send_event(server, payload, EVT_ERROR);
-    send_event_uuid(server, payload, user->user.uuid, EVT_LIST_USERS);
+    send_event_body(server, payload, &user->user, EVT_LIST_USERS);
 }
 
 static void send_message(const s_server_t *server, const p_payload_t *payload,
@@ -51,7 +51,7 @@ void s_server_event_list_messages(s_server_t *server,
         tmp = &message->message;
     }
     if (!tmp)
-        return send_event_uuid(server, payload, body.user_uuid, EVT_ERROR);
+        return send_event(server, payload, EVT_ERROR);
     send_message(server, payload, tmp, EVT_LIST_MESSAGES);
 }
 
@@ -67,12 +67,12 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
         if (strcmp(subscribe->subscribe.team_uuid, body.team_uuid) != 0)
             continue;
         if (tmp)
-            send_event_uuid(server, payload, tmp->user_uuid, EVT_CONTINUE);
+            send_event_body(server, payload, tmp, EVT_CONTINUE);
         tmp = &subscribe->subscribe;
     }
     if (!tmp)
         return send_event(server, payload, EVT_ERROR);
-    send_event_uuid(server, payload, tmp->user_uuid, EVT_LIST_SUBSCRIBED_IN_TEAM);
+    send_event_body(server, payload, tmp, EVT_LIST_SUBSCRIBED_IN_TEAM);
 }
 
 void s_server_event_list_subscribed_teams(s_server_t *server,
@@ -87,10 +87,10 @@ void s_server_event_list_subscribed_teams(s_server_t *server,
         if (strcmp(subscribe->subscribe.user_uuid, body.user_uuid) != 0)
             continue;
         if (tmp)
-            send_event_uuid(server, payload, tmp->team_uuid, EVT_CONTINUE);
+            send_event_body(server, payload, tmp->team_uuid, EVT_CONTINUE);
         tmp = &subscribe->subscribe;
     }
     if (!tmp)
         return send_event(server, payload, EVT_ERROR);
-    send_event_uuid(server, payload, tmp->team_uuid, EVT_LIST_SUBSCRIBED_TEAMS);
+    send_event_body(server, payload, tmp->team_uuid, EVT_LIST_SUBSCRIBED_TEAMS);
 }

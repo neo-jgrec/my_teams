@@ -38,7 +38,7 @@ static void new_user(s_server_t *server, const p_payload_t *payload,
     TAILQ_INSERT_TAIL(&server->users, user, entries);
     add_logged_user(server, payload, user);
     server_event_user_logged_in(user_uuid);
-    send_event_uuid(server, payload, user_uuid, EVT_LOGIN);
+    send_event_body(server, payload, &user->user, EVT_LOGIN);
 }
 
 void s_server_event_logged_in(s_server_t *server,
@@ -52,7 +52,7 @@ void s_server_event_logged_in(s_server_t *server,
         if (strcmp(body.user_name, user->user.name) == 0) {
             add_logged_user(server, payload, user);
             server_event_user_logged_in(user->user.uuid);
-            return send_event_uuid(server, payload, user->user.uuid, EVT_LOGIN);
+            return send_event_body(server, payload, &user->user, EVT_LOGIN);
         }
     }
     new_user(server, payload, &body);
@@ -71,6 +71,8 @@ void s_server_event_logged_out(s_server_t *server,
             break;
         }
     }
+    if (!user)
+        return send_event(server, payload, EVT_ERROR_ALREADY);
     server_event_user_logged_out(body.user_uuid);
-    send_event(server, payload, EVT_DISCONNECT);
+    send_event_body(server, payload, &user->user, EVT_DISCONNECT);
 }
