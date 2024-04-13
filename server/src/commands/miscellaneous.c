@@ -5,6 +5,8 @@
 ** miscellaneous
 */
 
+#include <time.h>
+
 #include "server.h"
 
 void s_server_event_ping(s_server_t *server,
@@ -39,6 +41,7 @@ void s_server_event_send_message(s_server_t *server,
     strcpy(message->message.sender_uuid, body.sender_uuid);
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
     strcpy(message->message.body, body.message_body);
+    time(&message->message.timestamp);
     TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
     ping_user_message(server, &body);
     send_event(server, payload, EVT_SEND);
