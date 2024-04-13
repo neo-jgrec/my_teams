@@ -17,12 +17,12 @@ void s_server_event_list_teams(s_server_t *server,
     memcpy(&body, payload->data, sizeof(list_teams_t));
     TAILQ_FOREACH(team, &server->teams, entries) {
         if (tmp)
-            send_uuid_process(server, payload, tmp->uuid);
+            send_event_body(server, payload, tmp, EVT_CONTINUE);
         tmp = &team->team;
     }
     if (!tmp)
-        return send_error(server, payload);
-    send_uuid(server, payload, tmp->uuid);
+        return send_event(server, payload, EVT_ERROR);
+    send_event_body(server, payload, tmp, EVT_LIST_TEAMS);
 }
 
 void s_server_event_list_channels(s_server_t *server,
@@ -34,15 +34,15 @@ void s_server_event_list_channels(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_channels_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.team_uuid, body.team_uuid) != 0)
+        if (strcmp(channel->channel.team_uuid, body.team_uuid))
             continue;
         if (tmp)
-            send_uuid_process(server, payload, tmp->uuid);
+            send_event_body(server, payload, tmp, EVT_CONTINUE);
         tmp = &channel->channel;
     }
     if (!tmp)
-        return send_error(server, payload);
-    send_uuid(server, payload, tmp->uuid);
+        return send_event(server, payload, EVT_ERROR);
+    send_event_body(server, payload, tmp, EVT_LIST_CHANNELS);
 }
 
 void s_server_event_list_threads(s_server_t *server,
@@ -54,15 +54,15 @@ void s_server_event_list_threads(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_threads_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.uuid, body.channel_uuid) != 0)
+        if (strcmp(channel->channel.uuid, body.channel_uuid))
             continue;
         if (tmp)
-            send_uuid_process(server, payload, tmp->uuid);
+            send_event_body(server, payload, tmp, EVT_CONTINUE);
         tmp = &channel->channel;
     }
     if (!tmp)
-        return send_error(server, payload);
-    send_uuid(server, payload, tmp->uuid);
+        return send_event(server, payload, EVT_ERROR);
+    send_event_body(server, payload, tmp, EVT_LIST_THREADS);
 }
 
 void s_server_event_list_replies(s_server_t *server,
@@ -74,13 +74,13 @@ void s_server_event_list_replies(s_server_t *server,
 
     memcpy(&body, payload->data, sizeof(list_replies_t));
     TAILQ_FOREACH(thread, &server->threads, entries) {
-        if (strcmp(thread->thread.uuid, body.thread_uuid) != 0)
+        if (strcmp(thread->thread.uuid, body.thread_uuid))
             continue;
         if (tmp)
-            send_uuid_process(server, payload, tmp->uuid);
+            send_event_body(server, payload, tmp, EVT_CONTINUE);
         tmp = &thread->thread;
     }
     if (!tmp)
-        return send_error(server, payload);
-    send_uuid(server, payload, tmp->uuid);
+        return send_event(server, payload, EVT_ERROR);
+    send_event_body(server, payload, tmp, EVT_LIST_REPLIES);
 }
