@@ -9,6 +9,7 @@
     #define SERVER_H_
 
     #include "protocol.h"
+    #include "events.h"
 
     #define UUID_LENGTH 37
     #define MAX_NAME_LENGTH 32
@@ -391,36 +392,23 @@ void s_server_event_get_thread_info(s_server_t *server,
 void s_server_event_ping(s_server_t *server, const p_payload_t *payload);
 
 /**
- * @brief Send a success response
+ * @brief Send an event
  * @param server The server
  * @param payload The payload
+ * @param type The event type
  */
-void send_success(const s_server_t *server, const p_payload_t *payload);
+void send_event(const s_server_t *server, const p_payload_t *payload,
+    event_t type);
 
 /**
- * @brief Send an error response
+ * @brief Send an event with a UUID
  * @param server The server
  * @param payload The payload
+ * @param body The body
+ * @param type The event type
  */
-void send_error(const s_server_t *server, const p_payload_t *payload);
-
-/**
- * @brief Send a UUID response
- * @param server The server
- * @param payload The payload
- * @param uuid The UUID
- */
-void send_uuid(const s_server_t *server, const p_payload_t *payload,
-    const char *uuid);
-
-/**
- * @brief Send a UUID process response
- * @param server The server
- * @param payload The payload
- * @param uuid The UUID
- */
-void send_uuid_process(const s_server_t *server, const p_payload_t *payload,
-    const char *uuid);
+void send_event_body(const s_server_t *server, const p_payload_t *payload,
+    const void *body, event_t type);
 
 /**
  * @brief Check if a user is in a team
