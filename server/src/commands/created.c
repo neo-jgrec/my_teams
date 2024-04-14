@@ -6,6 +6,7 @@
 */
 
 #include <string.h>
+#include <time.h>
 
 #include "logging_server.h"
 #include "server.h"
@@ -96,6 +97,7 @@ static void set_thread(s_thread_t *thread, const thread_create_t *body,
     strcpy(thread->thread.channel_uuid, body->channel_uuid);
     strcpy(thread->thread.title, body->thread_title);
     strcpy(thread->thread.body, body->thread_body);
+    time(&thread->thread.timestamp);
 }
 
 void s_server_event_thread_created(s_server_t *server,
@@ -144,6 +146,7 @@ void s_server_event_reply_created(s_server_t *server,
     strcpy(reply->reply.user_uuid, body.user_uuid);
     strcpy(reply->reply.thread_uuid, body.thread_uui);
     strcpy(reply->reply.body, body.reply_body);
+    time(&reply->reply.timestamp);
     TAILQ_INSERT_TAIL(&server->replies, reply, entries);
     ping_user_reply(server, &body);
     server_event_reply_created(body.thread_uui, body.user_uuid,

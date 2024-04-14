@@ -54,6 +54,7 @@ typedef struct {
     char channel_uuid[UUID_LENGTH];
     char title[MAX_NAME_LENGTH];
     char body[MAX_BODY_LENGTH];
+    time_t timestamp;
 } thread_t;
 
 typedef struct s_thread_s {
@@ -65,6 +66,7 @@ typedef struct {
     char user_uuid[UUID_LENGTH];
     char thread_uuid[UUID_LENGTH];
     char body[MAX_BODY_LENGTH];
+    time_t timestamp;
 } reply_t;
 
 typedef struct s_reply_s {
@@ -76,6 +78,7 @@ typedef struct {
     char sender_uuid[UUID_LENGTH];
     char receiver_uuid[UUID_LENGTH];
     char body[MAX_BODY_LENGTH];
+    time_t timestamp;
 } private_message_t;
 
 typedef struct s_private_message_s {
