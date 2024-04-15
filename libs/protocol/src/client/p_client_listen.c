@@ -8,9 +8,8 @@
 #include "protocol.h"
 #include <fcntl.h>
 
-p_payload_t *p_client_listen(const p_client_t *client)
+p_payload_t *p_client_listen(const p_client_t *client, p_payload_t *payload)
 {
-    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
     const int fd = client->network_data.sockfd;
 
     if (payload) {
@@ -19,6 +18,5 @@ p_payload_t *p_client_listen(const p_client_t *client)
             && read(fd, payload->data, DATA_SIZE))
             return payload;
     }
-    free(payload);
     return NULL;
 }
