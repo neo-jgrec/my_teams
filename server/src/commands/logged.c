@@ -71,6 +71,7 @@ void s_server_event_logged_out(s_server_t *server,
 {
     s_logged_user_t *user;
     logout_t body;
+    user_t response;
 
     memcpy(&body, payload->data, sizeof(logout_t));
     TAILQ_FOREACH(user, &server->logged, entries)
@@ -81,5 +82,7 @@ void s_server_event_logged_out(s_server_t *server,
     if (!user)
         return send_event(server, payload, EVT_ERROR_ALREADY);
     server_event_user_logged_out(body.user_uuid);
+    strcpy(response.uuid, body.user_uuid);
+    strcpy(response.name, user->user.name);
     send_event_body(server, payload, &user->user, EVT_DISCONNECT);
 }

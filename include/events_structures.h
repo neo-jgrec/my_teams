@@ -13,12 +13,11 @@
     #define MAX_DESCRIPTION_LENGTH 255
     #define MAX_BODY_LENGTH 512
 
-/**
- *  No Structure for EVT_INFO_TEAM and EVT_PING
- */
+// No Structure for EVT_INFO_TEAM and EVT_PING
 
 /**
  * @brief Struct for EVT_LIST_USERS
+ * and response for EVT_LOGIN and EVT_DISCONNECT
  */
 typedef struct {
     char uuid[UUID_LENGTH];
@@ -26,7 +25,7 @@ typedef struct {
 } user_t;
 
 /**
- * @brief Struct for EVT_SUBSCRIBE
+ * @brief Struct body for EVT_SUBSCRIBE
 
  */
 typedef struct {
@@ -35,7 +34,7 @@ typedef struct {
 } subscribe_t;
 
 /**
- * @brief Struct for EVT_LOGIN
+ * @brief Struct body for EVT_LOGIN
  */
 typedef struct {
     char user_name[MAX_NAME_LENGTH];
