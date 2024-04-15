@@ -22,8 +22,9 @@ void send_event_body(const s_server_t *server, const p_payload_t *payload,
     const void *body, const event_t type)
 {
     p_payload_t response = {0};
+    const uint16_t size = sizeof(body);
 
     response.packet_type = type;
-    memcpy(response.data, body, sizeof(body));
+    memcpy(response.data, body, size);
     p_server_send_packet(&response, payload->client_fd, server->socket);
 }

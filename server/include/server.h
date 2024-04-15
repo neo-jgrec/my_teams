@@ -8,18 +8,9 @@
 #ifndef SERVER_H_
     #define SERVER_H_
 
+    #include "events_structures.h"
     #include "protocol.h"
     #include "events.h"
-
-    #define UUID_LENGTH 37
-    #define MAX_NAME_LENGTH 32
-    #define MAX_DESCRIPTION_LENGTH 255
-    #define MAX_BODY_LENGTH 512
-
-typedef struct {
-    char uuid[UUID_LENGTH];
-    char name[MAX_NAME_LENGTH];
-} user_t;
 
 typedef struct s_user_s {
     user_t user;
@@ -86,11 +77,6 @@ typedef struct s_private_message_s {
     TAILQ_ENTRY(s_private_message_s) entries;
 } s_private_message_t;
 
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-    char team_uuid[UUID_LENGTH];
-} subscribe_t;
-
 typedef struct s_subscribe_s {
     subscribe_t subscribe;
     TAILQ_ENTRY(s_subscribe_s) entries;
@@ -98,6 +84,7 @@ typedef struct s_subscribe_s {
 
 typedef struct {
     char uuid[UUID_LENGTH];
+    char name[MAX_NAME_LENGTH];
     int socket;
 } logged_user_t;
 
@@ -138,20 +125,12 @@ void server(const char *str_port);
  */
 char *get_uuid(void);
 
-typedef struct {
-    char user_name[MAX_NAME_LENGTH];
-} login_t;
-
 /**
  * @brief Handle login event
  * @param server The server
  * @param payload The payload
  */
 void s_server_event_logged_in(s_server_t *server, const p_payload_t *payload);
-
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} logout_t;
 
 /**
  * @brief Handle disconnect event
@@ -167,12 +146,6 @@ void s_server_event_logged_out(s_server_t *server, const p_payload_t *payload);
  */
 void s_server_event_list_users(s_server_t *server, const p_payload_t *payload);
 
-typedef struct {
-    char sender_uuid[UUID_LENGTH];
-    char receiver_uuid[UUID_LENGTH];
-    char message_body[MAX_BODY_LENGTH];
-} send_message_t;
-
 /**
  * @brief Handle send message event
  * @param server The server
@@ -180,10 +153,6 @@ typedef struct {
  */
 void s_server_event_send_message(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} list_messages_t;
 
 /**
  * @brief Handle list messages event
@@ -200,10 +169,6 @@ void s_server_event_list_messages(s_server_t *server,
  */
 void s_server_event_subscribe(s_server_t *server, const p_payload_t *payload);
 
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-} list_subscribed_users_in_team_t;
-
 /**
  * @brief Handle list subscribed users in team event
  * @param server The server
@@ -211,10 +176,6 @@ typedef struct {
  */
 void s_server_event_list_subscribed_users_in_team(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} list_subscribed_teams_t;
 
 /**
  * @brief Handle list subscribed teams event
@@ -224,11 +185,6 @@ typedef struct {
 void s_server_event_list_subscribed_teams(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-    char team_uuid[UUID_LENGTH];
-} unsubscribe_t;
-
 /**
  * @brief Handle unsubscribe event
  * @param server The server
@@ -236,11 +192,6 @@ typedef struct {
  */
 void s_server_event_unsubscribe(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-    char team_name[MAX_NAME_LENGTH];
-} team_create_t;
 
 /**
  * @brief Handle create team event
@@ -250,11 +201,6 @@ typedef struct {
 void s_server_event_team_created(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-    char channel_name[MAX_NAME_LENGTH];
-} channel_create_t;
-
 /**
  * @brief Handle create channel event
  * @param server The server
@@ -262,13 +208,6 @@ typedef struct {
  */
 void s_server_event_channel_created(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char channel_uuid[UUID_LENGTH];
-    char user_uuid[UUID_LENGTH];
-    char thread_title[MAX_NAME_LENGTH];
-    char thread_body[MAX_BODY_LENGTH];
-} thread_create_t;
 
 /**
  * @brief Handle create thread event
@@ -278,12 +217,6 @@ typedef struct {
 void s_server_event_thread_created(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char thread_uui[UUID_LENGTH];
-    char user_uuid[UUID_LENGTH];
-    char reply_body[MAX_BODY_LENGTH];
-} reply_create_t;
-
 /**
  * @brief Handle create reply event
  * @param server The server
@@ -292,20 +225,12 @@ typedef struct {
 void s_server_event_reply_created(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} list_teams_t;
-
 /**
  * @brief Handle list teams event
  * @param server The server
  * @param payload The payload
  */
 void s_server_event_list_teams(s_server_t *server, const p_payload_t *payload);
-
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-} list_channels_t;
 
 /**
  * @brief Handle list channels event
@@ -315,10 +240,6 @@ typedef struct {
 void s_server_event_list_channels(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char channel_uuid[UUID_LENGTH];
-} list_threads_t;
-
 /**
  * @brief Handle list threads event
  * @param server The server
@@ -326,10 +247,6 @@ typedef struct {
  */
 void s_server_event_list_threads(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char thread_uuid[UUID_LENGTH];
-} list_replies_t;
 
 /**
  * @brief Handle list replies event
@@ -339,10 +256,6 @@ typedef struct {
 void s_server_event_list_replies(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} user_info_t;
-
 /**
  * @brief Handle get user info event
  * @param server The server
@@ -350,10 +263,6 @@ typedef struct {
  */
 void s_server_event_get_user_info(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-} team_info_t;
 
 /**
  * @brief Handle get team info event
@@ -363,10 +272,6 @@ typedef struct {
 void s_server_event_get_team_info(s_server_t *server,
     const p_payload_t *payload);
 
-typedef struct {
-    char channel_uuid[UUID_LENGTH];
-} channel_info_t;
-
 /**
  * @brief Handle get channel info event
  * @param server The server
@@ -374,10 +279,6 @@ typedef struct {
  */
 void s_server_event_get_channel_info(s_server_t *server,
     const p_payload_t *payload);
-
-typedef struct {
-    char thread_uuid[UUID_LENGTH];
-} thread_info_t;
 
 /**
  * @brief Handle get thread info event

@@ -12,13 +12,12 @@
 #include "server.h"
 
 static void ping_user_team(const s_server_t *server,
-    const team_create_t *body)
+    const p_payload_t *payload, const team_create_t *body)
 {
     s_logged_user_t *user;
-    p_payload_t *payload = p_create_payload(EVT_TEAM_CREATE, body);
 
     TAILQ_FOREACH(user, &server->logged, entries)
-        p_server_send_packet(payload, user->user.socket, server->socket);
+        send_event_body(server, payload, body, EVT_TEAM_CREATE);
 }
 
 void s_server_event_team_created(s_server_t *server,
@@ -39,7 +38,7 @@ void s_server_event_team_created(s_server_t *server,
     strcpy(team->team.uuid, team_uuid);
     strcpy(team->team.name, body.team_name);
     TAILQ_INSERT_TAIL(&server->teams, team, entries);
-    ping_user_team(server, &body);
+    ping_user_team(server, payload, &body);
     server_event_team_created(team_uuid, body.team_name, body.user_uuid);
     send_event_body(server, payload, &team->team, EVT_TEAM_CREATE);
 }
