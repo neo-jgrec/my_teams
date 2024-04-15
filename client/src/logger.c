@@ -9,11 +9,16 @@
 #include "protocol.h"
 #include "events.h"
 #include "client.h"
+#include "events_structures.h"
 #include "unused.h"
+#include <string.h>
 
 static void mt_log_client(UNUSED const p_payload_t *payload)
 {
-    printf("login\n");
+    user_t user = {0};
+
+    memcpy(&user, payload->data, sizeof(user_t));
+    client_event_logged_in(user.uuid, user.name);
 }
 
 void client_logger(const p_payload_t *payload)

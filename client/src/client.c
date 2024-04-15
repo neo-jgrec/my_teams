@@ -95,7 +95,7 @@ static p_payload_t *process_command(char *input, p_client_t *client)
 
 static void start_cli(p_client_t *client, queue_head_t *priority_queue)
 {
-    p_payload_t *payload = NULL;
+    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
 
     if (!client) {
         fprintf(stdout, "Failed to connect to server\n");
