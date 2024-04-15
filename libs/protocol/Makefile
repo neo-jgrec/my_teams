@@ -1,6 +1,7 @@
 ##
 ## EPITECH PROJECT, 2024
 ## my_teams
+## my_teams
 ## File description:
 ## Makefile
 ##
@@ -70,7 +71,7 @@ RM			:=	rm -rf
 
 CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../../include				\
-				-Wall -Wextra
+				-Wall -Wextra -fPIC
 LDFLAGS		:=
 
 all:				$(NAME)

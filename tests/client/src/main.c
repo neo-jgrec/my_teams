@@ -29,6 +29,7 @@ int main(void)
 
     printf("[CLIENT] Sent login packet\n\n");
     p_client_send_packet(EVT_LOGIN, "Hello", client);
+    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
     while (is_running) {
         p_client_listen(client, payload);
         printf("[CLIENT] Received packet of type %d\n", payload->packet_type);
