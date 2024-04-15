@@ -9,6 +9,15 @@
     #define CLIENT_H_
 
     #include "protocol.h"
+    #include <sys/queue.h>
+
+typedef struct queue_node {
+    p_payload_t *payload;
+    TAILQ_ENTRY(queue_node) entries;
+} queue_node_t;
+
+TAILQ_HEAD(queue_head, queue_node);
+typedef struct queue_head queue_head_t;
 
 /**
  * @brief main function for the client
@@ -26,5 +35,25 @@ int client(int ac, char **av);
  * @param payload
  */
 void client_logger(const p_payload_t *payload);
+
+/**
+ * @brief Set the payload to zero client object
+ *
+ * @param payload
+ */
+void payload_to_zero(p_payload_t *payload);
+
+/**
+ * @brief process the priority queue
+ *
+ */
+void process_priority_queue(queue_head_t *queue);
+
+/**
+ * @brief add a payload to the priority queue
+ *
+ * @param payload
+ */
+void add_to_priority_queue(p_payload_t *payload, queue_head_t *queue);
 
 #endif /* !CLIENT_H_ */

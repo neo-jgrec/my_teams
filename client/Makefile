@@ -12,8 +12,12 @@ DIR			:=	src
 SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					client.c										\
-					commands/help.c									\
 					logger.c										\
+					commands/help.c									\
+					commands/login.c								\
+					queue/add.c										\
+					queue/process.c									\
+					utils/payload_to_zero.c							\
 				)
 
 FU_DIR		:=	tests/func
@@ -48,7 +52,7 @@ CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../include							\
 				-iquote../libs/protocol/include								\
 				-iquote../libs/myteams										\
-				-Wall -Wextra
+				-Wall -Wextra -g3
 LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../libs/myteams						\
 				-Wl,-rpath=${CURDIR}/../libs/protocol						\
 				-L../libs/myteams -lmyteams									\

@@ -8,6 +8,7 @@
 #include "client.h"
 #include "commands.h"
 #include "debug_print.h"
+#include "protocol.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,44 +71,31 @@ static char **get_args_from_input(char *input)
     return args;
 }
 
-static void process_response_from_command(p_payload_t response)
+static p_payload_t *process_command(char *input, p_client_t *client)
 {
-    if (response.packet_type == EVT_ERROR) {
-        fprintf(stdout, "Error: %s\n", response.data);
-    } else {
-        fprintf(stdout, "%s\n", response.data);
-    }
-}
+    char **args = NULL;
+    char *command = NULL;
+    p_payload_t *payload = NULL;
 
-static void process_command(char *input)
-{
-    char **args = get_args_from_input(input);
-    char *command = args[0];
-    p_payload_t response;
-
+    if (!input)
+        return NULL;
+    args = get_args_from_input(input);
+    command = args[0];
     DEBUG_PRINT("Processing command: %s\n", command);
-    for (int i = 0; args[i]; i++)
-        DEBUG_PRINT("Arg %d: %s\n", i, args[i]);
     if (!command)
-        return;
-    for (int i = 0; commands[i].name; i++) {
-        if (!strcmp(commands[i].name, command)) {
-            DEBUG_PRINT("Command found: %s\n", command);
-            response = commands[i].func(args, NULL);
-            process_response_from_command(response);
-            break;
-        }
-    }
+        return payload;
+    for (int i = 0; commands[i].name; i++)
+        if (!strcmp(commands[i].name, command))
+            payload = commands[i].func(args, (void *)client);
     for (int i = 0; args[i]; i++)
         free(args[i]);
     free(args);
+    return payload;
 }
 
-static void start_cli(char *ip, int port)
+static void start_cli(p_client_t *client, queue_head_t *priority_queue)
 {
-    char *input = NULL;
-    p_client_t *client = p_client_create(ip, port);
-    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
+    p_payload_t *payload = NULL;
 
     if (!client) {
         fprintf(stdout, "Failed to connect to server\n");
@@ -116,24 +104,26 @@ static void start_cli(char *ip, int port)
     while (is_running) {
         signal(SIGINT, handle_sigint);
         p_client_listen(client, payload);
-        input = get_client_input();
-        if (input)
-            process_command(input);
+        process_priority_queue(priority_queue);
+        payload = process_command(get_client_input(), client);
+        add_to_priority_queue(payload, priority_queue);
     }
-    if (payload)
-        free(payload);
-    p_client_close(client);
 }
 
 int client(int ac, char **av)
 {
     int isHelpRequested = ac > 1 && (!strcmp(av[1], "--help")
         || !strcmp(av[1], "-h"));
+    p_client_t *client = NULL;
+    queue_head_t priority_queue;
 
     if (ac != 3 || isHelpRequested) {
         fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;
     }
-    start_cli(av[1], atoi(av[2]));
+    TAILQ_INIT(&priority_queue);
+    client = p_client_create(av[1], atoi(av[2]));
+    start_cli(client, &priority_queue);
+    p_client_close(client);
     return 0;
 }

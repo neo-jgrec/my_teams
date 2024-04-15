@@ -6,27 +6,21 @@
 */
 
 #include "commands.h"
+#include "protocol.h"
 #include "unused.h"
-#include <sys/types.h>
 
-p_payload_t cmd_help(char **args, UNUSED void *data)
+p_payload_t *cmd_help(char **args, UNUSED void *data)
 {
-    uint8_t buffer[4096] = {0};
-    p_payload_t payload = {
-        .packet_type = 0,
-        .data = {0},
-    };
-
-    if (!args[0]) {
-        memcpy(payload.data, "No arguments provided\n", 22);
-        return payload;
-    }
+    uint16_t buffer[4096] = {0};
     unsigned long pos = 0;
+
+    if (!args[0])
+        return p_create_payload(INT16_MAX - 1, "No arguments provided\n");
     for (int i = 0; commands[i].name; i++) {
-        pos += snprintf((char *)buffer + pos, sizeof(buffer) - pos, "%s\n", commands[i].name);
+        pos += snprintf((char *)buffer + pos, sizeof(buffer) - pos,
+            "%s\n", commands[i].name);
         if (pos >= sizeof(buffer))
             break;
     }
-    memcpy(payload.data, buffer, sizeof(buffer));
-    return payload;
+    return p_create_payload(INT16_MAX - 1, buffer);
 }
