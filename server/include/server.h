@@ -98,6 +98,7 @@ typedef struct s_subscribe_s {
 
 typedef struct {
     char uuid[UUID_LENGTH];
+    char name[MAX_NAME_LENGTH];
     int socket;
 } logged_user_t;
 

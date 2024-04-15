@@ -26,6 +26,18 @@ static void s_listen(s_server_t server)
     }
 }
 
+static void init_list(s_server_t *server)
+{
+    TAILQ_INIT(&server->users);
+    TAILQ_INIT(&server->teams);
+    TAILQ_INIT(&server->channels);
+    TAILQ_INIT(&server->threads);
+    TAILQ_INIT(&server->replies);
+    TAILQ_INIT(&server->private_messages);
+    TAILQ_INIT(&server->subscribes);
+    TAILQ_INIT(&server->logged);
+}
+
 void server(const char *str_port)
 {
     const int port = atoi(str_port);
@@ -37,6 +49,7 @@ void server(const char *str_port)
     server.socket = p_server_create(port);
     if (!server.socket)
         exit(EXIT_FAILURE);
+    init_list(&server);
     while (p_server_is_open())
         s_listen(server);
     p_server_close(server.socket);

@@ -8,7 +8,7 @@
 #include <uuid/uuid.h>
 #include <stdlib.h>
 
-#include "../../include/server.h"
+#include "server.h"
 
 char *get_uuid(void)
 {
@@ -18,6 +18,7 @@ char *get_uuid(void)
     if (!uuid)
         return NULL;
     uuid_generate(id);
+    uuid_unparse(id, uuid);
     uuid[UUID_LENGTH - 1] = '\0';
     return uuid;
 }
