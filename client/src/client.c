@@ -13,6 +13,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
+
+static const bool *is_running = (const bool *)1;
 
 static const char *HELP = "USAGE:"
 "\t./myteams_cli ip port\n"
@@ -20,21 +23,30 @@ static const char *HELP = "USAGE:"
 "\tip\tis the server ip address on which the server should connect\n"
 "\tport\tis the port number on which the server should connect\n";
 
-static void handle_sigint_program(int sig)
+static void handle_sigint(int sig)
 {
     (void)sig;
-    fprintf(stdout, "Must Ctrl-D to exit\n");
+    fprintf(stdout, "Exiting...\n");
+    is_running = false;
 }
 
 static char *get_client_input(void)
 {
-    char *input = NULL;
-    size_t len = 0;
+    static char input[8096];
+    ssize_t bytes_read = 0;
+    int flags = 0;
 
-    if (getline(&input, &len, stdin) == -1) {
-        free(input);
+    flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+    bytes_read = read(STDIN_FILENO, input, 8096 - 1);
+    if (bytes_read == -1) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return NULL;
+        perror("read");
         return NULL;
-    }
+    } else if (bytes_read == 0)
+        return NULL;
+    input[bytes_read] = '\0';
     return input;
 }
 
@@ -91,18 +103,26 @@ static void process_command(char *input)
     free(args);
 }
 
-static void start_cli(void)
+static void start_cli(char *ip, int port)
 {
     char *input = NULL;
+    p_client_t *client = p_client_create(ip, port);
+    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
 
-    for (;;) {
-        signal(SIGINT, handle_sigint_program);
-        input = get_client_input();
-        if (!input)
-            break;
-        process_command(input);
-        free(input);
+    if (!client) {
+        fprintf(stdout, "Failed to connect to server\n");
+        return;
     }
+    while (is_running) {
+        signal(SIGINT, handle_sigint);
+        p_client_listen(client, payload);
+        input = get_client_input();
+        if (input)
+            process_command(input);
+    }
+    if (payload)
+        free(payload);
+    p_client_close(client);
 }
 
 int client(int ac, char **av)
@@ -111,9 +131,9 @@ int client(int ac, char **av)
         || !strcmp(av[1], "-h"));
 
     if (ac != 3 || isHelpRequested) {
-        dprintf(isHelpRequested ? STDOUT_FILENO : STDERR_FILENO, "%s", HELP);
+        fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;
     }
-    start_cli();
+    start_cli(av[1], atoi(av[2]));
     return 0;
 }
