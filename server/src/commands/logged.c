@@ -21,6 +21,7 @@ static void add_logged_user(s_server_t *server, const p_payload_t *payload,
     }
     logged->user.socket = payload->client_fd;
     strcpy(logged->user.uuid, user->user.uuid);
+    strcpy(logged->user.name, user->user.name);
     TAILQ_INSERT_TAIL(&server->logged, logged, entries);
 }
 
@@ -49,9 +50,13 @@ void s_server_event_logged_in(s_server_t *server,
     const p_payload_t *payload)
 {
     s_user_t *user;
+    s_logged_user_t *logged;
     login_t body;
 
     memcpy(&body, payload->data, sizeof(login_t));
+    TAILQ_FOREACH(logged, &server->logged, entries)
+        if (!strcmp(body.user_name, logged->user.name))
+            return send_event(server, payload, EVT_ERROR_ALREADY);
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.user_name, user->user.name)) {
             add_logged_user(server, payload, user);
@@ -64,8 +69,9 @@ void s_server_event_logged_in(s_server_t *server,
 void s_server_event_logged_out(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_user_t *user;
+    s_logged_user_t *user;
     logout_t body;
+    user_t response;
 
     memcpy(&body, payload->data, sizeof(logout_t));
     TAILQ_FOREACH(user, &server->logged, entries)
@@ -76,5 +82,7 @@ void s_server_event_logged_out(s_server_t *server,
     if (!user)
         return send_event(server, payload, EVT_ERROR_ALREADY);
     server_event_user_logged_out(body.user_uuid);
+    strcpy(response.uuid, body.user_uuid);
+    strcpy(response.name, user->user.name);
     send_event_body(server, payload, &user->user, EVT_DISCONNECT);
 }
