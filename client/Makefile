@@ -13,6 +13,7 @@ SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					client.c										\
 					commands/help.c									\
+					logger.c										\
 				)
 
 FU_DIR		:=	tests/func
