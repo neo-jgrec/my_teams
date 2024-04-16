@@ -304,15 +304,20 @@ void s_server_event_ping(s_server_t *server, const p_payload_t *payload);
 void send_event(const s_server_t *server, const p_payload_t *payload,
     event_t type);
 
+typedef struct {
+    event_t type;
+    void *body;
+    uint16_t size;
+} s_response_t;
+
 /**
  * @brief Send an event with a UUID
  * @param server The server
  * @param payload The payload
- * @param body The body
- * @param type The event type
+ * @param response_payload The response payload
  */
 void send_event_body(const s_server_t *server, const p_payload_t *payload,
-    const void *body, event_t type);
+    const s_response_t *response_payload);
 
 /**
  * @brief Check if a user is in a team

@@ -17,7 +17,6 @@ int main(void)
 {
     const char ip[] = "127.0.0.1";
     const int port = 1235;
-    bool is_running = true;
 
     printf("[CLIENT] Opening client on %s:%i\n", ip, port);
     p_client_t *client = p_client_create(ip, port);
@@ -30,15 +29,16 @@ int main(void)
     printf("[CLIENT] Sent login packet\n\n");
     p_client_send_packet(EVT_LOGIN, "Hello", client);
     p_payload_t *payload = calloc(1, sizeof(p_payload_t));
-    while (is_running) {
-        p_client_listen(client, payload);
-        printf("[CLIENT] Received packet of type %d\n", payload->packet_type);
-        printf("[CLIENT] Received payload: %s\n", (char*)payload->data);
-        printf("[CLIENT] Received from client %d\n\n",
-            payload->network_data.sockfd);
-        free(payload);
-        is_running = false;
-    }
+    while (!p_client_listen(client, payload));
+
+    printf("[CLIENT] Received packet of type %d\n", payload->packet_type);
+    printf("[CLIENT] Received payload: [");
+    fflush(stdout);
+    write(1, payload->data, DATA_SIZE);
+    printf("]\n");
+    printf("[CLIENT] Received from client %d\n\n",
+        payload->network_data.sockfd);
+
     p_client_close(client);
     return EXIT_SUCCESS;
 }

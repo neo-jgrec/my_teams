@@ -13,15 +13,19 @@ void s_server_event_list_users(s_server_t *server,
     const p_payload_t *payload)
 {
     s_user_t *user;
+    s_response_t response = {EVT_CONTINUE, 0, sizeof(user_t)};
 
     TAILQ_FOREACH(user, &server->users, entries) {
         if (!TAILQ_NEXT(user, entries))
             break;
-        send_event_body(server, payload, &user->user, EVT_CONTINUE);
+        response.body = &user->user;
+        send_event_body(server, payload, &response);
     }
     if (!user)
         return send_event(server, payload, EVT_ERROR);
-    send_event_body(server, payload, &user->user, EVT_LIST_USERS);
+    response.type = EVT_LIST_USERS;
+    response.body = &user->user;
+    send_event_body(server, payload, &response);
 }
 
 static void send_message(const s_server_t *server, const p_payload_t *payload,
@@ -59,39 +63,40 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
     const p_payload_t *payload)
 {
     s_subscribe_t *subscribe;
-    const subscribe_t *tmp = NULL;
     list_subscribed_users_in_team_t body;
+    s_response_t response = {EVT_CONTINUE, 0, sizeof(subscribe_t)};
 
     memcpy(&body, payload->data, sizeof(list_subscribed_users_in_team_t));
     TAILQ_FOREACH(subscribe, &server->subscribes, entries) {
         if (strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
             continue;
-        if (tmp)
-            send_event_body(server, payload, tmp, EVT_CONTINUE);
-        tmp = &subscribe->subscribe;
+        if (response.body)
+            send_event_body(server, payload, &response);
+        response.body = &subscribe->subscribe;
     }
-    if (!tmp)
+    if (!response.body)
         return send_event(server, payload, EVT_ERROR);
-    send_event_body(server, payload, tmp, EVT_LIST_SUBSCRIBED_IN_TEAM);
+    response.type = EVT_LIST_SUBSCRIBED_IN_TEAM;
+    send_event_body(server, payload, &response);
 }
 
 void s_server_event_list_subscribed_teams(s_server_t *server,
     const p_payload_t *payload)
 {
     s_subscribe_t *subscribe;
-    const subscribe_t *tmp = NULL;
     list_subscribed_teams_t body;
+    s_response_t response = {EVT_CONTINUE, 0, sizeof(subscribe_t)};
 
     memcpy(&body, payload->data, sizeof(list_subscribed_teams_t));
     TAILQ_FOREACH(subscribe, &server->subscribes, entries) {
         if (strcmp(subscribe->subscribe.user_uuid, body.user_uuid))
             continue;
-        if (tmp)
-            send_event_body(server, payload, tmp->team_uuid, EVT_CONTINUE);
-        tmp = &subscribe->subscribe;
+        if (response.body)
+            send_event_body(server, payload, &response);
+        response.body = &subscribe->subscribe;
     }
-    if (!tmp)
+    if (!response.body)
         return send_event(server, payload, EVT_ERROR);
-    send_event_body(server, payload, tmp->team_uuid,
-        EVT_LIST_SUBSCRIBED_TEAMS);
+    response.type = EVT_LIST_SUBSCRIBED_TEAMS;
+    send_event_body(server, payload, &response);
 }

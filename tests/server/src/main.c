@@ -31,7 +31,7 @@ int main(void)
 
         p_payload_t *next;
         for (payload = TAILQ_FIRST(&server->payloads); payload; payload =
-             next) {
+            next) {
             next = TAILQ_NEXT(payload, entries);
 
             printf("[SERVER] Received packet of type: %d\n",

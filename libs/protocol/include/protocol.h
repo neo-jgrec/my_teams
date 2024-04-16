@@ -83,9 +83,9 @@ p_client_t *p_client_create(const char *ip, int port);
  * @brief Listen for incoming packets on the client.
  * @param client Pointer to the client.
  * @param payload Pointer to the payload to be filled.
- * @return Pointer to the received payload.
+ * @return True if a packet was received, false otherwise.
  */
-p_payload_t *p_client_listen(const p_client_t *client, p_payload_t *payload);
+bool p_client_listen(const p_client_t *client, p_payload_t *payload);
 
 /**
  * @brief Send a packet from the client.
