@@ -45,8 +45,7 @@ CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../../include					\
 				-iquote../../libs/protocol/include						\
 				-Wall -Wextra
-LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../../libs/protocol				\
-				-L../../libs/protocol -lmyprotocol
+LDFLAGS		:=	-L../../libs/protocol -lmyprotocol
 
 all:				$(NAME)
 
