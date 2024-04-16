@@ -5,6 +5,10 @@
 ** select_server
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "protocol.h"
 
 bool select_server(p_server_t *server)

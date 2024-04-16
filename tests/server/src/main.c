@@ -5,6 +5,7 @@
 ** main
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "protocol.h"
@@ -22,8 +23,6 @@ int main(void)
     }
     printf("[SERVER] Server created\n\n");
 
-    p_payload_t *payload_resp = p_create_payload(EVT_LOGIN, "Tamere\n");
-
     while (p_server_is_open()) {
         p_payload_t *payload = p_server_listen(server);
         if (!payload)
@@ -34,20 +33,19 @@ int main(void)
             next) {
             next = TAILQ_NEXT(payload, entries);
 
-            printf("[SERVER] Received packet of type: %d\n",
-                payload->packet_type);
-            printf("[SERVER] Received payload: %s\n", (char*)payload->data);
-            printf("[SERVER] Received from client: %d\n\n", payload->client_fd);
+            printf("[SERVER] Received packet of type: %d\n", payload->packet.type);
+            printf("[SERVER] Received payload: %s\n", (char*)payload->packet.data);
+            printf("[SERVER] Received from client: %d\n\n", payload->fd);
 
-            if (payload->packet_type == EVT_LOGIN)
-                p_server_send_packet(payload_resp, payload->client_fd, server);
+            const p_packet_t packet = {EVT_LOGIN, "Tamere"};
+            if (payload->packet.type == EVT_LOGIN)
+                p_server_send_packet(packet, payload->fd, server);
 
             TAILQ_REMOVE(&server->payloads, payload, entries);
             free(payload);
         }
     }
     p_server_close(server);
-    free(payload_resp);
     printf("[SERVER] Server closed\n");
     return EXIT_SUCCESS;
 }

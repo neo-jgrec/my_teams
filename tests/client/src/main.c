@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "protocol.h"
 #include "events.h"
@@ -27,17 +28,16 @@ int main(void)
     printf("[CLIENT] Client created\n\n");
 
     printf("[CLIENT] Sent login packet\n\n");
-    p_client_send_packet(EVT_LOGIN, "Hello", client);
-    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
-    while (!p_client_listen(client, payload));
+    p_client_send_packet(client, EVT_LOGIN, "Batman", 6);
 
-    printf("[CLIENT] Received packet of type %d\n", payload->packet_type);
+    p_packet_t packet = {0};
+    while (!p_client_listen(client, &packet));
+
+    printf("[CLIENT] Received packet of type %d\n", packet.type);
     printf("[CLIENT] Received payload: [");
     fflush(stdout);
-    write(1, payload->data, DATA_SIZE);
+    write(1, packet.data, DATA_SIZE);
     printf("]\n");
-    printf("[CLIENT] Received from client %d\n\n",
-        payload->network_data.sockfd);
 
     p_client_close(client);
     return EXIT_SUCCESS;

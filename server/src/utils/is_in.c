@@ -5,6 +5,8 @@
 ** is_in
 */
 
+#include <string.h>
+
 #include "server.h"
 
 bool is_in_teams(const s_server_t *server, const char *user_uuid,

@@ -8,11 +8,6 @@
 NAME		:=	libmyprotocol.so
 EXT			:=	.c
 
-DIR			:=	src
-SRC			:=	$(addprefix $(DIR)/,								\
-					p_create_payload.c								\
-				)
-
 DIR			+=	src/client
 SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					p_client_close.c								\
