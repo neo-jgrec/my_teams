@@ -76,7 +76,6 @@ void s_server_event_list_replies(s_server_t *server,
 {
     s_thread_t *thread;
     list_replies_t body;
-    // s_response_t response = {EVT_CONTINUE, 0, sizeof(thread_t)};
     p_packet_t packet = {EVT_CONTINUE, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(list_replies_t));

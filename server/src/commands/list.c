@@ -57,7 +57,8 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
     list_subscribed_users_in_team_t body;
     p_packet_t packet = {EVT_CONTINUE, {0}};
 
-    memcpy(&body, payload->packet.data, sizeof(list_subscribed_users_in_team_t));
+    memcpy(&body, payload->packet.data,
+        sizeof(list_subscribed_users_in_team_t));
     TAILQ_FOREACH(subscribe, &server->subscribes, entries) {
         if (strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
             continue;

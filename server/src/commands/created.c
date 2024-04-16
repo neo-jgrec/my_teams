@@ -17,8 +17,8 @@ static void ping_user_team(const s_server_t *server, team_create_t *body)
 {
     s_logged_user_t *user;
     p_packet_t packet = {EVT_TEAM_CREATE, {0}};
-    memcpy(packet.data, body, sizeof(team_create_t));
 
+    memcpy(packet.data, body, sizeof(team_create_t));
     TAILQ_FOREACH(user, &server->logged, entries)
         p_server_send_packet(packet, user->user.socket, server->socket);
 }
@@ -32,7 +32,7 @@ void s_server_event_team_created(s_server_t *server,
     p_packet_t packet = {EVT_TEAM_CREATE, {0}};
 
     if (!team)
-        return (void)p_server_send_packet_type(EVT_ERROR, payload->fd, server->socket);
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
     team_uuid = get_uuid();
     if (!team_uuid) {
         free(team);
