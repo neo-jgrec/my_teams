@@ -27,7 +27,6 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 DIR			+=	src/utils
 SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 					is_in.c											\
-					sender.c										\
 					uuid.c											\
 				)
 

@@ -5,6 +5,8 @@
 ** get_client
 */
 
+#include <unistd.h>
+
 #include "protocol.h"
 
 p_client_t *get_client(const int fd, const p_server_t *server)

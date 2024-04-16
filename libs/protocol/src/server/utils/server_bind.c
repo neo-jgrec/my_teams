@@ -5,6 +5,9 @@
 ** server_bind
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "protocol.h"
 
 bool server_bind(p_server_t *server)

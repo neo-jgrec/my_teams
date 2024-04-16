@@ -5,6 +5,9 @@
 ** server_listen
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "protocol.h"
 
 bool server_listen(p_server_t *server)

@@ -5,6 +5,8 @@
 ** server_socket
 */
 
+#include <stdlib.h>
+
 #include "protocol.h"
 
 p_server_t *server_socket(const int port)
