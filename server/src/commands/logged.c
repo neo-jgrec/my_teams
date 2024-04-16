@@ -30,6 +30,7 @@ static void new_user(s_server_t *server, const p_payload_t *payload,
 {
     s_user_t *user = malloc(sizeof(s_user_t));
     const char *user_uuid;
+    s_response_t response = {EVT_INFO_TEAM, 0, sizeof(user_t)};
 
     if (!user)
         return send_event(server, payload, EVT_ERROR);
@@ -43,7 +44,8 @@ static void new_user(s_server_t *server, const p_payload_t *payload,
     TAILQ_INSERT_TAIL(&server->users, user, entries);
     add_logged_user(server, payload, user);
     server_event_user_logged_in(user_uuid);
-    send_event_body(server, payload, &user->user, EVT_LOGIN);
+    response.body = &user->user;
+    send_event_body(server, payload, &response);
 }
 
 void s_server_event_logged_in(s_server_t *server,
@@ -52,6 +54,7 @@ void s_server_event_logged_in(s_server_t *server,
     s_user_t *user;
     s_logged_user_t *logged;
     login_t body;
+    s_response_t response = {EVT_LOGIN, 0, sizeof(user_t)};
 
     memcpy(&body, payload->data, sizeof(login_t));
     TAILQ_FOREACH(logged, &server->logged, entries)
@@ -61,7 +64,8 @@ void s_server_event_logged_in(s_server_t *server,
         if (!strcmp(body.user_name, user->user.name)) {
             add_logged_user(server, payload, user);
             server_event_user_logged_in(user->user.uuid);
-            return send_event_body(server, payload, &user->user, EVT_LOGIN);
+            response.body = &user->user;
+            return send_event_body(server, payload, &response);
         }
     new_user(server, payload, &body);
 }
@@ -71,7 +75,8 @@ void s_server_event_logged_out(s_server_t *server,
 {
     s_logged_user_t *user;
     logout_t body;
-    user_t response;
+    s_response_t response = {EVT_DISCONNECT, 0, sizeof(user_t)};
+    user_t user_response;
 
     memcpy(&body, payload->data, sizeof(logout_t));
     TAILQ_FOREACH(user, &server->logged, entries)
@@ -82,7 +87,8 @@ void s_server_event_logged_out(s_server_t *server,
     if (!user)
         return send_event(server, payload, EVT_ERROR_ALREADY);
     server_event_user_logged_out(body.user_uuid);
-    strcpy(response.uuid, body.user_uuid);
-    strcpy(response.name, user->user.name);
-    send_event_body(server, payload, &user->user, EVT_DISCONNECT);
+    strcpy(user_response.uuid, user->user.uuid);
+    strcpy(user_response.name, user->user.name);
+    response.body = &user_response;
+    send_event_body(server, payload, &response);
 }

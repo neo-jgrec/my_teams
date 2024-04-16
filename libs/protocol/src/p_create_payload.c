@@ -7,10 +7,8 @@
 
 #include "protocol.h"
 
-p_payload_t *p_create_payload(
-    const uint16_t packet_type,
-    const void *payload_data
-)
+p_payload_t *p_create_payload(const uint16_t packet_type,
+    const void *payload_data)
 {
     p_payload_t *payload = calloc(1, sizeof(p_payload_t));
     uint16_t data_size = 0;
@@ -27,6 +25,5 @@ p_payload_t *p_create_payload(
             return NULL;
         }
     }
-
     return payload;
 }

@@ -8,15 +8,12 @@
 #include "protocol.h"
 #include <fcntl.h>
 
-p_payload_t *p_client_listen(const p_client_t *client, p_payload_t *payload)
+bool p_client_listen(const p_client_t *client, p_payload_t *payload)
 {
     const int fd = client->network_data.sockfd;
 
-    if (payload) {
-        fcntl(fd, F_SETFL, O_NONBLOCK);
-        if (read(fd, &payload->packet_type, sizeof(uint16_t))
-            && read(fd, payload->data, DATA_SIZE))
-            return payload;
-    }
-    return NULL;
+    fcntl(fd, F_SETFL, O_NONBLOCK);
+    return payload
+        && read(fd, &payload->packet_type, sizeof(uint16_t)) > 0
+        && read(fd, payload->data, DATA_SIZE) > 0;
 }
