@@ -18,7 +18,7 @@ static void s_listen(s_server_t server)
     if (!payload)
         return;
     for (payload = TAILQ_FIRST(&server.socket->payloads); payload; payload =
-         TAILQ_FIRST(&server.socket->payloads)) {
+        TAILQ_FIRST(&server.socket->payloads)) {
         TAILQ_REMOVE(&server.socket->payloads, payload, entries);
         if (payload->packet_type < NB_EVT)
             events[payload->packet_type].callback(&server, payload);
@@ -43,12 +43,16 @@ void server(const char *str_port)
     const int port = atoi(str_port);
     s_server_t server = {0};
 
-    if (port < 1024 || port > 65535)
+    if (port < 1024 || port > 65535) {
+        printf("Invalid port\n");
         exit(EXIT_FAILURE);
+    }
     printf("Server started on port %d\n", port);
     server.socket = p_server_create(port);
-    if (!server.socket)
+    if (!server.socket) {
+        printf("Server creation failed\n");
         exit(EXIT_FAILURE);
+    }
     init_list(&server);
     while (p_server_is_open())
         s_listen(server);

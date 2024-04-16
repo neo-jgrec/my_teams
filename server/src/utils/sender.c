@@ -19,12 +19,11 @@ void send_event(const s_server_t *server, const p_payload_t *payload,
 }
 
 void send_event_body(const s_server_t *server, const p_payload_t *payload,
-    const void *body, const event_t type)
+    const s_response_t *response_payload)
 {
     p_payload_t response = {0};
-    const uint16_t size = sizeof(body);
 
-    response.packet_type = type;
-    memcpy(response.data, body, size);
+    response.packet_type = response_payload->type;
+    memcpy(response.data, response_payload->body, response_payload->size);
     p_server_send_packet(&response, payload->client_fd, server->socket);
 }
