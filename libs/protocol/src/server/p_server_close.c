@@ -5,6 +5,9 @@
 ** p_server_close
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "protocol.h"
 
 void p_server_close(p_server_t *server)

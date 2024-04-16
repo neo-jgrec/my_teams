@@ -8,18 +8,9 @@
 #ifndef PROTOCOL_H_
     #define PROTOCOL_H_
 
-    #include <stdio.h>
-    #include <stdint.h>
     #include <netinet/in.h>
-    #include <stdlib.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
-    #include <sys/select.h>
     #include <sys/queue.h>
-    #include <signal.h>
-    #include <string.h>
     #include <stdbool.h>
-    #include <errno.h>
 
     #define DATA_SIZE 4096
 
@@ -34,16 +25,23 @@ typedef struct p_network_data_s {
 } p_network_data_t;
 
 /**
+ * @struct p_packet_s
+ * @brief Represents a packet with type and data.
+ */
+typedef struct p_packet_s {
+    uint16_t type;           // Type of the packet
+    uint8_t data[DATA_SIZE]; // Data
+} p_packet_t;
+
+/**
  * @struct p_payload_s
  * @brief Represents a payload containing packet, network data, and actual
  * data.
  */
 typedef struct p_payload_s {
-    int client_fd; /**< File descriptor of the client */
-    uint16_t packet_type; /**< Type of the packet */
-    struct p_network_data_s network_data; /**< Network data */
-    uint8_t data[DATA_SIZE];                /**< Data */
-    TAILQ_ENTRY(p_payload_s) entries; /**< Entry for TAILQ list */
+    p_packet_t packet;                // Packet
+    int fd;                           // File descriptor of the client
+    TAILQ_ENTRY(p_payload_s) entries; // Entry for TAILQ list
 } p_payload_t;
 
 /**
@@ -82,23 +80,21 @@ p_client_t *p_client_create(const char *ip, int port);
 /**
  * @brief Listen for incoming packets on the client.
  * @param client Pointer to the client.
- * @param payload Pointer to the payload to be filled.
+ * @param packet Pointer to the packet to be filled.
  * @return True if a packet was received, false otherwise.
  */
-bool p_client_listen(const p_client_t *client, p_payload_t *payload);
+bool p_client_listen(const p_client_t *client, p_packet_t *packet);
 
 /**
  * @brief Send a packet from the client.
- * @param packet_type Type of the packet.
- * @param payload_data Data to be sent.
  * @param client Pointer to the client.
- * @return 0 on success, -1 on failure.
+ * @param type Type of the packet.
+ * @param data Data to be included in the packet.
+ * @param size Size of the data.
+ * @return True on success, false on failure.
  */
-int p_client_send_packet(
-    uint16_t packet_type,
-    const void *payload_data,
-    const p_client_t *client
-);
+bool p_client_send_packet(const p_client_t *client, uint16_t type,
+    const void *data, int size);
 
 /**
  * @brief Create a server with given port.
@@ -116,16 +112,26 @@ p_payload_t *p_server_listen(p_server_t *server);
 
 /**
  * @brief Send a packet from the server to a specific client.
- * @param payload Pointer to the packet payload.
+ * @param packet Pointer to the packet to be sent.
  * @param client_fd File descriptor of the client.
  * @param server Pointer to the server.
  * @return true on success, false on failure.
  */
 bool p_server_send_packet(
-    p_payload_t *payload,
+    p_packet_t packet,
     int client_fd,
     p_server_t *server
 );
+
+/**
+ * @brief Send a packet from the server to a specific client.
+ * @param type Type of the packet.
+ * @param client_fd File descriptor of the client.
+ * @param server Pointer to the server.
+ * @return true on success, false on failure.
+ */
+bool p_server_send_packet_type(uint16_t type, int client_fd,
+    p_server_t *server);
 
 /**
  * @brief Create a payload with given packet type, data, and size.

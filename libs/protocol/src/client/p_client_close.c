@@ -5,6 +5,9 @@
 ** p_client_close
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "protocol.h"
 
 void p_client_close(p_client_t *client)

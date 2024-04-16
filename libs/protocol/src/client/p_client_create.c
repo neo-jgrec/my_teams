@@ -5,8 +5,10 @@
 ** p_client_create
 */
 
+#include <arpa/inet.h>
+#include <stdlib.h>
+
 #include "protocol.h"
-#include "debug_print.h"
 
 static p_client_t *client_socket(const char *ip, const int port)
 {
@@ -14,7 +16,6 @@ static p_client_t *client_socket(const char *ip, const int port)
 
     client->network_data.sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (client->network_data.sockfd < 0) {
-        DEBUG_PRINT("Socket creation failed: %s\n", strerror(errno));
         free(client);
         return NULL;
     }
@@ -31,11 +32,9 @@ static bool client_connect(p_client_t *client)
         (struct sockaddr*)&client->network_data.server_addr,
         sizeof(client->network_data.server_addr)
     ) < 0) {
-        DEBUG_PRINT("Connection failed: %s\n", strerror(errno));
         free(client);
         return false;
     }
-    DEBUG_PRINT("Connected to server\n");
     return true;
 }
 

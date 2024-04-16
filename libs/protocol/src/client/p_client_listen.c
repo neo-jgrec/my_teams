@@ -5,15 +5,13 @@
 ** p_client_listen
 */
 
-#include "protocol.h"
+#include <unistd.h>
 #include <fcntl.h>
 
-bool p_client_listen(const p_client_t *client, p_payload_t *payload)
-{
-    const int fd = client->network_data.sockfd;
+#include "protocol.h"
 
-    fcntl(fd, F_SETFL, O_NONBLOCK);
-    return payload
-        && read(fd, &payload->packet_type, sizeof(uint16_t)) > 0
-        && read(fd, payload->data, DATA_SIZE) > 0;
+bool p_client_listen(const p_client_t *client, p_packet_t *packet)
+{
+    fcntl(client->network_data.sockfd, F_SETFL, O_NONBLOCK);
+    return read(client->network_data.sockfd, packet, sizeof(p_packet_t)) > 0;
 }

@@ -6,6 +6,7 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "protocol.h"
 #include "commands.h"
@@ -20,8 +21,8 @@ static void s_listen(s_server_t server)
     for (payload = TAILQ_FIRST(&server.socket->payloads); payload; payload =
         TAILQ_FIRST(&server.socket->payloads)) {
         TAILQ_REMOVE(&server.socket->payloads, payload, entries);
-        if (payload->packet_type < NB_EVT)
-            events[payload->packet_type].callback(&server, payload);
+        if (payload->packet.type < NB_EVT)
+            events[payload->packet.type].callback(&server, payload);
         free(payload);
     }
 }

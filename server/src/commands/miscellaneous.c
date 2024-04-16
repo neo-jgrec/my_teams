@@ -5,27 +5,30 @@
 ** miscellaneous
 */
 
+#include <string.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "server.h"
+#include "events.h"
 
 void s_server_event_ping(s_server_t *server,
     const p_payload_t *payload)
 {
-    send_event(server, payload, EVT_PING);
+    p_server_send_packet_type(EVT_PING, payload->fd, server->socket);
 }
 
 static void ping_user_message(const s_server_t *server,
     const send_message_t *body)
 {
     s_logged_user_t *user;
-    p_payload_t *payload;
+    p_packet_t packet = {EVT_MESSAGE_RECEIVE, {0}};
 
     TAILQ_FOREACH(user, &server->logged, entries) {
         if (strcmp(user->user.uuid, body->receiver_uuid))
             continue;
-        payload = p_create_payload(EVT_MESSAGE_RECEIVE, body);
-        p_server_send_packet(payload, user->user.socket, server->socket);
+        memcpy(packet.data, body, sizeof(send_message_t));
+        p_server_send_packet(packet, user->user.socket, server->socket);
     }
 }
 
@@ -36,15 +39,15 @@ void s_server_event_send_message(s_server_t *server,
     s_private_message_t *message = malloc(sizeof(s_private_message_t));
 
     if (!message)
-        return send_event(server, payload, EVT_ERROR);
-    memcpy(&body, payload->data, sizeof(send_message_t));
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
+    memcpy(&body, payload->packet.data, sizeof(send_message_t));
     strcpy(message->message.sender_uuid, body.sender_uuid);
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
     strcpy(message->message.body, body.message_body);
     time(&message->message.timestamp);
     TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
     ping_user_message(server, &body);
-    send_event(server, payload, EVT_SEND);
+    p_server_send_packet_type(EVT_SEND, payload->fd, server->socket);
 }
 
 void s_server_event_subscribe(s_server_t *server,
@@ -52,21 +55,21 @@ void s_server_event_subscribe(s_server_t *server,
 {
     s_subscribe_t *subscribe;
     subscribe_t body;
-    s_response_t response = {EVT_SUBSCRIBE, 0, sizeof(subscribe_t)};
+    p_packet_t packet = {EVT_SUBSCRIBE, {0}};
 
-    memcpy(&body, payload->data, sizeof(subscribe_t));
+    memcpy(&body, payload->packet.data, sizeof(subscribe_t));
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
-            return send_event(server, payload, EVT_ERROR_ALREADY);
+            return SEND_TYPE(EVT_ERROR_ALREADY, payload->fd, server->socket);
     subscribe = malloc(sizeof(s_subscribe_t));
     if (!subscribe)
-        return send_event(server, payload, EVT_ERROR);
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
-    response.body = &subscribe->subscribe;
-    send_event_body(server, payload, &response);
+    memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
+    p_server_send_packet(packet, payload->fd, server->socket);
 }
 
 void s_server_event_unsubscribe(s_server_t *server,
@@ -74,16 +77,16 @@ void s_server_event_unsubscribe(s_server_t *server,
 {
     s_subscribe_t *subscribe;
     unsubscribe_t body;
-    s_response_t response = {EVT_UNSUBSCRIBE, 0, sizeof(unsubscribe_t)};
+    p_packet_t packet = {EVT_UNSUBSCRIBE, {0}};
 
-    memcpy(&body, payload->data, sizeof(unsubscribe_t));
+    memcpy(&body, payload->packet.data, sizeof(unsubscribe_t));
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid)) {
             TAILQ_REMOVE(&server->subscribes, subscribe, entries);
             free(subscribe);
-            response.body = &body;
-            return send_event_body(server, payload, &response);
+            memcpy(packet.data, &body, sizeof(unsubscribe_t));
+            p_server_send_packet(packet, payload->fd, server->socket);
         }
-    send_event(server, payload, EVT_ERROR_ALREADY);
+    p_server_send_packet_type(EVT_ERROR_ALREADY, payload->fd, server->socket);
 }

@@ -5,6 +5,8 @@
 ** new_client
 */
 
+#include <stdlib.h>
+
 #include "protocol.h"
 
 bool new_client(p_server_t *server)

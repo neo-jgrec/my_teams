@@ -6,9 +6,11 @@
 */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "logging_server.h"
 #include "server.h"
+#include "events.h"
 
 static void add_logged_user(s_server_t *server, const p_payload_t *payload,
     s_user_t *user)
@@ -17,9 +19,9 @@ static void add_logged_user(s_server_t *server, const p_payload_t *payload,
 
     if (!logged) {
         free(user);
-        return send_event(server, payload, EVT_ERROR);
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
     }
-    logged->user.socket = payload->client_fd;
+    logged->user.socket = payload->fd;
     strcpy(logged->user.uuid, user->user.uuid);
     strcpy(logged->user.name, user->user.name);
     TAILQ_INSERT_TAIL(&server->logged, logged, entries);
@@ -30,22 +32,22 @@ static void new_user(s_server_t *server, const p_payload_t *payload,
 {
     s_user_t *user = malloc(sizeof(s_user_t));
     const char *user_uuid;
-    s_response_t response = {EVT_INFO_TEAM, 0, sizeof(user_t)};
+    p_packet_t packet = {EVT_LOGIN, {0}};
 
     if (!user)
-        return send_event(server, payload, EVT_ERROR);
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
     user_uuid = get_uuid();
     if (!user_uuid) {
         free(user);
-        return send_event(server, payload, EVT_ERROR);
+        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
     }
     strcpy(user->user.uuid, user_uuid);
     strcpy(user->user.name, body->user_name);
     TAILQ_INSERT_TAIL(&server->users, user, entries);
     add_logged_user(server, payload, user);
     server_event_user_logged_in(user_uuid);
-    response.body = &user->user;
-    send_event_body(server, payload, &response);
+    memcpy(packet.data, &user->user, sizeof(user_t));
+    p_server_send_packet(packet, payload->fd, server->socket);
 }
 
 void s_server_event_logged_in(s_server_t *server,
@@ -54,18 +56,19 @@ void s_server_event_logged_in(s_server_t *server,
     s_user_t *user;
     s_logged_user_t *logged;
     login_t body;
-    s_response_t response = {EVT_LOGIN, 0, sizeof(user_t)};
+    p_packet_t packet = {EVT_LOGIN, {0}};
 
-    memcpy(&body, payload->data, sizeof(login_t));
+    memcpy(&body, payload->packet.data, sizeof(login_t));
     TAILQ_FOREACH(logged, &server->logged, entries)
         if (!strcmp(body.user_name, logged->user.name))
-            return send_event(server, payload, EVT_ERROR_ALREADY);
+            return SEND_TYPE(EVT_ERROR_ALREADY, payload->fd, server->socket);
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.user_name, user->user.name)) {
             add_logged_user(server, payload, user);
             server_event_user_logged_in(user->user.uuid);
-            response.body = &user->user;
-            return send_event_body(server, payload, &response);
+            memcpy(packet.data, &user->user, sizeof(user_t));
+            p_server_send_packet(packet, payload->fd, server->socket);
+            return;
         }
     new_user(server, payload, &body);
 }
@@ -75,20 +78,20 @@ void s_server_event_logged_out(s_server_t *server,
 {
     s_logged_user_t *user;
     logout_t body;
-    s_response_t response = {EVT_DISCONNECT, 0, sizeof(user_t)};
+    p_packet_t packet = {EVT_DISCONNECT, {0}};
     user_t user_response;
 
-    memcpy(&body, payload->data, sizeof(logout_t));
+    memcpy(&body, payload->packet.data, sizeof(logout_t));
     TAILQ_FOREACH(user, &server->logged, entries)
         if (!strcmp(body.user_uuid, user->user.uuid)) {
             TAILQ_REMOVE(&server->logged, user, entries);
             break;
         }
     if (!user)
-        return send_event(server, payload, EVT_ERROR_ALREADY);
+        return SEND_TYPE(EVT_ERROR_UNKNOWN, payload->fd, server->socket);
     server_event_user_logged_out(body.user_uuid);
     strcpy(user_response.uuid, user->user.uuid);
     strcpy(user_response.name, user->user.name);
-    response.body = &user_response;
-    send_event_body(server, payload, &response);
+    memcpy(packet.data, &user_response, sizeof(user_t));
+    p_server_send_packet(packet, payload->fd, server->socket);
 }

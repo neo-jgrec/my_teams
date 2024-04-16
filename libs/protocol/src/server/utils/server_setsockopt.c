@@ -5,6 +5,9 @@
 ** server_setsockopt
 */
 
+#include <unistd.h>
+#include <stdlib.h>
+
 #include "protocol.h"
 
 bool server_setsockopt(p_server_t *server)

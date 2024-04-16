@@ -5,6 +5,9 @@
 ** p_server_create
 */
 
+#include <signal.h>
+#include <unistd.h>
+
 #include "protocol.h"
 
 static bool p_server_open_state(const bool new_state, const bool set)
