@@ -53,9 +53,7 @@ CFLAGS		:=	-iquote./include -iquote../include							\
 				-iquote../libs/protocol/include								\
 				-iquote../libs/myteams										\
 				-Wall -Wextra
-LDFLAGS		:=	-Wl,-rpath=${CURDIR}/../libs/myteams						\
-				-Wl,-rpath=${CURDIR}/../libs/protocol						\
-				-L../libs/myteams -lmyteams									\
+LDFLAGS		:=	-L../libs/myteams -lmyteams									\
 				-L../libs/protocol -lmyprotocol								\
 				-luuid
 

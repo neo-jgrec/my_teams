@@ -6,11 +6,11 @@
 ## Makefile
 ##
 
-NAME		:=	libmyprotocol.so
+NAME		:=	libmyprotocol.a
 EXT			:=	.c
 
-DIR			+=	src/client
-SRC			+=	$(addprefix $(lastword $(DIR))/,					\
+DIR			:=	src/client
+SRC			:=	$(addprefix $(DIR)/,								\
 					p_client_close.c								\
 					p_client_create.c								\
 					p_client_listen.c								\
@@ -68,6 +68,7 @@ CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../../include				\
 				-Wall -Wextra -fPIC
 LDFLAGS		:=
+CLINKER		:=	ar rc
 
 all:				$(NAME)
 
@@ -101,7 +102,7 @@ endef
 
 define COMPILE_LIB
 	$(CREATE_DIR)
-	@$(CC) --shared -o $@ $^										\
+	@$(CLINKER) -o $@ $^											\
 	&& printf "\033[32m[SUCCES]\033[0m %s\n" $@						\
 	|| printf "\033[31m[ERROR]\033[0m %s\n"  $@
 endef
