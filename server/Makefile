@@ -26,6 +26,7 @@ SRC			+=	$(addprefix $(lastword $(DIR))/,					\
 
 DIR			+=	src/utils
 SRC			+=	$(addprefix $(lastword $(DIR))/,					\
+					check.c											\
 					is_in.c											\
 					save.c											\
 					load.c											\
