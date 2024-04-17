@@ -49,9 +49,13 @@ typedef struct p_payload_s {
  * @brief Represents a client with socket file descriptor and network data.
  */
 typedef struct p_client_s {
-    int sockfd;                  /**< Socket file descriptor */
-    p_network_data_t network_data; /**< Network data */
-    TAILQ_ENTRY(p_client_s) entries; /**< Entry for TAILQ list */
+    fd_set master_read_fds;             // Master file descriptor set
+    fd_set master_write_fds;            // Master file descriptor set
+    fd_set readfds;                     // File descriptor set
+    fd_set writefds;                    // File descriptor set
+    int sockfd;                         // Socket file descriptor
+    p_network_data_t network_data;      // Network data
+    TAILQ_ENTRY(p_client_s) entries;    // Entry for TAILQ list
 } p_client_t;
 
 /**
@@ -83,7 +87,7 @@ p_client_t *p_client_create(const char *ip, int port);
  * @param packet Pointer to the packet to be filled.
  * @return True if a packet was received, false otherwise.
  */
-bool p_client_listen(const p_client_t *client, p_packet_t *packet);
+bool p_client_listen(p_client_t *client, p_packet_t *packet);
 
 /**
  * @brief Send a packet from the client.
