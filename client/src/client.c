@@ -120,7 +120,7 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
     command = args[0];
     DEBUG_PRINT("Processing command: %s\n", command);
     for (int i = 0; commands[i].name; i++)
-        if (!strcmp(commands[i].name, command))
+        if (!strcmp(commands[i].name, command) && commands[i].func)
             commands[i].func(args, (void *)client, p);
     free_args(args);
     return;
