@@ -307,4 +307,53 @@ bool is_in_threads(const s_server_t *server, const char *user_uuid,
  */
 bool is_logged(const s_server_t *server, const char *user_uuid);
 
+/**
+ * @brief Check if a team exists
+ * @param server The server
+ * @param fd The client file descriptor
+ * @param team_uuid The team UUID
+ * @param type The packet type
+ */
+bool check_team_exist(s_server_t *server, int fd, const char *team_uuid,
+    uint16_t type);
+
+/**
+ * @brief Check if a channel exists
+ * @param server The server
+ * @param fd The client file descriptor
+ * @param channel_uuid The channel UUID
+ * @param type The packet type
+ */
+bool check_channel_exist(s_server_t *server, int fd, const char *channel_uuid,
+    uint16_t type);
+
+/**
+ * @brief Check if a thread exists
+ * @param server The server
+ * @param fd The client file descriptor
+ * @param thread_uuid The thread UUID
+ * @param type The packet type
+ */
+bool check_thread_exist(s_server_t *server, int fd, const char *thread_uuid,
+    uint16_t type);
+
+/**
+ * @brief Check if a user exists
+ * @param server The server
+ * @param fd The client file descriptor
+ * @param user_uuid The user UUID
+ * @param type The packet type
+ */
+bool check_user_exist(s_server_t *server, int fd, const char *user_uuid,
+    uint16_t type);
+
+/**
+ * @brief Check if a UUID is allocated
+ * @param server The server
+ * @param fd The client file descriptor
+ * @param uuid The UUID
+ * @param type The packet type
+ */
+bool check_uuid(s_server_t *server, int fd, char **uuid, uint16_t type);
+
 #endif /* !SERVER_H_ */
