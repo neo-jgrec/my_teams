@@ -127,6 +127,19 @@ void server(const char *str_port);
 char *get_uuid(void);
 
 /**
+ * @brief Save the server
+ * @param server The server
+ * @return true if the server was saved, false otherwise
+ */
+bool save(s_server_t *server);
+
+/**
+ * @brief Load the server
+ * @param server The server
+ */
+void load(s_server_t *server);
+
+/**
  * @brief Handle login event
  * @param server The server
  * @param payload The payload
