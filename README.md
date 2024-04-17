@@ -82,7 +82,7 @@ Each packet follows the following structure:
     +-------------+-------------------------+--------------+
 ```
 
-> [!INFO]
+> [!NOTE]
 > The packet type is a single byte that indicates the type ofpacket being sent. The network data is a structure that containsinformation about the sender and receiver of the packet, as well as the timestamp ofthe packet.  
 > The payload contains the actual data being sent, such asmessages, commands, or responses.
 
@@ -140,7 +140,7 @@ The following network data structure is defined in the Protocol:
 
 ## ARCHITECTURE
 
-> [!INFO]
+> [!NOTE]
 > The client application communicates with the server application using the MyTeams protocol. The protocol defines the format of the packets exchanged between the client and server, enabling seamless communication and collaboration between users.
 
 The following diagram illustrates the architecture of the MyTeams protocol:
