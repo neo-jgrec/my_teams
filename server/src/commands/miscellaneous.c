@@ -28,7 +28,7 @@ static void ping_user_message(const s_server_t *server,
         if (strcmp(user->user.uuid, body->receiver_uuid))
             continue;
         memcpy(packet.data, body, sizeof(send_message_t));
-        p_server_send_packet(packet, user->user.socket, server->socket);
+        p_server_send_packet(&packet, user->user.socket, server->socket);
     }
 }
 
@@ -39,7 +39,7 @@ void s_server_event_send_message(s_server_t *server,
     s_private_message_t *message = malloc(sizeof(s_private_message_t));
 
     if (!message)
-        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
+        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_SEND));
     memcpy(&body, payload->packet.data, sizeof(send_message_t));
     strcpy(message->message.sender_uuid, body.sender_uuid);
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
@@ -61,15 +61,15 @@ void s_server_event_subscribe(s_server_t *server,
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
-            return SEND_TYPE(EVT_ERROR_ALREADY, payload->fd, server->socket);
+            return SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, EVT_SUBSCRIBE));
     subscribe = malloc(sizeof(s_subscribe_t));
     if (!subscribe)
-        return SEND_TYPE(EVT_ERROR, payload->fd, server->socket);
+        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_SUBSCRIBE));
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
     memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
-    p_server_send_packet(packet, payload->fd, server->socket);
+    p_server_send_packet(&packet, payload->fd, server->socket);
 }
 
 void s_server_event_unsubscribe(s_server_t *server,
@@ -86,7 +86,7 @@ void s_server_event_unsubscribe(s_server_t *server,
             TAILQ_REMOVE(&server->subscribes, subscribe, entries);
             free(subscribe);
             memcpy(packet.data, &body, sizeof(unsubscribe_t));
-            p_server_send_packet(packet, payload->fd, server->socket);
+            p_server_send_packet(&packet, payload->fd, server->socket);
         }
-    p_server_send_packet_type(EVT_ERROR_ALREADY, payload->fd, server->socket);
+    SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, EVT_UNSUBSCRIBE));
 }

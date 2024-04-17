@@ -12,6 +12,8 @@
     #include "protocol.h"
 
     #define SEND_TYPE (void)p_server_send_packet_type
+    #define COMBINE(x, y) (x << 8) + y
+    #define ERROR_PACKET(x, y) COMBINE(x, y), payload->fd, server->socket
 
 typedef struct s_user_s {
     user_t user;
@@ -96,19 +98,12 @@ typedef struct s_logged_user_s {
 
 typedef struct {
     TAILQ_HEAD(, s_user_s) users;
-
     TAILQ_HEAD(, s_team_s) teams;
-
     TAILQ_HEAD(, s_channel_s) channels;
-
     TAILQ_HEAD(, s_thread_s) threads;
-
     TAILQ_HEAD(, s_reply_s) replies;
-
     TAILQ_HEAD(, s_private_message_s) private_messages;
-
     TAILQ_HEAD(, s_subscribe_s) subscribes;
-
     TAILQ_HEAD(, s_logged_user_s) logged;
 
     p_server_t *socket;

@@ -39,7 +39,7 @@ int main(void)
 
             const p_packet_t packet = {EVT_LOGIN, "Tamere"};
             if (payload->packet.type == EVT_LOGIN)
-                p_server_send_packet(packet, payload->fd, server);
+                p_server_send_packet(&packet, payload->fd, server);
 
             TAILQ_REMOVE(&server->payloads, payload, entries);
             free(payload);
