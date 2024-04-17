@@ -28,10 +28,6 @@ Status of this Memo
     implementing the Protocol, catering to a diverse range of network
     environments and computing platforms.
 
-                                                                        [Page 1]
-
-MyTeams Protocol Specification                                        April 2024
-
 
 2. Protocol Overview
     The MyTeams protocol is a text-based protocol that enables real-time
@@ -45,6 +41,10 @@ MyTeams Protocol Specification                                        April 2024
     creating and managing teams, channels, and users, and retrieving
     information about teams and channels.
 
+                                                                        [Page 1]
+
+MyTeams Protocol Specification                                        April 2024
+
     The Protocol is designed to be platform-independent, allowing it to be
     implemented on a wide range of devices and operating systems. It is
     transport-agnostic, meaning it can be used over any network transport
@@ -54,10 +54,6 @@ MyTeams Protocol Specification                                        April 2024
     and data structures to suit their specific requirements. It is designed to
     be easy to implement and integrate with existing systems, enabling seamless
     communication and collaboration across distributed environments.
-
-                                                                        [Page 2]
-
-MyTeams Protocol Specification                                        April 2024
 
 3. Protocol Specification
 
@@ -89,8 +85,7 @@ MyTeams Protocol Specification                                        April 2024
         struct sockaddr_in server_addr; /**< Server address */
     } p_network_data_t;
 
-
-                                                                        [Page 3]
+                                                                        [Page 2]
 
 MyTeams Protocol Specification                                        April 2024
 
@@ -113,24 +108,28 @@ MyTeams Protocol Specification                                        April 2024
 
 5. Server Behavior
 
-        The server application is responsible for accepting incoming connections
-        from clients, receiving and processing packets, and sending responses to
-        clients. The server application should follow the following steps:
+    The server application is responsible for accepting incoming connections
+    from clients, receiving and processing packets, and sending responses to
+    clients. The server application should follow the following steps:
 
-        1. Create a socket and bind it to a port.
-        2. Listen for incoming connections from clients.
-        3. Accept incoming connections from clients.
-        4. Receive a packet from a client.
-        5. Process the data received from the client.
-        6. Send a response packet to the client.
-        7. Repeat steps 4-6 as needed.
+    1. Create a socket and bind it to a port.
+    2. Listen for incoming connections from clients.
+    3. Accept incoming connections from clients.
+    4. Receive a packet from a client.
+    5. Process the data received from the client.
+    6. Send a response packet to the client.
+    7. Repeat steps 4-6 as needed.
 
-        The server application should handle errors and exceptions gracefully,
-        such as connection failures, packet loss, or client timeouts. It should
-        also implement appropriate error handling and recovery mechanisms to
-        ensure reliable communication with clients.
+    The server application should handle errors and exceptions gracefully,
+    such as connection failures, packet loss, or client timeouts. It should
+    also implement appropriate error handling and recovery mechanisms to
+    ensure reliable communication with clients.
 
-                                                                        [Page 4]
+
+
+
+
+                                                                        [Page 3]
 
 MyTeams Protocol Specification                                        April 2024
 
@@ -144,135 +143,295 @@ MyTeams Protocol Specification                                        April 2024
     The following commands are defined in the Protocol:
 
     /HELP
-        Description:
-            Display help information about available commands.
-        Action:
-            Prints out a list of available commands and their descriptions.
-
-        Syntax:
-            /help
-
-        Return Code:
-            0 - Success
-            1 - Error
-
-        Return Value:
-            None
+    Description:
+        Display help information about available commands.
+    Action:
+        Prints out a list of available commands and their descriptions.
+    Syntax:
+        /help
 
     /LOGIN
         Description:
             Authenticate the user with the server.
         Action:
             Authenticates the user with the server using the specified username.
-
         Syntax:
             /login <username>
 
-        Return Code:
-            0 - Success
-            1 - Error
+    /LOGOUT
+        Description:
+            Disconnect the client from the server.
+        Action:
+            Disconnects the client from the server.
+        Syntax:
+            /logout
 
-        Return Value:
-            user_uuid - The UUID of the authenticated user
-            username - The username of the authenticated user
+    /USERS
+        Description:
+            Get the list of all users that exist on the domain.
+        Action:
+            Retrieves the list of all users on the domain.
+        Syntax:
+            /users
 
+                                                                        [Page 4]
+
+MyTeams Protocol Specification                                        April 2024
+
+    /USER
+        Description:
+            Get details about the requested user.
+        Action:
+            Retrieves details about the specified user.
+        Syntax:
+            /user <user_uuid>
+
+    /SEND
+        Description:
+            Send a message to specific user.
+        Action:
+            Sends a message to the specified user.
+        Syntax:
+            /send <user_uuid> <message_body>
+
+    /MESSAGES
+        Description:
+            List all messages exchanged with the specified user.
+        Action:
+            Lists all messages exchanged with the specified user.
+        Syntax:
+            /messages <user_uuid>
+
+    /SUBSCRIBE
+        Description:
+            Subscribe to the events of a team and its subdirectories.
+        Action:
+            Enables reception of all events from a team.
+        Syntax:
+            /subscribe <team_uuid>
+
+    /SUBSCRIBED
+        Description:
+            List all subscribed teams or list all users subscribed to a team.
+        Action:
+            Lists all subscribed teams or users subscribed to a team.
+        Syntax:
+            /subscribed ?<team_uuid>
 
                                                                         [Page 5]
 
 MyTeams Protocol Specification                                        April 2024
 
-
-    /LOGOUT
+    /UNSUBSCRIBE
         Description:
-            Deauthenticate the user with the server.
+            Unsubscribe from a team.
         Action:
-            Deauthenticates the user with the server.
-
+            Unsubscribes from a team.
         Syntax:
-            /logout
+            /unsubscribe <team_uuid>
 
-        Return Code:
-            0 - Success
-            1 - Error
+    /USE
+        Description:
+            Sets the command context to a team/channel/thread.
+        Action:
+            Sets the command context to a team, channel, or thread.
+        Syntax:
+            /use ?<team_uuid> ?<channel_uuid> ?<thread_uuid>
 
-        Return Value:
-            None
+    /CREATE
+        Description:
+            Create a new resource based on the context.
+        Action:
+            Creates a new team, channel, thread, or reply based on the context.
+        Syntax:
+            - When no context is defined:
+                /create "<team_name>" "<team_description>"
+            - When team_uuid is defined:
+                /create "<channel_name>" "<channel_description>"
+            - When team_uuid and channel_uuid are defined:
+                /create "<thread_title>" "<thread_message>"
+            - When team_uuid, channel_uuid, and thread_uuid are defined:
+                /create "<comment_body>"
+
+    /LIST
+        Description:
+            List all existing resources based on the context.
+        Action:
+            Lists all existing teams, channels, threads, or replies based on
+            the context.
+        Syntax:
+            - When no context is defined:
+                /list
+            - When team_uuid is defined:
+                /list
+            - When team_uuid and channel_uuid are defined:
+                /list
+            - When team_uuid, channel_uuid, and thread_uuid are defined:
+                /list
 
                                                                         [Page 6]
 
 MyTeams Protocol Specification                                        April 2024
 
+    /INFO
+        Description:
+            Display details of the current resource based on the context.
+        Action:
+            Displays details of the currently logged-in user, selected team,
+            channel, or thread based on the context.
+        Syntax:
+            - When no context is defined:
+                /info
+            - When team_uuid is defined:
+                /info
+            - When team_uuid and channel_uuid are defined:
+                /info
+            - When team_uuid, channel_uuid, and thread_uuid are defined:
+                /info
 
-8. Return Codes
 
-8.1 Client
+    Each commands use the protocol to send the command to the server and receive
+    the response from the server. The server will process the command and send
+    the response back to the client. The client will then display the response
+    to the user.
 
-Type    Description
-0x00    The client sends this packet to the server to authenticate itself.
-0x01    The client sends this packet to the server to disconnect from the server.
-0x02    The server sends this packet to the client to update the list of users.
-0x03    The server sends this packet to the client to notify it that a new user
-        has connected.
-0x04    The client sends this packet to the server to send a message to another
-        user. The server sends this packet to the client to notify it that a
-        new message has been received.
-0x05    The server sends this packet to the client to update the list of
-        messages.
-0x06    The client sends this packet to the server to subscribe to the messages
-        of another user.
-0x07    The server sends this packet to the client to notify it that a new user
-        has subscribed to its messages.
-0x08    The server sends this packet to the client to update the list of teams.
-0x09    The client sends this packet to the server to unsubscribe from the
-        messages of another user.
-0x10    The client sends this packet to the server to create a new team.
-0x11    The client sends this packet to the server to create a new channel.
-0x12    The client sends this packet to the server to create a new thread.
-0x13    The client sends this packet to the server to create a new reply.
-0x14    The client sends this packet to the server to list the teams.
-0x15    The client sends this packet to the server to list the channels.
-0x16    The client sends this packet to the server to list the threads.
-0x17    The client sends this packet to the server to list the replies.
-0x18    The client sends this packet to the server to get the information
-        of a user.
-0x19    The client sends this packet to the server to get the information
-        of a team.
-0x20    The client sends this packet to the server to get the information
-        of a channel.
-0x21    The client sends this packet to the server to get the information
-        of a thread.
-0x22    The client sends this packet to the server to check if it is still
-        connected.
+    Using the protocol, the client can send commands to the server and receive
+    through the packet. The packet contains many information like the type of
+    the packet, the network data and the payload. The payload contains the
+    response of the server to the command sent by the client.
+
+    The payload of the packet is a uint8_t array of 4096 bytes, which can be
+    used to send messages, commands, or responses. The payload can be of
+    variable length, depending on the type of data being sent.
+
+    If the data is too long to fit in the payload, the server will split the
+    data into multiple packets and send them to the client. The client will
+    then reassemble the packets to reconstruct the original data.
+
+
+
+
+
 
                                                                         [Page 7]
 
 MyTeams Protocol Specification                                        April 2024
 
 
-8.2 Server
+8. Events
 
-Type    Description
-0x00    The server sends this packet to the client to notify it that an error
-        has occurred.
-0x01    The server sends this packet to the client to notify it that an
-        operation has been successful.
-0x02    The server sends this packet to the client to provide the information
-        of a user.
-0x03    The server sends this packet to the client to provide the information
-        of a team.
-0x04    The server sends this packet to the client to provide the information
-        of a channel.
-0x05    The server sends this packet to the client to provide the information
-        of a thread.
-0x06    The server sends this packet to the client to provide the information
-        of a reply.
-0x07    The server sends this packet to the client to provide the information
-        of a message.
-0x08    The server sends this packet to the client to provide the information
-        of a subscription.
-0x09    The server sends this packet to the client to provide the information
-        of an unsubscription.
+    The following events are defined in the Protocol:
+
+- EVT_LOGIN:                    This event indicates that a user has
+                                successfully logged in to the system.
+- EVT_DISCONNECT:               This event signifies that the user has been
+                                disconnected from the server.
+- EVT_LIST_USERS:               This event is triggered when a request is made
+                                to list all users existing on the domain.
+- EVT_SEND:                     This event occurs when a message is sent to a
+                                specific user.
+- EVT_LIST_MESSAGES:            This event is raised when a request is made to
+                                list all messages exchanged with a specified
+                                user.
+- EVT_SUBSCRIBE:                This event occurs when a user subscribes to
+                                another user's events.
+- EVT_LIST_SUBSCRIBED_IN_TEAM:  This event is triggered when a request is made
+                                to list all users subscribed to events within a
+                                specific team.
+- EVT_LIST_SUBSCRIBED_TEAMS:    This event occurs when a request is made to list
+                                all teams that the user is subscribed to.
+- EVT_UNSUBSCRIBE:              This event happens when a user unsubscribes from
+                                another user's events.
+- EVT_CREATE_TEAM:              This event is raised when a new team is created.
+- EVT_CREATE_CHANNEL:           This event signifies the creation of a new
+                                channel within a team.
+- EVT_CREATE_THREAD:            This event occurs when a new thread is created
+                                within a channel.
+- EVT_CREATE_REPLY:             This event is triggered when a reply is created
+                                within a thread.
+- EVT_LIST_TEAMS:               This event happens when a request is made to
+                                list all existing teams.
+- EVT_LIST_CHANNELS:            This event occurs when a request is made to list
+                                all channels within a team.
+- EVT_LIST_THREADS:             This event is triggered when a request is made
+                                to list all threads within a channel.
+- EVT_LIST_REPLIES:             This event happens when a request is made to
+                                list all replies within a thread.
+- EVT_INFO_USER:                This event is raised when a request is made to
+                                get detailed information about a user.
 
                                                                         [Page 8]
 
 MyTeams Protocol Specification                                        April 2024
+
+- EVT_INFO_TEAM:                This event occurs when a request is made to get
+                                detailed information about a team.
+- EVT_INFO_CHANNEL:             This event is triggered when a request is made
+                                to get detailed information about a channel.
+- EVT_INFO_THREAD:              This event happens when a request is made to get
+                                detailed information about a thread.
+- EVT_PING:                     This event is raised as a ping from the server
+                                to check the client's connection status.
+- EVT_MESSAGE_RECEIVE:          This event indicates the reception of a message.
+- EVT_REPLY_CREATE:             This event signifies the creation of a reply.
+- EVT_TEAM_CREATE:              This event occurs when a team is created.
+- EVT_THREAD_CREATE:            This event is triggered when a thread is created.
+- EVT_CHANNEL_CREATE:           This event happens when a channel is created.
+- EVT_CONTINUE:                 This event is used to continue a process or
+                                operation.
+- EVT_ERROR:                    This event indicates an error condition.
+- EVT_ERROR_UNKNOWN:            This event signifies an unknown error.
+- EVT_ERROR_UNAUTHORIZED:       This event occurs when the user is unauthorized
+                                to perform an action.
+- EVT_ERROR_ALREADY:            This event is raised when a user is already
+                                subscribed.
+
+
+
+
+
+
+
+9. Architecture Diagram
+
+
+    The client application communicates with the server application using the
+    MyTeams protocol. The protocol defines the format of the packets exchanged
+    between the client and server, enabling seamless communication and
+    collaboration between users.
+
+    The following diagram illustrates the architecture of the MyTeams protocol:
+
+
+                                                                        [Page 9]
+
+MyTeams Protocol Specification                                        April 2024
+
+    +-----------------------+      +------------------------+
+    |      Client App       |      |      Server App        |
+    +-----------+-----------+      +-----------+------------+
+                |                              |
+   +------------|---------------+  +-----------|------------+
+   |   Command  |  Transmission |  |  Command  | Processing |
+   |   Handling |  (via MyTeams |  | Execution | & Response |
+   |            |   Protocol)   |  |           | Generation |
+   +------------|---------------+  +-----------|------------+
+                |                              |
+    +-----------|------------------------------|----------+
+    |    +-------------+               +---------------+  |
+    |    |  Librairie  |               |    Librairie  |  |
+    |    |   Protocol  |               |    Protocol   |  |
+    |    +-------------+               +---------------+  |
+    +-----------|------------------------------|----------+
+                |                              |
+        +---------------------------------------------+
+        |                                             |
+        |            Communication endpoint           |
+        |                                             |
+        +---------------------------------------------+
+
+
+                                                                       [Page 10]
+
+MyTeams Protocol Specification                                        April 2024
+
