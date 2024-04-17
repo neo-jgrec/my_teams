@@ -7,8 +7,11 @@
 
 #include "protocol.h"
 
-void payload_to_zero(p_payload_t *payload)
+#include <stdint.h>
+#include <string.h>
+
+void packet_to_zero(p_packet_t *payload)
 {
-    payload->packet_type = INT16_MAX;
+    payload->type = INT16_MAX;
     memset(payload->data, 0, sizeof(payload->data));
 }

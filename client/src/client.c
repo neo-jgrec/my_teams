@@ -9,12 +9,17 @@
 #include "commands.h"
 #include "debug_print.h"
 #include "protocol.h"
+#include "unused.h"
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <signal.h>
 
 static const bool *is_running = (const bool *)1;
 
@@ -71,31 +76,33 @@ static char **get_args_from_input(char *input)
     return args;
 }
 
-static p_payload_t *process_command(char *input, p_client_t *client)
+static void process_command(char *input, p_client_t *client, p_packet_t *p)
 {
     char **args = NULL;
     char *command = NULL;
-    p_payload_t *payload = NULL;
 
     if (!input)
-        return NULL;
+        return;
     args = get_args_from_input(input);
     command = args[0];
     DEBUG_PRINT("Processing command: %s\n", command);
     if (!command)
-        return payload;
+        return;
     for (int i = 0; commands[i].name; i++)
         if (!strcmp(commands[i].name, command))
-            payload = commands[i].func(args, (void *)client);
+            commands[i].func(args, (void *)client, p);
     for (int i = 0; args[i]; i++)
         free(args[i]);
     free(args);
-    return payload;
+    return;
 }
 
 static void start_cli(p_client_t *client, queue_head_t *priority_queue)
 {
-    p_payload_t *payload = calloc(1, sizeof(p_payload_t));
+    p_packet_t packet = {
+        .type = INT16_MAX,
+        .data = {0}
+    };
 
     if (!client) {
         fprintf(stdout, "Failed to connect to server\n");
@@ -103,10 +110,10 @@ static void start_cli(p_client_t *client, queue_head_t *priority_queue)
     }
     while (is_running) {
         signal(SIGINT, handle_sigint);
-        p_client_listen(client, payload);
+        p_client_listen(client, &packet);
         process_priority_queue(priority_queue);
-        payload = process_command(get_client_input(), client);
-        add_to_priority_queue(payload, priority_queue);
+        process_command(get_client_input(), client, &packet);
+        add_to_priority_queue(&packet, priority_queue);
     }
 }
 

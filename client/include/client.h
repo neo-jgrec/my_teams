@@ -10,9 +10,10 @@
 
     #include "protocol.h"
     #include <sys/queue.h>
+    #include <sys/types.h>
 
 typedef struct queue_node {
-    p_payload_t *payload;
+    p_packet_t *packet;
     TAILQ_ENTRY(queue_node) entries;
 } queue_node_t;
 
@@ -34,14 +35,14 @@ int client(int ac, char **av);
  *
  * @param payload
  */
-void client_logger(const p_payload_t *payload);
+void client_logger(const p_packet_t *payload);
 
 /**
  * @brief Set the payload to zero client object
  *
  * @param payload
  */
-void payload_to_zero(p_payload_t *payload);
+void packet_to_zero(p_packet_t *payload);
 
 /**
  * @brief process the priority queue
@@ -54,6 +55,6 @@ void process_priority_queue(queue_head_t *queue);
  *
  * @param payload
  */
-void add_to_priority_queue(p_payload_t *payload, queue_head_t *queue);
+void add_to_priority_queue(p_packet_t *payload, queue_head_t *queue);
 
 #endif /* !CLIENT_H_ */
