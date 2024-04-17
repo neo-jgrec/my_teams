@@ -54,7 +54,7 @@ static const command_t commands[] = {
     {
         "/logout",
         "/logout : disconnect the client from the server",
-        NULL,
+        cmd_logout,
         true
     },
     {

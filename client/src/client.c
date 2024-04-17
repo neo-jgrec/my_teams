@@ -11,6 +11,7 @@
 #include "protocol.h"
 
 #include <stdlib.h>
+#include <sys/queue.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -102,7 +103,7 @@ static char **get_args_from_input(char *input)
     return args;
 }
 
-static void process_command(char *input, p_client_t *client, p_packet_t *p)
+static void process_command(char *input, c_client_t *client, p_packet_t *p)
 {
     char **args = NULL;
     char *command = NULL;
@@ -125,23 +126,23 @@ static void process_command(char *input, p_client_t *client, p_packet_t *p)
     return;
 }
 
-static void start_cli(p_client_t *client, queue_head_t *priority_queue)
+static void start_cli(c_client_t *client)
 {
     p_packet_t packet = {
         .type = INT16_MAX,
         .data = {0}
     };
 
-    if (!client) {
+    if (!client->p_client) {
         fprintf(stdout, "Failed to connect to server\n");
         return;
     }
     while (is_running) {
         signal(SIGINT, handle_sigint);
-        p_client_listen(client, &packet);
-        process_priority_queue(priority_queue);
+        p_client_listen(client->p_client, &packet);
+        process_priority_queue(&client->queue, client);
         process_command(get_client_input(), client, &packet);
-        add_to_priority_queue(&packet, priority_queue);
+        add_to_priority_queue(&packet, &client->queue);
     }
 }
 
@@ -149,17 +150,16 @@ int client(int ac, char **av)
 {
     int isHelpRequested = ac > 1 && (!strcmp(av[1], "--help")
         || !strcmp(av[1], "-h"));
-    p_client_t *client = NULL;
-    queue_head_t priority_queue;
+    c_client_t *client = malloc(sizeof(c_client_t));
 
     if (ac != 3 || isHelpRequested) {
         fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;
     }
-    TAILQ_INIT(&priority_queue);
-    client = p_client_create(av[1], atoi(av[2]));
-    start_cli(client, &priority_queue);
-    if (client)
-        p_client_close(client);
+    TAILQ_INIT(&client->queue);
+    client->p_client = p_client_create(av[1], atoi(av[2]));
+    start_cli(client);
+    if (client->p_client)
+        p_client_close(client->p_client);
     return 0;
 }
