@@ -20,60 +20,25 @@ typedef struct s_user_s {
     TAILQ_ENTRY(s_user_s) entries;
 } s_user_t;
 
-typedef struct {
-    char uuid[UUID_LENGTH];
-    char name[MAX_NAME_LENGTH];
-    char description[MAX_DESCRIPTION_LENGTH];
-} team_t;
-
 typedef struct s_team_s {
     team_t team;
     TAILQ_ENTRY(s_team_s) entries;
 } s_team_t;
-
-typedef struct {
-    char uuid[UUID_LENGTH];
-    char team_uuid[UUID_LENGTH];
-    char name[MAX_NAME_LENGTH];
-    char description[MAX_DESCRIPTION_LENGTH];
-} channel_t;
 
 typedef struct s_channel_s {
     channel_t channel;
     TAILQ_ENTRY(s_channel_s) entries;
 } s_channel_t;
 
-typedef struct {
-    char uuid[UUID_LENGTH];
-    char channel_uuid[UUID_LENGTH];
-    char title[MAX_NAME_LENGTH];
-    char body[MAX_BODY_LENGTH];
-    time_t timestamp;
-} thread_t;
-
 typedef struct s_thread_s {
     thread_t thread;
     TAILQ_ENTRY(s_thread_s) entries;
 } s_thread_t;
 
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-    char thread_uuid[UUID_LENGTH];
-    char body[MAX_BODY_LENGTH];
-    time_t timestamp;
-} reply_t;
-
 typedef struct s_reply_s {
     reply_t reply;
     TAILQ_ENTRY(s_reply_s) entries;
 } s_reply_t;
-
-typedef struct {
-    char sender_uuid[UUID_LENGTH];
-    char receiver_uuid[UUID_LENGTH];
-    char body[MAX_BODY_LENGTH];
-    time_t timestamp;
-} private_message_t;
 
 typedef struct s_private_message_s {
     private_message_t message;
@@ -333,5 +298,13 @@ bool is_in_channels(const s_server_t *server, const char *user_uuid,
  */
 bool is_in_threads(const s_server_t *server, const char *user_uuid,
     const char *thread_uuid);
+
+/**
+ * @brief Check if a user is logged
+ * @param server The server
+ * @param user_uuid The user UUID
+ * @return true if the user is logged, false otherwise
+ */
+bool is_logged(const s_server_t *server, const char *user_uuid);
 
 #endif /* !SERVER_H_ */

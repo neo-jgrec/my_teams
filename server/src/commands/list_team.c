@@ -14,10 +14,10 @@ void s_server_event_list_teams(s_server_t *server,
     const p_payload_t *payload)
 {
     s_team_t *team;
-    list_teams_t body;
+    team_uuid_t body;
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_TEAMS), {0}};
 
-    memcpy(&body, payload->packet.data, sizeof(list_teams_t));
+    memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
     TAILQ_FOREACH(team, &server->teams, entries) {
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
@@ -33,12 +33,12 @@ void s_server_event_list_channels(s_server_t *server,
     const p_payload_t *payload)
 {
     s_channel_t *channel;
-    list_channels_t body;
+    team_uuid_t body;
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_CHANNELS), {0}};
 
-    memcpy(&body, payload->packet.data, sizeof(list_channels_t));
+    memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.team_uuid, body.team_uuid))
+        if (strcmp(channel->channel.team_uuid, body.uuid))
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
@@ -54,12 +54,12 @@ void s_server_event_list_threads(s_server_t *server,
     const p_payload_t *payload)
 {
     s_channel_t *channel;
-    list_threads_t body;
+    team_uuid_t body;
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_THREADS), {0}};
 
-    memcpy(&body, payload->packet.data, sizeof(list_threads_t));
+    memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
     TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.uuid, body.channel_uuid))
+        if (strcmp(channel->channel.uuid, body.uuid))
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
@@ -74,17 +74,17 @@ void s_server_event_list_threads(s_server_t *server,
 void s_server_event_list_replies(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_thread_t *thread;
-    list_replies_t body;
+    s_reply_t *reply;
+    team_uuid_t body;
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_REPLIES), {0}};
 
-    memcpy(&body, payload->packet.data, sizeof(list_replies_t));
-    TAILQ_FOREACH(thread, &server->threads, entries) {
-        if (strcmp(thread->thread.uuid, body.thread_uuid))
+    memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    TAILQ_FOREACH(reply, &server->replies, entries) {
+        if (strcmp(reply->reply.thread_uuid, body.uuid))
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
-        memcpy(packet.data, &thread->thread, sizeof(thread_t));
+        memcpy(packet.data, &reply->reply, sizeof(reply_t));
     }
     if (!packet.data[0])
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_LIST_REPLIES));
