@@ -43,3 +43,13 @@ bool is_in_threads(const s_server_t *server, const char *user_uuid,
                 thread->thread.channel_uuid);
     return false;
 }
+
+bool is_logged(const s_server_t *server, const char *user_uuid)
+{
+    s_logged_user_t *logged;
+
+    TAILQ_FOREACH(logged, &server->logged, entries)
+        if (!strcmp(logged->user.uuid, user_uuid))
+            return true;
+    return false;
+}

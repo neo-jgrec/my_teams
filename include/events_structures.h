@@ -13,11 +13,14 @@
     #define MAX_DESCRIPTION_LENGTH 255
     #define MAX_BODY_LENGTH 512
 
-// No Structure for EVT_INFO_TEAM and EVT_PING
+    #include <stdbool.h>
+    #include <time.h>
+
+// No Struct request for EVT_PING and EVT_LIST_USERS
+// No Struct response for EVT_PING and EVT_SEND
 
 /**
- * @brief Struct for EVT_LIST_USERS
- * and response for EVT_LOGIN and EVT_DISCONNECT
+ * @details Struct response for EVT_LOGIN and EVT_DISCONNECT
  */
 typedef struct {
     char uuid[UUID_LENGTH];
@@ -25,8 +28,38 @@ typedef struct {
 } user_t;
 
 /**
- * @brief Struct body for EVT_SUBSCRIBE
+ * @details Struct request for EVT_LIST_USERS and EVT_INFO_USER
+ */
+typedef struct {
+    char uuid[UUID_LENGTH];
+    char name[MAX_NAME_LENGTH];
+    bool is_logged;
+} user_state_t;
 
+/**
+ * @details Struct response for EVT_CREATE_TEAM, EVT_INFO_TEAM,
+ * EVT_LIST_TEAMS and EVT_TEAM_CREATE
+ */
+typedef struct {
+    char uuid[UUID_LENGTH];
+    char name[MAX_NAME_LENGTH];
+    char description[MAX_DESCRIPTION_LENGTH];
+} team_t;
+
+/**
+ * @details Struct response for EVT_LIST_MESSAGES
+ */
+typedef struct {
+    char sender_uuid[UUID_LENGTH];
+    char receiver_uuid[UUID_LENGTH];
+    char body[MAX_BODY_LENGTH];
+    time_t timestamp;
+} private_message_t;
+
+/**
+ * @details Struct request for EVT_SUBSCRIBE
+ * @details Struct response for EVT_LIST_SUBSCRIBED_IN_TEAM,
+ * EVT_LIST_SUBSCRIBED_TEAMS, EVT_SUBSCRIBE and EVT_UNSUBSCRIBE
  */
 typedef struct {
     char user_uuid[UUID_LENGTH];
@@ -34,21 +67,25 @@ typedef struct {
 } subscribe_t;
 
 /**
- * @brief Struct body for EVT_LOGIN
+ * @details Struct request for EVT_LOGIN
  */
 typedef struct {
     char user_name[MAX_NAME_LENGTH];
 } login_t;
 
 /**
- * @brief Struct for EVT_DISCONNECT
+ * @details Struct request for EVT_DISCONNECT, EVT_LIST_MESSAGES,
+ * EVT_LIST_SUBSCRIBED_IN_TEAM, EVT_LIST_SUBSCRIBED_TEAMS, EVT_LIST_TEAMS,
+ * EVT_LIST_CHANNELS, EVT_LIST_THREADS, EVT_LIST_REPLIES, EVT_INFO_USER,
+ * EVT_INFO_CHANNEL, EVT_INFO_THREAD and EVT_INFO_REPLY
  */
 typedef struct {
-    char user_uuid[UUID_LENGTH];
-} logout_t;
+    char uuid[UUID_LENGTH];
+} team_uuid_t;
 
 /**
- * @brief Struct for EVT_SEND_MESSAGE, EVT_MESSAGE_RECEIVE
+ * @details Struct request for EVT_SEND
+ * @details Struct response for EVT_MESSAGE_RECEIVE
  */
 typedef struct {
     char sender_uuid[UUID_LENGTH];
@@ -57,28 +94,7 @@ typedef struct {
 } send_message_t;
 
 /**
- * @brief Struct for EVT_LIST_MESSAGES
- */
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} list_messages_t;
-
-/**
- * @brief Struct for EVT_LIST_SUBSCRIBED_IN_TEAM
- */
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-} list_subscribed_users_in_team_t;
-
-/**
- * @brief Struct for EVT_LIST_SUBSCRIBED_TEAMS
- */
-typedef struct {
-    char user_uuid[UUID_LENGTH];
-} list_subscribed_teams_t;
-
-/**
- * @brief Struct for EVT_UNSUBSCRIBE
+ * @details Struct request for EVT_UNSUBSCRIBE
  */
 typedef struct {
     char user_uuid[UUID_LENGTH];
@@ -86,7 +102,7 @@ typedef struct {
 } unsubscribe_t;
 
 /**
- * @brief Struct for EVT_CREATE_TEAM, EVT_TEAM_CREATE
+ * @details Struct request for EVT_CREATE_TEAM
  */
 typedef struct {
     char user_uuid[UUID_LENGTH];
@@ -94,7 +110,7 @@ typedef struct {
 } team_create_t;
 
 /**
- * @brief Struct for EVT_CREATE_CHANNEL, EVT_CHANNEL_CREATE
+ * @details Struct request for EVT_CREATE_CHANNEL
  */
 typedef struct {
     char team_uuid[UUID_LENGTH];
@@ -102,7 +118,18 @@ typedef struct {
 } channel_create_t;
 
 /**
- * @brief Struct for EVT_CREATE_THREAD, EVT_THREAD_CREATE
+ * @details Struct response for EVT_CREATE_CHANNEL, EVT_CHANNEL_CREATE,
+ * EVT_INFO_CHANNEL and EVT_LIST_CHANNELS
+ */
+typedef struct {
+    char uuid[UUID_LENGTH];
+    char team_uuid[UUID_LENGTH];
+    char name[MAX_NAME_LENGTH];
+    char description[MAX_DESCRIPTION_LENGTH];
+} channel_t;
+
+/**
+ * @details Struct request for EVT_CREATE_THREAD
  */
 typedef struct {
     char channel_uuid[UUID_LENGTH];
@@ -112,68 +139,45 @@ typedef struct {
 } thread_create_t;
 
 /**
- * @brief Struct for EVT_CREATE_REPLY, EVT_REPLY_CREATE
+ * @details Struct response for EVT_THREAD_CREATE, EVT_CREATE_THREAD and
+ * EVT_INFO_THREAD
  */
 typedef struct {
-    char thread_uui[UUID_LENGTH];
+    char uuid[UUID_LENGTH];
+    char user_uuid[UUID_LENGTH];
+    char channel_uuid[UUID_LENGTH];
+    char title[MAX_NAME_LENGTH];
+    char body[MAX_BODY_LENGTH];
+    time_t timestamp;
+} thread_t;
+
+/**
+ * @details Struct request for EVT_CREATE_REPLY
+ */
+typedef struct {
+    char thread_uuid[UUID_LENGTH];
     char user_uuid[UUID_LENGTH];
     char reply_body[MAX_BODY_LENGTH];
 } reply_create_t;
 
 /**
- * @brief Struct for EVT_LIST_TEAMS
+ * @details Struct response for EVT_LIST_REPLIES and EVT_CREATE_REPLY
  */
 typedef struct {
     char user_uuid[UUID_LENGTH];
-} list_teams_t;
+    char thread_uuid[UUID_LENGTH];
+    char body[MAX_BODY_LENGTH];
+    time_t timestamp;
+} reply_t;
 
 /**
- * @brief Struct for EVT_LIST_CHANNELS
+ * @details Struct request for EVT_REPLY_CREATE
  */
 typedef struct {
     char team_uuid[UUID_LENGTH];
-} list_channels_t;
-
-/**
- * @brief Struct for EVT_LIST_THREADS
- */
-typedef struct {
-    char channel_uuid[UUID_LENGTH];
-} list_threads_t;
-
-/**
- * @brief Struct for EVT_LIST_REPLIES
- */
-typedef struct {
-    char thread_uuid[UUID_LENGTH];
-} list_replies_t;
-
-/**
- * @brief Struct for EVT_INFO_USER
- */
-typedef struct {
     char user_uuid[UUID_LENGTH];
-} user_info_t;
-
-/**
- * @brief Struct for EVT_INFO_CHANNEL
- */
-typedef struct {
-    char team_uuid[UUID_LENGTH];
-} team_info_t;
-
-/**
- * @brief Struct for EVT_INFO_THREAD
- */
-typedef struct {
-    char channel_uuid[UUID_LENGTH];
-} channel_info_t;
-
-/**
- * @brief Struct for EVT_INFO_REPLY
- */
-typedef struct {
     char thread_uuid[UUID_LENGTH];
-} thread_info_t;
+    char reply_body[MAX_BODY_LENGTH];
+} reply_ref_t;
 
 #endif //EVENTS_STRUCTURES_H
