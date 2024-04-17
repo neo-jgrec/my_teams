@@ -12,17 +12,17 @@
 #include "commands.h"
 #include "events.h"
 
-static void s_listen(s_server_t server)
+static void s_listen(s_server_t *server)
 {
-    p_payload_t *payload = p_server_listen(server.socket);
+    p_payload_t *payload = p_server_listen(server->socket);
 
     if (!payload)
         return;
-    for (payload = TAILQ_FIRST(&server.socket->payloads); payload; payload =
-        TAILQ_FIRST(&server.socket->payloads)) {
-        TAILQ_REMOVE(&server.socket->payloads, payload, entries);
+    for (payload = TAILQ_FIRST(&server->socket->payloads); payload; payload =
+        TAILQ_FIRST(&server->socket->payloads)) {
+        TAILQ_REMOVE(&server->socket->payloads, payload, entries);
         if (payload->packet.type < NB_EVT)
-            events[payload->packet.type].callback(&server, payload);
+            events[payload->packet.type].callback(server, payload);
         free(payload);
     }
 }
@@ -56,7 +56,7 @@ void server(const char *str_port)
     }
     init_list(&server);
     while (p_server_is_open())
-        s_listen(server);
+        s_listen(&server);
     p_server_close(server.socket);
     printf("Server closed\n");
 }

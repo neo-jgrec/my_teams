@@ -12,7 +12,13 @@ DIR			:=	src
 SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					client.c										\
+					logger.c										\
 					commands/help.c									\
+					commands/login.c								\
+					commands/logout.c								\
+					queue/add.c										\
+					queue/process.c									\
+					utils/payload_to_zero.c							\
 				)
 
 FU_DIR		:=	tests/func

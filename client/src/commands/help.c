@@ -6,44 +6,31 @@
 */
 
 #include "commands.h"
+#include "protocol.h"
 #include "unused.h"
-#include "asprintf.h"
-#include <stdlib.h>
+
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
+static const char INVALID_COMMAND[] = "Invalid command\n";
 
-static response_t standard_help(char **buffer)
+void cmd_help(char **args, UNUSED void *data, p_packet_t *packet)
 {
-    response_t mem_error = {
-        .status = 500,
-        .message = "Memory allocation error",
-        .data = NULL,
-    };
-
-    for (int i = 0; commands[i].name; i++) {
-        if (asprintf(buffer, "%s%s\n",
-            *buffer ? *buffer : "", commands[i].description) == -1) {
-            return mem_error;
-        }
-    }
-    return (response_t){
-        .status = 200,
-        .message = "Help command executed successfully",
-        .data = *buffer,
-    };
-}
-
-response_t cmd_help(char **args, UNUSED void *data)
-{
-    char *buffer = NULL;
+    uint16_t buffer[4096] = {0};
+    unsigned long pos = 0;
 
     if (!args[0]) {
-        return (response_t){
-            .status = 404,
-            .message = "Help command failed (invalid arguments)",
-            .is_success = 0,
-            .data = NULL,
-        };
+        packet->type = INT16_MAX;
+        memcpy(packet->data, INVALID_COMMAND, sizeof(INVALID_COMMAND));
+        return;
     }
-    return standard_help(&buffer);
+    for (int i = 0; commands[i].name; i++) {
+        pos += snprintf((char *)buffer + pos, sizeof(buffer) - pos,
+            "%s\n", commands[i].name);
+        if (pos >= sizeof(buffer))
+            break;
+    }
+    packet->type = 0;
+    memcpy(packet->data, buffer, sizeof(packet->data));
 }
