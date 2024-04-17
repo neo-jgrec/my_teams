@@ -9,7 +9,6 @@
 #include "commands.h"
 #include "debug_print.h"
 #include "protocol.h"
-#include "unused.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -56,6 +55,33 @@ static char *get_client_input(void)
     return input;
 }
 
+static void free_args(char **args)
+{
+    if (args) {
+        for (int i = 0; args[i]; i++) {
+            free(args[i]);
+        }
+        free(args);
+        args = NULL;
+    }
+}
+
+static bool format_args(char **args)
+{
+    for (int i = 1; args[i]; i++) {
+        if (args[i][0] == '"' && args[i][strlen(args[i]) - 1] == '"') {
+            memmove(args[i], args[i] + 1, strlen(args[i]));
+            args[i][strlen(args[i]) - 1] = '\0';
+        } else {
+            fprintf(stdout, "Invalid argument: %s\n", args[i]);
+            free_args(args);
+            args = NULL;
+            return false;
+        }
+    }
+    return true;
+}
+
 static char **get_args_from_input(char *input)
 {
     int space_count = 0;
@@ -84,16 +110,18 @@ static void process_command(char *input, p_client_t *client, p_packet_t *p)
     if (!input)
         return;
     args = get_args_from_input(input);
+    if (!args || !args[0]) {
+        free_args(args);
+        return;
+    }
+    if (!format_args(args))
+        return;
     command = args[0];
     DEBUG_PRINT("Processing command: %s\n", command);
-    if (!command)
-        return;
     for (int i = 0; commands[i].name; i++)
         if (!strcmp(commands[i].name, command))
             commands[i].func(args, (void *)client, p);
-    for (int i = 0; args[i]; i++)
-        free(args[i]);
-    free(args);
+    free_args(args);
     return;
 }
 
@@ -131,6 +159,7 @@ int client(int ac, char **av)
     TAILQ_INIT(&priority_queue);
     client = p_client_create(av[1], atoi(av[2]));
     start_cli(client, &priority_queue);
-    p_client_close(client);
+    if (client)
+        p_client_close(client);
     return 0;
 }
