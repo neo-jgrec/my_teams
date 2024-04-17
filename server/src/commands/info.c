@@ -21,10 +21,10 @@ void s_server_event_get_user_info(s_server_t *server,
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.user_uuid, user->user.uuid)) {
             memcpy(packet.data, &user->user, sizeof(user_t));
-            p_server_send_packet(packet, payload->fd, server->socket);
+            p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    p_server_send_packet_type(EVT_ERROR_UNKNOWN, payload->fd, server->socket);
+    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_USER));
 }
 
 void s_server_event_get_team_info(s_server_t *server,
@@ -38,10 +38,10 @@ void s_server_event_get_team_info(s_server_t *server,
     TAILQ_FOREACH(team, &server->teams, entries)
         if (!strcmp(body.team_uuid, team->team.uuid)) {
             memcpy(packet.data, &team->team, sizeof(team_t));
-            p_server_send_packet(packet, payload->fd, server->socket);
+            p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    p_server_send_packet_type(EVT_ERROR_UNKNOWN, payload->fd, server->socket);
+    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_TEAM));
 }
 
 void s_server_event_get_channel_info(s_server_t *server,
@@ -55,10 +55,10 @@ void s_server_event_get_channel_info(s_server_t *server,
     TAILQ_FOREACH(channel, &server->channels, entries)
         if (!strcmp(body.channel_uuid, channel->channel.uuid)) {
             memcpy(packet.data, &channel->channel, sizeof(channel_t));
-            p_server_send_packet(packet, payload->fd, server->socket);
+            p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    p_server_send_packet_type(EVT_ERROR_UNKNOWN, payload->fd, server->socket);
+    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_CHANNEL));
 }
 
 void s_server_event_get_thread_info(s_server_t *server,
@@ -72,7 +72,7 @@ void s_server_event_get_thread_info(s_server_t *server,
     TAILQ_FOREACH(thread, &server->threads, entries)
         if (!strcmp(body.thread_uuid, thread->thread.uuid)) {
             memcpy(packet.data, &thread->thread, sizeof(thread_t));
-            p_server_send_packet(packet, payload->fd, server->socket);
+            p_server_send_packet(&packet, payload->fd, server->socket);
         }
-    p_server_send_packet_type(EVT_ERROR_UNKNOWN, payload->fd, server->socket);
+    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_THREAD));
 }

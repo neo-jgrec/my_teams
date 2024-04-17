@@ -41,6 +41,18 @@ static void init_list(s_server_t *server)
     printf("Server loaded\n");
 }
 
+static void close_server(s_server_t *server)
+{
+    s_logged_user_t *logged;
+
+    p_server_close(server->socket);
+    while (!TAILQ_EMPTY(&server->logged)) {
+        logged = TAILQ_FIRST(&server->logged);
+        TAILQ_REMOVE(&server->logged, logged, entries);
+        free(logged);
+    }
+}
+
 void server(const char *str_port)
 {
     const int port = atoi(str_port);
@@ -59,7 +71,7 @@ void server(const char *str_port)
     init_list(&server);
     while (p_server_is_open())
         s_listen(&server);
-    p_server_close(server.socket);
+    close_server(&server);
     save(&server);
     printf("Server closed\n");
 }
