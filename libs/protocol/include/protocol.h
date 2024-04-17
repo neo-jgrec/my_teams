@@ -122,7 +122,7 @@ p_payload_t *p_server_listen(p_server_t *server);
  * @return true on success, false on failure.
  */
 bool p_server_send_packet(
-    p_packet_t packet,
+    const p_packet_t *packet,
     int client_fd,
     p_server_t *server
 );

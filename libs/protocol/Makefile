@@ -65,7 +65,7 @@ RM			:=	rm -rf
 
 CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../../include				\
-				-Wall -Wextra -fPIC
+				-Wall -Wextra -fPIC -g
 LDFLAGS		:=
 CLINKER		:=	ar rc
 
