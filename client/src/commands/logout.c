@@ -32,6 +32,6 @@ void cmd_logout(char **args, void *data, p_packet_t *packet)
         p_client,
         EVT_DISCONNECT,
         &logout,
-        0
+        sizeof(logout)
     );
 }
