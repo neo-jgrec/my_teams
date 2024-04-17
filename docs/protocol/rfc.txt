@@ -391,7 +391,6 @@ MyTeams Protocol Specification                                        April 2024
 
 
 
-
 9. Architecture Diagram
 
 
@@ -431,7 +430,7 @@ MyTeams Protocol Specification                                        April 2024
         +---------------------------------------------+
 
 
-                                                                       [Page 10]
+                                                                        [Page 8]
 
 MyTeams Protocol Specification                                        April 2024
 
