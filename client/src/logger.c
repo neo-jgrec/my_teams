@@ -20,7 +20,6 @@ static void mt_log_client(const p_packet_t *payload, c_client_t *client)
     user_t user = {0};
 
     memcpy(&user, payload->data, sizeof(user_t));
-
     client->user = user;
     client_event_logged_in(user.uuid, user.name);
 }
@@ -30,7 +29,6 @@ static void mt_logout_client(const p_packet_t *payload, c_client_t *client)
     user_t user = {0};
 
     memcpy(&user, payload->data, sizeof(user_t));
-
     client->user = user;
     client_event_logged_out(user.uuid, user.name);
     client->user = (user_t){0};

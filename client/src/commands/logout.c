@@ -26,8 +26,10 @@ void cmd_logout(char **args, void *data, p_packet_t *packet)
         memcpy(packet->data, "Invalid command\n", sizeof("Invalid command\n"));
         return;
     }
-    fprintf(stdout, "Trying to log out user with uuid: %s\n", ((c_client_t *)data)->user.uuid);
-    memcpy(logout.user_uuid, ((c_client_t *)data)->user.uuid, sizeof(logout.user_uuid));
+    fprintf(stdout, "Trying to log out user with uuid: %s\n",
+        ((c_client_t *)data)->user.uuid);
+    memcpy(logout.user_uuid, ((c_client_t *)data)->user.uuid,
+        sizeof(logout.user_uuid));
     p_client_send_packet(
         p_client,
         EVT_DISCONNECT,
