@@ -42,5 +42,11 @@ p_client_t *p_client_create(const char *ip, const int port)
 {
     p_client_t *client = client_socket(ip, port);
 
-    return client && client_connect(client) ? client : NULL;
+    if (!client || !client_connect(client))
+        return NULL;
+    FD_ZERO(&client->master_read_fds);
+    FD_ZERO(&client->master_write_fds);
+    FD_SET(client->network_data.sockfd, &client->master_read_fds);
+    FD_SET(client->network_data.sockfd, &client->master_write_fds);
+    return client;
 }

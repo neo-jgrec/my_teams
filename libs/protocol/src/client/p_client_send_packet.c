@@ -15,6 +15,8 @@ bool p_client_send_packet(const p_client_t *client, const uint16_t type,
 {
     p_packet_t packet = {type, {0}};
 
+    if (FD_ISSET(client->network_data.sockfd, &client->master_write_fds) == 0)
+        return false;
     memcpy(packet.data, data, size);
     return write(client->network_data.sockfd, &packet, sizeof(p_packet_t))
         != -1;

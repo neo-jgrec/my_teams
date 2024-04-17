@@ -37,6 +37,7 @@ static void init_list(s_server_t *server)
     TAILQ_INIT(&server->private_messages);
     TAILQ_INIT(&server->subscribes);
     TAILQ_INIT(&server->logged);
+    load(server);
 }
 
 void server(const char *str_port)
@@ -58,5 +59,6 @@ void server(const char *str_port)
     while (p_server_is_open())
         s_listen(&server);
     p_server_close(server.socket);
+    save(&server);
     printf("Server closed\n");
 }
