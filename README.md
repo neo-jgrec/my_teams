@@ -20,9 +20,9 @@ You MUST push the given logging library and its includes at the root of the repo
 Please note that all arguments of the existing commands should be quoted with double quotes.  
 A missing quote should be interpreted as an error.  
 Please note that all the names, descriptions and message bodies have a pre-defined length which will be as follow:
-- MAX_NAME_LENGTH 32
-- MAX_DESCRIPTION_LENGTH 255
-- MAX_BODY_LENGTH 512
+- `MAX_NAME_LENGTH` 32
+- `MAX_DESCRIPTION_LENGTH` 255
+- `MAX_BODY_LENGTH` 512
 
 You don’t have to spend too much time on the information display.
 You MUST therefore use the functions provided by the logging library (and only these) to display the information given by the server.  
