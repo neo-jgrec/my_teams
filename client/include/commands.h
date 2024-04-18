@@ -60,75 +60,75 @@ static const command_t commands[] = {
     {
         "/users",
         "/users : get the list of all users that exist on the domain",
-        NULL,
+        cmd_users,
         true
     },
     {
         "/user",
         "/user [“user_uuid”] : get details about the requested user",
-        NULL,
+        cmd_user,
         true
     },
     {
         "/send",
         "/send [“user_uuid”] [“message_body”] :"
         " send a message to specific user",
-        NULL,
+        cmd_send,
         true
     },
     {
         "/messages",
         "/messages [“user_uuid”] : list all messages"
         " exchanged with the specified user",
-        NULL,
+        cmd_messages,
         true
     },
     {
         "/subscribe",
         "/subscribe [“team_uuid”] : subscribe to the events of a team and "
         "its sub directories (enable reception of all events from a team)",
-        NULL,
+        cmd_subscribe,
         true
     },
     {
         "/subscribed",
         "/subscribed ?[“team_uuid”] : list all subscribed teams"
         " or list all users subscribed to a team",
-        NULL,
+        cmd_subscribed,
         true
     },
     {
         "/unsubscribe",
         "/unsubscribe [“team_uuid”] : unsubscribe from a team",
-        NULL,
+        cmd_unsubscribe,
         true
     },
     {
         "/use",
         "/use ?[“team_uuid”] ?[“channel_uuid”] ?[“thread_uuid”] : "
         "Sets the command context to a team/channel/thread",
-        NULL,
+        cmd_use,
         true
     },
     {
         "/create",
         "/create : based on the context, create the"
         " sub resource (see /help create)",
-        NULL,
+        cmd_create,
         true
     },
     {
         "/list",
         "/list : based on the context, list all the sub"
         "resources (see /help list)",
-        NULL,
+        cmd_list,
         true
     },
     {
         "/info",
         "/info : based on the context, display details of"
         " the current resource (see /help info)",
-        NULL,
+        cmd_info,
         true
     },
     {

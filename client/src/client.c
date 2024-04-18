@@ -8,6 +8,7 @@
 #include "client.h"
 #include "commands.h"
 #include "debug_print.h"
+#include "logging_client.h"
 #include "protocol.h"
 
 #include <stdlib.h>
@@ -103,6 +104,16 @@ static char **get_args_from_input(char *input)
     return args;
 }
 
+static bool check_login(c_client_t *client)
+{
+    if (!client->user.uuid[0]) {
+        fprintf(stdout, "You need to log in first\n");
+        client_error_unauthorized();
+        return false;
+    }
+    return true;
+}
+
 static void process_command(char *input, c_client_t *client, p_packet_t *p)
 {
     char **args = NULL;
@@ -120,7 +131,8 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
     command = args[0];
     DEBUG_PRINT("Processing command: %s\n", command);
     for (int i = 0; commands[i].name; i++)
-        if (!strcmp(commands[i].name, command) && commands[i].func)
+        if (!strcmp(commands[i].name, command) && commands[i].func
+            && (!commands[i].need_login || check_login(client)))
             commands[i].func(args, (void *)client, p);
     free_args(args);
     return;

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** teams [WSL: Arch]
 ** File description:
-** login
+** messages
 */
 
 #include "client.h"
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void cmd_login(char **args, void *data, UNUSED p_packet_t *packet)
+void cmd_messages(char **args, void *data, UNUSED p_packet_t *packet)
 {
     size_t nb_args = 0;
     p_client_t *p_client = ((c_client_t *)data)->p_client;
@@ -24,10 +24,9 @@ void cmd_login(char **args, void *data, UNUSED p_packet_t *packet)
         fprintf(stdout, "Invalid command\n");
         return;
     }
-    fprintf(stdout, "Trying to log in with username: %s\n", args[1]);
     p_client_send_packet(
         p_client,
-        EVT_LOGIN,
+        EVT_LIST_MESSAGES,
         args[1],
         strlen(args[1])
     );
