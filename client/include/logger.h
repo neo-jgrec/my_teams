@@ -18,6 +18,8 @@
     #include <string.h>
     #include <stdint.h>
 
+    #define UNCOMBINED_EVT(evt, sub_evt) ((evt << 8) + sub_evt)
+
 static inline void mt_log_client(const p_packet_t *payload, c_client_t *client)
 {
     user_t user = {0};
@@ -105,6 +107,19 @@ static inline void mt_thread_created(const p_packet_t *payload,
     );
 }
 
+static inline void mt_user(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    user_state_t user = {0};
+
+    memcpy(&user, payload->data, sizeof(user_state_t));
+    client_print_users(
+        user.uuid,
+        user.name,
+        user.is_logged
+    );
+}
+
 static const struct {
     uint16_t type;
     void (*func)(const p_packet_t *payload, c_client_t *client);
@@ -116,6 +131,8 @@ static const struct {
     {EVT_TEAM_CREATE, mt_team_created},
     {EVT_CHANNEL_CREATE, mt_channel_created},
     {EVT_THREAD_CREATE, mt_thread_created},
+    {EVT_LIST_USERS, mt_user},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_USERS), mt_user},
     {INT16_MAX - 1, NULL}
 };
 

@@ -60,7 +60,7 @@ static const command_t commands[] = {
     {
         "/users",
         "/users : get the list of all users that exist on the domain",
-        NULL,
+        cmd_users,
         true
     },
     {

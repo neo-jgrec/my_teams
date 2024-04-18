@@ -16,6 +16,7 @@ SRC			:=	$(addprefix $(DIR)/,								\
 					commands/help.c									\
 					commands/login.c								\
 					commands/logout.c								\
+					commands/users.c								\
 					commands/use.c									\
 					queue/add.c										\
 					queue/process.c									\
