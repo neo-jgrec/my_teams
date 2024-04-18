@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "debug_print.h"
 #include "server.h"
 #include "events.h"
 
@@ -23,6 +24,7 @@ void s_server_event_list_teams(s_server_t *server,
     TAILQ_FOREACH(team, &server->teams, entries) {
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List team (name): %s\n", team->team.name);
         memcpy(packet.data, &team->team, sizeof(team_t));
     }
     if (!packet.data[0])
@@ -47,6 +49,7 @@ void s_server_event_list_channels(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List channel (name): %s\n", channel->channel.name);
         memcpy(packet.data, &channel->channel, sizeof(channel_t));
     }
     if (!packet.data[0])
@@ -70,6 +73,7 @@ void s_server_event_list_threads(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List thread (title): %s\n", channel->channel.name);
         memcpy(packet.data, &channel->channel, sizeof(channel_t));
     }
     if (!packet.data[0])
@@ -93,6 +97,7 @@ void s_server_event_list_replies(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List reply (body): %s\n", reply->reply.body);
         memcpy(packet.data, &reply->reply, sizeof(reply_t));
     }
     if (!packet.data[0])

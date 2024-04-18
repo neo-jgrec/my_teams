@@ -9,104 +9,126 @@
 #include <stdlib.h>
 
 #include "server.h"
+#include "debug_print.h"
 
-static void load_users(s_server_t *server, FILE *file)
+static bool load_users(s_server_t *server, FILE *file)
 {
-    s_user_t *user = malloc(sizeof(s_user_t));
+    s_user_t *user;
     uint32_t count;
 
-    if (!user)
-        return;
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d users\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&user->user, sizeof(user_t), 1, file))
-            return;
+        user = calloc(1, sizeof(s_user_t));
+        if (!user || !fread(&user->user, sizeof(user_t), 1, file))
+            return false;
         TAILQ_INSERT_TAIL(&server->users, user, entries);
     }
+    return true;
 }
 
-static void load_teams(s_server_t *server, FILE *file)
+static bool load_teams(s_server_t *server, FILE *file)
 {
-    s_team_t team;
+    s_team_t *team;
     uint32_t count;
 
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d teams\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&team, sizeof(s_team_t), 1, file))
-            return;
-        TAILQ_INSERT_TAIL(&server->teams, &team, entries);
+        team = calloc(1, sizeof(s_team_t));
+        if (!team || !fread(&team->team, sizeof(team_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->teams, team, entries);
     }
+    return true;
 }
 
-static void load_channels(s_server_t *server, FILE *file)
+static bool load_channels(s_server_t *server, FILE *file)
 {
-    s_channel_t channel;
+    s_channel_t *channel;
     uint32_t count;
 
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d channels\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&channel, sizeof(s_channel_t), 1, file))
-            return;
-        TAILQ_INSERT_TAIL(&server->channels, &channel, entries);
+        channel = calloc(1, sizeof(s_channel_t));
+        if (!channel || !fread(&channel->channel, sizeof(channel_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->channels, channel, entries);
     }
+    return true;
 }
 
-static void load_threads(s_server_t *server, FILE *file)
+static bool load_threads(s_server_t *server, FILE *file)
 {
-    s_thread_t thread;
+    s_thread_t *thread;
     uint32_t count;
 
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d threads\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&thread, sizeof(s_thread_t), 1, file))
-            return;
-        TAILQ_INSERT_TAIL(&server->threads, &thread, entries);
+        thread = calloc(1, sizeof(s_thread_t));
+        if (!thread || !fread(&thread->thread, sizeof(thread_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->threads, thread, entries);
     }
+    return true;
 }
 
-static void load_replies(s_server_t *server, FILE *file)
+static bool load_replies(s_server_t *server, FILE *file)
 {
-    s_reply_t reply;
+    s_reply_t *reply;
     uint32_t count;
 
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d replies\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&reply, sizeof(s_reply_t), 1, file))
-            return;
-        TAILQ_INSERT_TAIL(&server->replies, &reply, entries);
+        reply = calloc(1, sizeof(s_reply_t));
+        if (!reply || !fread(&reply->reply, sizeof(reply_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->replies, reply, entries);
     }
+    return true;
 }
 
-static void load_private_messages(s_server_t *server, FILE *file)
+static bool load_private_messages(s_server_t *server, FILE *file)
 {
-    s_private_message_t message;
+    s_private_message_t *message;
     uint32_t count;
 
     if (!fread(&count, sizeof(uint32_t), 1, file))
-        return;
+        return false;
+    DEBUG_PRINT("Loading %d private messages\n", count);
     for (uint32_t i = 0; i < count; i++) {
-        if (!fread(&message, sizeof(s_private_message_t), 1, file))
-            return;
-        TAILQ_INSERT_TAIL(&server->private_messages, &message, entries);
+        message = calloc(1, sizeof(s_private_message_t));
+        if (!message || !fread(&message->message,
+            sizeof(private_message_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
     }
+    return true;
 }
 
 void load(s_server_t *server)
 {
-    FILE *file = fopen(".save", "r");
+    FILE *file = fopen(SAVE_FILE, "r");
+    bool ret;
 
     if (!file)
         return;
-    load_users(server, file);
-    load_teams(server, file);
-    load_channels(server, file);
-    load_threads(server, file);
-    load_replies(server, file);
-    load_private_messages(server, file);
+    ret = !load_users(server, file) || !load_teams(server, file) ||
+        !load_channels(server, file) || !load_threads(server, file) ||
+        !load_replies(server, file) || !load_private_messages(server, file);
     fclose(file);
+    if (ret) {
+        remove(SAVE_FILE);
+        clear_server(server);
+        printf("Error loading server\n");
+    } else
+        printf("Server loaded\n");
 }

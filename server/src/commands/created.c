@@ -26,16 +26,14 @@ static void ping_user_team(const s_server_t *server, const team_t *team)
 void s_server_event_team_created(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_team_t *team = malloc(sizeof(s_team_t));
+    s_team_t *team = calloc(1, sizeof(s_team_t));
     team_create_t body;
     p_packet_t packet = {EVT_CREATE_TEAM, {0}};
 
     if (!team)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_TEAM));
-    if (!check_uuid(server, payload->fd, (char **)&team->team.uuid,
-        EVT_CREATE_TEAM))
-        return;
     memcpy(&body, payload->packet.data, sizeof(team_create_t));
+    get_uuid_no_malloc(team->team.uuid);
     strcpy(team->team.name, body.team_name);
     strcpy(team->team.description, body.team_description);
     TAILQ_INSERT_TAIL(&server->teams, team, entries);
@@ -60,17 +58,17 @@ static void ping_user_channel(const s_server_t *server,
 void s_server_event_channel_created(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_channel_t *channel = malloc(sizeof(s_channel_t));
+    s_channel_t *channel = calloc(1, sizeof(s_channel_t));
     channel_create_t body;
     p_packet_t packet = {EVT_CREATE_CHANNEL, {0}};
 
     if (!channel)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_CHANNEL));
     memcpy(&body, payload->packet.data, sizeof(channel_create_t));
-    if (!check_uuid(server, payload->fd, (char **)&channel->channel.uuid,
-        EVT_CREATE_CHANNEL) || !check_team_exist(server, payload->fd,
-        body.team_uuid, EVT_CREATE_CHANNEL))
+    if (!check_team_exist(server, payload->fd, body.team_uuid,
+        EVT_CREATE_CHANNEL))
         return;
+    get_uuid_no_malloc(channel->channel.uuid);
     strcpy(channel->channel.name, body.channel_name);
     strcpy(channel->channel.team_uuid, body.team_uuid);
     strcpy(channel->channel.description, body.channel_description);
@@ -95,9 +93,9 @@ static void ping_user_thread(const s_server_t *server,
 }
 
 static void set_thread(s_server_t *server, s_thread_t *thread,
-    const thread_create_t *body, const char *thread_uuid)
+    const thread_create_t *body)
 {
-    strcpy(thread->thread.uuid, thread_uuid);
+    get_uuid_no_malloc(thread->thread.uuid);
     strcpy(thread->thread.user_uuid, body->user_uuid);
     strcpy(thread->thread.channel_uuid, body->channel_uuid);
     strcpy(thread->thread.title, body->thread_title);
@@ -110,22 +108,20 @@ static void set_thread(s_server_t *server, s_thread_t *thread,
 void s_server_event_thread_created(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_thread_t *thread = malloc(sizeof(s_thread_t));
+    s_thread_t *thread = calloc(1, sizeof(s_thread_t));
     thread_create_t body;
-    char *thread_uuid;
     p_packet_t packet = {EVT_CREATE_THREAD, {0}};
 
     if (!thread)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
     memcpy(&body, payload->packet.data, sizeof(thread_create_t));
-    if (!check_uuid(server, payload->fd, &thread_uuid, EVT_CREATE_THREAD)
-        || !check_channel_exist(server, payload->fd, body.channel_uuid,
+    if (!check_channel_exist(server, payload->fd, body.channel_uuid,
         EVT_CREATE_THREAD) || !check_team_exist(server, payload->fd,
         body.channel_uuid, EVT_CREATE_THREAD))
         return;
-    set_thread(server, thread, &body, thread_uuid);
-    server_event_thread_created(body.channel_uuid, thread_uuid, body.user_uuid,
-        body.thread_title, body.thread_body);
+    set_thread(server, thread, &body);
+    server_event_thread_created(body.channel_uuid, thread->thread.uuid,
+        body.user_uuid, body.thread_title, body.thread_body);
     memcpy(packet.data, &thread->thread, sizeof(thread_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
@@ -164,7 +160,7 @@ static void set_reply(s_reply_t *reply, const reply_create_t *body)
 void s_server_event_reply_created(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_reply_t *reply = malloc(sizeof(s_reply_t));
+    s_reply_t *reply = calloc(1, sizeof(s_reply_t));
     reply_create_t body;
     p_packet_t packet = {EVT_CREATE_REPLY, {0}};
 
@@ -178,7 +174,8 @@ void s_server_event_reply_created(s_server_t *server,
         return;
     TAILQ_INSERT_TAIL(&server->replies, reply, entries);
     ping_user_reply(server, &body);
-    server_event_reply_created(body.thread_uuid, body.user_uuid, body.reply_body);
+    server_event_reply_created(body.thread_uuid, body.user_uuid,
+        body.reply_body);
     memcpy(packet.data, &reply->reply, sizeof(reply_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
