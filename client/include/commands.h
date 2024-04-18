@@ -121,7 +121,7 @@ static const command_t commands[] = {
         "/list",
         "/list : based on the context, list all the sub"
         "resources (see /help list)",
-        NULL,
+        cmd_list,
         true
     },
     {

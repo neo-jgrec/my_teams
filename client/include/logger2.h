@@ -40,4 +40,46 @@ static inline void mt_unsubscribe(const p_packet_t *payload,
     );
 }
 
+static inline void mt_channel(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    channel_t channel = {0};
+
+    memcpy(&channel, payload->data, sizeof(channel_t));
+    client_print_channel_created(
+        channel.uuid,
+        channel.name,
+        channel.description
+    );
+}
+
+static inline void mt_thread(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    thread_t thread = {0};
+
+    memcpy(&thread, payload->data, sizeof(thread_t));
+    client_print_thread_created(
+        thread.uuid,
+        thread.user_uuid,
+        thread.timestamp,
+        thread.title,
+        thread.body
+    );
+}
+
+static inline void mt_reply(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    reply_t reply = {0};
+
+    memcpy(&reply, payload->data, sizeof(reply_t));
+    client_print_reply_created(
+        reply.thread_uuid,
+        reply.user_uuid,
+        reply.timestamp,
+        reply.body
+    );
+}
+
 #endif /* !LOGGER2_H_ */

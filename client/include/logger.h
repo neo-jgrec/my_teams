@@ -167,6 +167,14 @@ static const struct {
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_SUBSCRIBED_TEAMS), mt_team},
     {EVT_SUBSCRIBE, mt_subscribe},
     {EVT_UNSUBSCRIBE, mt_unsubscribe},
+    {EVT_LIST_TEAMS, mt_team},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_TEAMS), mt_team},
+    {EVT_LIST_CHANNELS, mt_channel},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_CHANNELS), mt_channel},
+    {EVT_LIST_THREADS, mt_thread},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_THREADS), mt_thread},
+    {EVT_LIST_REPLIES, mt_reply},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_REPLIES), mt_reply},
     {INT16_MAX - 1, NULL}
 };
 
