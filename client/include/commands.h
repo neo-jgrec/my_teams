@@ -128,7 +128,7 @@ static const command_t commands[] = {
         "/info",
         "/info : based on the context, display details of"
         " the current resource (see /help info)",
-        NULL,
+        cmd_info,
         true
     },
     {

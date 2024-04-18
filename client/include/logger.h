@@ -175,6 +175,9 @@ static const struct {
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_THREADS), mt_thread},
     {EVT_LIST_REPLIES, mt_reply},
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_REPLIES), mt_reply},
+    {EVT_INFO_TEAM, mt_team},
+    {EVT_INFO_CHANNEL, mt_channel},
+    {EVT_INFO_THREAD, mt_thread},
     {INT16_MAX - 1, NULL}
 };
 
