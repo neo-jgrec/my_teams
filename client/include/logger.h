@@ -146,6 +146,18 @@ static inline void mt_private_message(const p_packet_t *payload,
     );
 }
 
+static inline void mt_subscribe(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    subscribe_t subscribe = {0};
+
+    memcpy(&subscribe, payload->data, sizeof(subscribe_t));
+    client_print_subscribed(
+        subscribe.user_uuid,
+        subscribe.team_uuid
+    );
+}
+
 static const struct {
     uint16_t type;
     void (*func)(const p_packet_t *payload, c_client_t *client);

@@ -87,7 +87,7 @@ static const command_t commands[] = {
         "/subscribe",
         "/subscribe [“team_uuid”] : subscribe to the events of a team and "
         "its sub directories (enable reception of all events from a team)",
-        NULL,
+        cmd_subscribe,
         true
     },
     {
