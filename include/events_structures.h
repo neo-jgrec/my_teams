@@ -107,6 +107,7 @@ typedef struct {
 typedef struct {
     char user_uuid[UUID_LENGTH];
     char team_name[MAX_NAME_LENGTH];
+    char team_description[MAX_DESCRIPTION_LENGTH];
 } team_create_t;
 
 /**
@@ -115,6 +116,7 @@ typedef struct {
 typedef struct {
     char team_uuid[UUID_LENGTH];
     char channel_name[MAX_NAME_LENGTH];
+    char channel_description[MAX_DESCRIPTION_LENGTH];
 } channel_create_t;
 
 /**

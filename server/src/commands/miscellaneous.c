@@ -64,7 +64,7 @@ void s_server_event_subscribe(s_server_t *server,
             return SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, packet.type));
     subscribe = malloc(sizeof(s_subscribe_t));
     if (!subscribe)
-        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
+        return SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, packet.type));
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
