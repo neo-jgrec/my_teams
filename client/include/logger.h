@@ -144,6 +144,7 @@ static const struct {
     {EVT_TEAM_CREATE, mt_team_created},
     {EVT_CHANNEL_CREATE, mt_channel_created},
     {EVT_THREAD_CREATE, mt_thread_created},
+    {EVT_INFO_USER, mt_user},
     {EVT_LIST_USERS, mt_user},
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_USERS), mt_user},
     {EVT_LIST_SUBSCRIBED_IN_TEAM, mt_user},

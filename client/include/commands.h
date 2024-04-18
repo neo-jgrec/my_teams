@@ -66,7 +66,7 @@ static const command_t commands[] = {
     {
         "/user",
         "/user [“user_uuid”] : get details about the requested user",
-        NULL,
+        cmd_user,
         true
     },
     {
