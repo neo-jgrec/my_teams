@@ -65,4 +65,3 @@ void cmd_info(UNUSED char **args, void *data, UNUSED p_packet_t *packet)
             UUID_LENGTH
         );
 }
-

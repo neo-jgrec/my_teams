@@ -8,6 +8,8 @@
 #include "client.h"
 #include "commands.h"
 #include "debug_print.h"
+#include "events.h"
+#include "events_structures.h"
 #include "logging_client.h"
 #include "protocol.h"
 
@@ -138,6 +140,24 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
     return;
 }
 
+static void wait_for_logout(c_client_t *client)
+{
+    p_packet_t packet = {
+        .type = INT16_MAX,
+        .data = {0}
+    };
+
+    p_client_send_packet(
+        client->p_client,
+        EVT_DISCONNECT,
+        client->user.uuid,
+        UUID_LENGTH
+    );
+    while (!p_client_listen(client->p_client, &packet)
+        && packet.type != EVT_DISCONNECT)
+        client_logger(&packet, client);
+}
+
 static void start_cli(c_client_t *client)
 {
     p_packet_t packet = {
@@ -156,6 +176,7 @@ static void start_cli(c_client_t *client)
         process_command(get_client_input(), client, &packet);
         add_to_priority_queue(&packet, &client->queue);
     }
+    wait_for_logout(client);
 }
 
 int client(int ac, char **av)
