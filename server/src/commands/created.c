@@ -28,19 +28,19 @@ void s_server_event_team_created(s_server_t *server,
 {
     s_team_t *team = malloc(sizeof(s_team_t));
     team_create_t body;
-    char *team_uuid;
     p_packet_t packet = {EVT_CREATE_TEAM, {0}};
 
     if (!team)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_TEAM));
-    if (!check_uuid(server, payload->fd, &team_uuid, EVT_CREATE_TEAM))
+    if (!check_uuid(server, payload->fd, (char **)&team->team.uuid,
+        EVT_CREATE_TEAM))
         return;
     memcpy(&body, payload->packet.data, sizeof(team_create_t));
-    strcpy(team->team.uuid, team_uuid);
     strcpy(team->team.name, body.team_name);
+    strcpy(team->team.description, body.team_description);
     TAILQ_INSERT_TAIL(&server->teams, team, entries);
     ping_user_team(server, &team->team);
-    server_event_team_created(team_uuid, body.team_name, body.user_uuid);
+    server_event_team_created(team->team.uuid, body.team_name, body.user_uuid);
     memcpy(packet.data, &team->team, sizeof(team_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
@@ -62,21 +62,22 @@ void s_server_event_channel_created(s_server_t *server,
 {
     s_channel_t *channel = malloc(sizeof(s_channel_t));
     channel_create_t body;
-    char *chan_uuid;
     p_packet_t packet = {EVT_CREATE_CHANNEL, {0}};
 
     if (!channel)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_CHANNEL));
     memcpy(&body, payload->packet.data, sizeof(channel_create_t));
-    if (!check_uuid(server, payload->fd, &chan_uuid, EVT_CREATE_CHANNEL)
-        || !check_team_exist(server, payload->fd, body.team_uuid,
-        EVT_CREATE_CHANNEL))
+    if (!check_uuid(server, payload->fd, (char **)&channel->channel.uuid,
+        EVT_CREATE_CHANNEL) || !check_team_exist(server, payload->fd,
+        body.team_uuid, EVT_CREATE_CHANNEL))
         return;
-    strcpy(channel->channel.uuid, chan_uuid);
     strcpy(channel->channel.name, body.channel_name);
+    strcpy(channel->channel.team_uuid, body.team_uuid);
+    strcpy(channel->channel.description, body.channel_description);
     TAILQ_INSERT_TAIL(&server->channels, channel, entries);
     ping_user_channel(server, &channel->channel);
-    server_event_channel_created(body.team_uuid, chan_uuid, body.channel_name);
+    server_event_channel_created(body.team_uuid,
+        channel->channel.uuid, body.channel_name);
     memcpy(packet.data, &channel->channel, sizeof(channel_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
@@ -87,14 +88,14 @@ static void ping_user_thread(const s_server_t *server,
     s_logged_user_t *user;
     p_packet_t packet = {EVT_THREAD_CREATE, {0}};
 
-    memcpy(packet.data, thread, sizeof(thread_create_t));
+    memcpy(packet.data, thread, sizeof(thread_t));
     TAILQ_FOREACH(user, &server->logged, entries)
         if (is_in_channels(server, user->user.uuid, thread->channel_uuid))
             p_server_send_packet(&packet, user->user.socket, server->socket);
 }
 
-static void set_thread(s_server_t *server,s_thread_t *thread, const thread_create_t *body,
-    const char *thread_uuid)
+static void set_thread(s_server_t *server, s_thread_t *thread,
+    const thread_create_t *body, const char *thread_uuid)
 {
     strcpy(thread->thread.uuid, thread_uuid);
     strcpy(thread->thread.user_uuid, body->user_uuid);
@@ -102,7 +103,6 @@ static void set_thread(s_server_t *server,s_thread_t *thread, const thread_creat
     strcpy(thread->thread.title, body->thread_title);
     strcpy(thread->thread.body, body->thread_body);
     time(&thread->thread.timestamp);
-
     TAILQ_INSERT_TAIL(&server->threads, thread, entries);
     ping_user_thread(server, &thread->thread);
 }

@@ -20,7 +20,9 @@ void s_server_event_list_users(s_server_t *server,
     TAILQ_FOREACH(user, &server->users, entries) {
         if (!TAILQ_NEXT(user, entries))
             break;
-        memcpy(packet.data, &user->user, sizeof(user_t));
+        memcpy(response.uuid, user->user.uuid, UUID_LENGTH);
+        memcpy(response.name, user->user.name, MAX_NAME_LENGTH);
+        response.is_logged = is_logged(server, user->user.uuid);
         p_server_send_packet(&packet, payload->fd, server->socket);
     }
     if (!user)
