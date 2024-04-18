@@ -24,6 +24,7 @@ SRC			:=	$(addprefix $(DIR)/,								\
 					commands/messages.c								\
 					commands/subscribe.c							\
 					commands/unsubscribe.c							\
+					commands/create.c								\
 					queue/add.c										\
 					queue/process.c									\
 					utils/payload_to_zero.c							\
