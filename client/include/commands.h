@@ -114,7 +114,7 @@ static const command_t commands[] = {
         "/create",
         "/create : based on the context, create the"
         " sub resource (see /help create)",
-        NULL,
+        cmd_create,
         true
     },
     {

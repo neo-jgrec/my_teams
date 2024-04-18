@@ -14,6 +14,7 @@
     #include "events.h"
     #include "events_structures.h"
     #include "unused.h"
+    #include "logger2.h"
 
     #include <string.h>
     #include <stdint.h>
@@ -143,30 +144,6 @@ static inline void mt_private_message(const p_packet_t *payload,
         message.sender_uuid,
         message.timestamp,
         message.body
-    );
-}
-
-static inline void mt_subscribe(const p_packet_t *payload,
-    UNUSED c_client_t *client)
-{
-    subscribe_t subscribe = {0};
-
-    memcpy(&subscribe, payload->data, sizeof(subscribe_t));
-    client_print_subscribed(
-        subscribe.user_uuid,
-        subscribe.team_uuid
-    );
-}
-
-static inline void mt_unsubscribe(const p_packet_t *payload,
-    UNUSED c_client_t *client)
-{
-    subscribe_t subscribe = {0};
-
-    memcpy(&subscribe, payload->data, sizeof(subscribe_t));
-    client_print_unsubscribed(
-        subscribe.user_uuid,
-        subscribe.team_uuid
     );
 }
 
