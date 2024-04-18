@@ -23,7 +23,7 @@ typedef struct queue_node {
 TAILQ_HEAD(queue_head, queue_node);
 typedef struct queue_head queue_head_t;
 
-typedef struct{
+typedef struct {
     char team_uuid[UUID_LENGTH];
     char channel_uuid[UUID_LENGTH];
     char thread_uuid[UUID_LENGTH];
