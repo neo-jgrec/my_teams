@@ -10,11 +10,12 @@
 #include "events.h"
 #include "events_structures.h"
 #include "protocol.h"
+#include "unused.h"
 
 #include <stdio.h>
 #include <string.h>
 
-void cmd_logout(char **args, void *data, p_packet_t *packet)
+void cmd_logout(char **args, void *data, UNUSED p_packet_t *packet)
 {
     size_t nb_args = 0;
     p_client_t *p_client = ((c_client_t *)data)->p_client;
@@ -22,9 +23,7 @@ void cmd_logout(char **args, void *data, p_packet_t *packet)
 
     for (; args[nb_args]; nb_args++);
     if (nb_args != 1) {
-        packet->type = EVT_ERROR;
-        memcpy(packet->data, "Invalid command\n", sizeof("Invalid command\n"));
-        return;
+        fprintf(stdout, "Invalid command\n");
     }
     fprintf(stdout, "Trying to log out user with uuid: %s\n",
         ((c_client_t *)data)->user.uuid);

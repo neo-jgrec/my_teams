@@ -6,7 +6,6 @@
 */
 
 #include "logger.h"
-#include <stdio.h>
 
 void client_logger(const p_packet_t *payload, c_client_t *client)
 {
@@ -16,5 +15,4 @@ void client_logger(const p_packet_t *payload, c_client_t *client)
             return;
         }
     }
-    printf("%s\n", payload->data);
 }
