@@ -161,6 +161,8 @@ static const struct {
     {EVT_INFO_USER, mt_user},
     {EVT_LIST_USERS, mt_user},
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_USERS), mt_user},
+    {EVT_LIST_MESSAGES, mt_private_message},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_MESSAGES), mt_private_message},
     {EVT_LIST_SUBSCRIBED_IN_TEAM, mt_user},
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_SUBSCRIBED_IN_TEAM), mt_user},
     {EVT_LIST_SUBSCRIBED_TEAMS, mt_team},
