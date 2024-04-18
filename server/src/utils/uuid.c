@@ -22,3 +22,13 @@ char *get_uuid(void)
     uuid[UUID_LENGTH - 1] = '\0';
     return uuid;
 }
+
+char *get_uuid_no_malloc(char *uuid)
+{
+    uuid_t id;
+
+    uuid_generate(id);
+    uuid_unparse(id, uuid);
+    uuid[UUID_LENGTH - 1] = '\0';
+    return uuid;
+}

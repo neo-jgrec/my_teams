@@ -38,7 +38,6 @@ static void init_list(s_server_t *server)
     TAILQ_INIT(&server->subscribes);
     TAILQ_INIT(&server->logged);
     load(server);
-    printf("Server loaded\n");
 }
 
 static void close_server(s_server_t *server)

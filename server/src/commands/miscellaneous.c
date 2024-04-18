@@ -36,7 +36,7 @@ void s_server_event_send_message(s_server_t *server,
     const p_payload_t *payload)
 {
     send_message_t body;
-    s_private_message_t *message = malloc(sizeof(s_private_message_t));
+    s_private_message_t *message = calloc(1, sizeof(s_private_message_t));
 
     if (!message)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_SEND));
@@ -62,7 +62,7 @@ void s_server_event_subscribe(s_server_t *server,
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
             return SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, packet.type));
-    subscribe = malloc(sizeof(s_subscribe_t));
+    subscribe = calloc(1, sizeof(s_subscribe_t));
     if (!subscribe)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, packet.type));
     strcpy(subscribe->subscribe.user_uuid, body.user_uuid);

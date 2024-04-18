@@ -124,7 +124,7 @@ static void save_subscribes(s_server_t *server, FILE *file)
 
 bool save(s_server_t *server)
 {
-    FILE *file = fopen(".save", "w");
+    FILE *file = fopen(SAVE_FILE, "w");
 
     if (!file)
         return false;
