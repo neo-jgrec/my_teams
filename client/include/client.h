@@ -13,6 +13,7 @@
 
     #include <sys/queue.h>
     #include <sys/types.h>
+    #include <uuid/uuid.h>
 
 typedef struct queue_node {
     p_packet_t *packet;
@@ -22,10 +23,17 @@ typedef struct queue_node {
 TAILQ_HEAD(queue_head, queue_node);
 typedef struct queue_head queue_head_t;
 
+typedef struct{
+    char team_uuid[UUID_LENGTH];
+    char channel_uuid[UUID_LENGTH];
+    char thread_uuid[UUID_LENGTH];
+} context_t;
+
 typedef struct {
     p_client_t *p_client;
     queue_head_t queue;
     user_t user;
+    context_t context;
 } c_client_t;
 
 /**

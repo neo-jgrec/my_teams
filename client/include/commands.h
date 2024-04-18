@@ -107,7 +107,7 @@ static const command_t commands[] = {
         "/use",
         "/use ?[“team_uuid”] ?[“channel_uuid”] ?[“thread_uuid”] : "
         "Sets the command context to a team/channel/thread",
-        NULL,
+        cmd_use,
         true
     },
     {
