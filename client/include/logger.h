@@ -133,6 +133,19 @@ static inline void mt_team(const p_packet_t *payload,
     );
 }
 
+static inline void mt_private_message(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    private_message_t message = {0};
+
+    memcpy(&message, payload->data, sizeof(private_message_t));
+    client_private_message_print_messages(
+        message.sender_uuid,
+        message.timestamp,
+        message.body
+    );
+}
+
 static const struct {
     uint16_t type;
     void (*func)(const p_packet_t *payload, c_client_t *client);

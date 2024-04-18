@@ -80,7 +80,7 @@ static const command_t commands[] = {
         "/messages",
         "/messages [“user_uuid”] : list all messages"
         " exchanged with the specified user",
-        NULL,
+        cmd_messages,
         true
     },
     {
