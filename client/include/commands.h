@@ -73,7 +73,7 @@ static const command_t commands[] = {
         "/send",
         "/send [“user_uuid”] [“message_body”] :"
         " send a message to specific user",
-        NULL,
+        cmd_send,
         true
     },
     {
