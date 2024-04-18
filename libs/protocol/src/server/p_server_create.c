@@ -21,8 +21,10 @@ static bool p_server_open_state(const bool new_state, const bool set)
 
 static void p_server_stop(const int sig)
 {
-    if (sig == SIGINT)
+    if (sig == SIGINT) {
+        write(1, "\r", 1);
         p_server_open_state(false, true);
+    }
 }
 
 bool p_server_is_open(void)

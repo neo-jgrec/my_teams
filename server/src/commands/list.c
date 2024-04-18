@@ -7,8 +7,17 @@
 
 #include <string.h>
 
+#include "debug_print.h"
 #include "server.h"
 #include "events.h"
+
+static void set_user_state(const s_server_t *server, user_state_t *response,
+    const s_user_t *user)
+{
+    memcpy(response->uuid, user->user.uuid, UUID_LENGTH);
+    memcpy(response->name, user->user.name, MAX_NAME_LENGTH);
+    response->is_logged = is_logged(server, user->user.uuid);
+}
 
 void s_server_event_list_users(s_server_t *server,
     const p_payload_t *payload)
@@ -20,18 +29,17 @@ void s_server_event_list_users(s_server_t *server,
     TAILQ_FOREACH(user, &server->users, entries) {
         if (!TAILQ_NEXT(user, entries))
             break;
-        memcpy(response.uuid, user->user.uuid, UUID_LENGTH);
-        memcpy(response.name, user->user.name, MAX_NAME_LENGTH);
-        response.is_logged = is_logged(server, user->user.uuid);
+        set_user_state(server, &response, user);
+        memcpy(packet.data, &response, sizeof(user_state_t));
+        DEBUG_PRINT("List user (name): %s\n", user->user.name);
         p_server_send_packet(&packet, payload->fd, server->socket);
     }
     if (!user)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_LIST_USERS));
     packet.type = EVT_LIST_USERS;
-    memcpy(response.uuid, user->user.uuid, UUID_LENGTH);
-    memcpy(response.name, user->user.name, MAX_NAME_LENGTH);
-    response.is_logged = is_logged(server, user->user.uuid);
+    set_user_state(server, &response, user);
     memcpy(packet.data, &response, sizeof(user_state_t));
+    DEBUG_PRINT("List user (name): %s\n", user->user.name);
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
 
@@ -49,6 +57,7 @@ void s_server_event_list_messages(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List message (body): %s\n", message->message.body);
         memcpy(packet.data, &message->message, sizeof(private_message_t));
     }
     if (!packet.data[0])
@@ -71,6 +80,8 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List subscribe (user): %s\n",
+            subscribe->subscribe.user_uuid);
         memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
     }
     if (!packet.data[0])
@@ -93,6 +104,7 @@ void s_server_event_list_subscribed_teams(s_server_t *server,
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
+        DEBUG_PRINT("List team (uuid): %s\n", subscribe->subscribe.team_uuid);
         memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
     }
     if (!packet.data[0])

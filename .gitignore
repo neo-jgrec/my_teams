@@ -61,4 +61,7 @@ report
 .idea
 build
 compile_commands.json
-.save
+
+# Miscellaneous
+.save.out
+vgcore.*

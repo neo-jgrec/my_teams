@@ -12,39 +12,35 @@
 #include "server.h"
 #include "events.h"
 
-static void add_logged_user(s_server_t *server, const p_payload_t *payload,
+static bool add_logged_user(s_server_t *server, const p_payload_t *payload,
     s_user_t *user)
 {
-    s_logged_user_t *logged = malloc(sizeof(s_logged_user_t));
+    s_logged_user_t *logged = calloc(1, sizeof(s_logged_user_t));
 
     if (!logged) {
         free(user);
-        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_LOGIN));
+        return false;
     }
     logged->user.socket = payload->fd;
     strcpy(logged->user.uuid, user->user.uuid);
     strcpy(logged->user.name, user->user.name);
     TAILQ_INSERT_TAIL(&server->logged, logged, entries);
+    return true;
 }
 
 static void new_user(s_server_t *server, const p_payload_t *payload,
     const login_t *body, p_packet_t *packet)
 {
-    s_user_t *user = malloc(sizeof(s_user_t));
-    const char *user_uuid;
+    s_user_t *user = calloc(1, sizeof(s_user_t));
 
     if (!user)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet->type));
-    user_uuid = get_uuid();
-    if (!user_uuid) {
-        free(user);
-        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet->type));
-    }
-    strcpy(user->user.uuid, user_uuid);
+    get_uuid_no_malloc(user->user.uuid);
     strcpy(user->user.name, body->user_name);
+    if (!add_logged_user(server, payload, user))
+        return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet->type));
     TAILQ_INSERT_TAIL(&server->users, user, entries);
-    add_logged_user(server, payload, user);
-    server_event_user_logged_in(user_uuid);
+    server_event_user_logged_in(user->user.uuid);
     memcpy(packet->data, &user->user, sizeof(user_t));
     p_server_send_packet(packet, payload->fd, server->socket);
 }

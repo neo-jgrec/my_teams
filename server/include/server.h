@@ -15,6 +15,8 @@
     #define COMBINE(x, y) (x << 8) + y
     #define ERROR_PACKET(x, y) COMBINE(x, y), payload->fd, server->socket
 
+    #define SAVE_FILE ".save.out"
+
 typedef struct s_user_s {
     user_t user;
     TAILQ_ENTRY(s_user_s) entries;
@@ -87,6 +89,13 @@ void server(const char *str_port);
 char *get_uuid(void);
 
 /**
+ * @brief Get a UUID (version 4) without malloc
+ * @param uuid The UUID
+ * @return The UUID
+ */
+char *get_uuid_no_malloc(char *uuid);
+
+/**
  * @brief Save the server
  * @param server The server
  * @return true if the server was saved, false otherwise
@@ -98,6 +107,12 @@ bool save(s_server_t *server);
  * @param server The server
  */
 void load(s_server_t *server);
+
+/**
+ * @brief Clear the server
+ * @param server The server
+ */
+void clear_server(s_server_t *server);
 
 /**
  * @brief Handle login event
