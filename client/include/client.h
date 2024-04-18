@@ -73,4 +73,11 @@ void process_priority_queue(queue_head_t *queue, c_client_t *client);
  */
 void add_to_priority_queue(p_packet_t *payload, queue_head_t *queue);
 
+/**
+ * @brief process client input as arguments
+ *
+ * @return char**
+ */
+char **get_args_from_input(const char *input);
+
 #endif /* !CLIENT_H_ */

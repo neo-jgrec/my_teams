@@ -73,37 +73,13 @@ static void free_args(char **args)
 static bool format_args(char **args)
 {
     for (int i = 1; args[i]; i++) {
-        if (args[i][0] == '"' && args[i][strlen(args[i]) - 1] == '"') {
-            memmove(args[i], args[i] + 1, strlen(args[i]));
-            args[i][strlen(args[i]) - 1] = '\0';
-        } else {
-            fprintf(stdout, "Invalid argument: %s\n", args[i]);
+        if (args[i][0] != '"' || args[i][strlen(args[i]) - 1] != '"') {
+            fprintf(stdout, "Error in arguments : %s\n", args[i]);
             free_args(args);
-            args = NULL;
             return false;
         }
     }
     return true;
-}
-
-static char **get_args_from_input(char *input)
-{
-    int space_count = 0;
-    char **args = NULL;
-    char *token = NULL;
-    int i = 0;
-
-    for (int j = 0; input[j]; j++)
-        if (input[j] == ' ')
-            space_count++;
-    args = malloc(sizeof(char *) * (space_count + 2));
-    token = strtok(input, " \n");
-    for (; token; i++) {
-        args[i] = strdup(token);
-        token = strtok(NULL, " \n");
-    }
-    args[i] = NULL;
-    return args;
 }
 
 static bool check_login(c_client_t *client)

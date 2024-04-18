@@ -13,6 +13,7 @@ SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					client.c										\
 					logger.c										\
+					get_args.c										\
 					commands/help.c									\
 					commands/login.c								\
 					commands/logout.c								\
