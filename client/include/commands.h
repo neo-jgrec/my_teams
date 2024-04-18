@@ -94,7 +94,7 @@ static const command_t commands[] = {
         "/subscribed",
         "/subscribed ?[“team_uuid”] : list all subscribed teams"
         " or list all users subscribed to a team",
-        NULL,
+        cmd_subscribed,
         true
     },
     {

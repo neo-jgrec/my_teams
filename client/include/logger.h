@@ -120,6 +120,19 @@ static inline void mt_user(const p_packet_t *payload,
     );
 }
 
+static inline void mt_team(const p_packet_t *payload,
+    UNUSED c_client_t *client)
+{
+    team_t team = {0};
+
+    memcpy(&team, payload->data, sizeof(team_t));
+    client_print_teams(
+        team.uuid,
+        team.name,
+        team.description
+    );
+}
+
 static const struct {
     uint16_t type;
     void (*func)(const p_packet_t *payload, c_client_t *client);
@@ -133,6 +146,10 @@ static const struct {
     {EVT_THREAD_CREATE, mt_thread_created},
     {EVT_LIST_USERS, mt_user},
     {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_USERS), mt_user},
+    {EVT_LIST_SUBSCRIBED_IN_TEAM, mt_user},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_SUBSCRIBED_IN_TEAM), mt_user},
+    {EVT_LIST_SUBSCRIBED_TEAMS, mt_team},
+    {UNCOMBINED_EVT(EVT_CONTINUE, EVT_LIST_SUBSCRIBED_TEAMS), mt_team},
     {INT16_MAX - 1, NULL}
 };
 
