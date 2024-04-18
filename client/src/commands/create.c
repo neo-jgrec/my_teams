@@ -50,7 +50,7 @@ static void no_context(c_client_t *client, UNUSED char **args)
 
     memcpy(te.user_uuid, client->user.uuid, sizeof(te.user_uuid));
     memcpy(te.team_name, args[1], sizeof(te.team_name));
-    // TODO: Implement description
+    memcpy(te.team_description, args[2], sizeof(te.team_description));
     p_client_send_packet(
         p_client,
         EVT_CREATE_TEAM,
@@ -66,7 +66,7 @@ static void team_context(c_client_t *client, char **args)
 
     memcpy(c.team_uuid, client->context.team_uuid, sizeof(c.team_uuid));
     memcpy(c.channel_name, args[1], sizeof(c.channel_name));
-    // TODO: Implement description and user check
+    memcpy(c.channel_description, args[2], sizeof(c.channel_description));
     p_client_send_packet(
         p_client,
         EVT_CREATE_CHANNEL,
