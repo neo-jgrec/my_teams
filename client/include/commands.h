@@ -100,7 +100,7 @@ static const command_t commands[] = {
     {
         "/unsubscribe",
         "/unsubscribe [“team_uuid”] : unsubscribe from a team",
-        NULL,
+        cmd_unsubscribe,
         true
     },
     {
