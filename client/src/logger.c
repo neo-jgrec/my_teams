@@ -5,6 +5,7 @@
 ** logger
 */
 
+#include "debug_print.h"
 #include "logger.h"
 
 void client_logger(const p_packet_t *payload, c_client_t *client)

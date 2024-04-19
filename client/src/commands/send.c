@@ -31,10 +31,10 @@ void cmd_send(char **args, void *data, UNUSED p_packet_t *packet)
     memcpy(m.message_body, args[2], sizeof(m.message_body));
     memcpy(m.sender_uuid, ((c_client_t *)data)->user.uuid,
         sizeof(m.sender_uuid));
-    // p_client_send_packet(
-    //     p_client,
-    //     EVT_SEND,
-    //     &m,
-    //     sizeof(m)
-    // );
+    p_client_send_packet(
+        p_client,
+        EVT_SEND,
+        &m,
+        sizeof(m)
+    );
 }

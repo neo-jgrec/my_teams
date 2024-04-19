@@ -29,10 +29,10 @@ void cmd_logout(char **args, void *data, UNUSED p_packet_t *packet)
         ((c_client_t *)data)->user.uuid);
     memcpy(logout.uuid, ((c_client_t *)data)->user.uuid,
         sizeof(logout.uuid));
-    // p_client_send_packet(
-    //     p_client,
-    //     EVT_DISCONNECT,
-    //     &logout,
-    //     sizeof(logout)
-    // );
+    p_client_send_packet(
+        p_client,
+        EVT_DISCONNECT,
+        &logout,
+        sizeof(logout)
+    );
 }

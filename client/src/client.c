@@ -108,7 +108,6 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
     if (!format_args(args))
         return;
     command = args[0];
-    DEBUG_PRINT("Command: %s", command);
     for (int i = 0; commands[i].name; i++)
         if (!strcmp(commands[i].name, command) && commands[i].func
             && (!commands[i].need_login || check_login(client)))
@@ -122,12 +121,12 @@ static void wait_for_logout(c_client_t *client)
         .type = INT16_MAX,
         .data = {0}
     };
-    // p_client_send_packet(
-    //     client->p_client,
-    //     EVT_DISCONNECT,
-    //     client->user.uuid,
-    //     UUID_LENGTH
-    // );
+    p_client_send_packet(
+        client->p_client,
+        EVT_DISCONNECT,
+        client->user.uuid,
+        UUID_LENGTH
+    );
     while (!p_client_listen(client->p_client) && packet.type != EVT_DISCONNECT)
         client_logger(&packet, client);
 }
@@ -146,7 +145,12 @@ static void start_cli(c_client_t *client)
     signal(SIGINT, handle_sigint);
     while (is_running) {
         p_client_listen(client->p_client);
-        process_priority_queue(&client->queue, client);
+        while (!TAILQ_EMPTY(&client->p_client->payloads)) {
+            p_payload_t *payload = TAILQ_FIRST(&client->p_client->payloads);
+            client_logger(&payload->packet, client);
+            TAILQ_REMOVE(&client->p_client->payloads, payload, entries);
+            free(payload);
+        }
         process_command(get_client_input(), client, &packet);
     }
     signal(SIGINT, SIG_DFL);

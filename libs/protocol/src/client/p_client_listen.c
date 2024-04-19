@@ -20,7 +20,6 @@ static p_payload_t *receive_packet(const int fd)
     if (!payload)
         return NULL;
     if (read(fd, &payload->packet, sizeof(p_packet_t)) > 0) {
-        write(fd, &payload->packet, sizeof(p_packet_t));
         return payload;
     }
     free(payload);
