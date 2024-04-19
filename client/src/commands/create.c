@@ -77,6 +77,7 @@ static void team_context(c_client_t *client, char **args)
         fprintf(stdout, "Error: Channel name or description too long\n");
         return;
     }
+    memcpy(c.user_uuid, client->user.uuid, sizeof(c.user_uuid));
     memcpy(c.team_uuid, client->context.team_uuid, sizeof(c.team_uuid));
     memcpy(c.channel_name, args[1], strlen(c.channel_name));
     memcpy(c.channel_description, args[2], strlen(c.channel_description));
