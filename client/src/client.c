@@ -35,7 +35,7 @@ static const char *HELP = "USAGE:"
 static void handle_sigint(int sig)
 {
     (void)sig;
-    fprintf(stdout, "Exiting...\n");
+    fprintf(stdout, "\rExiting...\n");
     is_running = false;
 }
 
@@ -121,10 +121,7 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
 
 static void wait_for_logout(c_client_t *client)
 {
-    p_packet_t packet = {
-        .type = INT16_MAX,
-        .data = {0}
-    };
+    p_payload_t *payload;
 
     p_client_send_packet(
         client->p_client,
@@ -132,17 +129,33 @@ static void wait_for_logout(c_client_t *client)
         client->user.uuid,
         UUID_LENGTH
     );
-    while (!p_client_listen(client->p_client, &packet)
-        && packet.type != EVT_DISCONNECT)
-        client_logger(&packet, client);
+    while (p_client_listen(client->p_client)
+        && TAILQ_EMPTY(&client->p_client->payloads)) {
+        payload = TAILQ_FIRST(&client->p_client->payloads);
+        TAILQ_REMOVE(&client->p_client->payloads, payload, entries);
+        if (payload->packet.type == EVT_DISCONNECT) {
+            client_logger(&payload->packet, client);
+            return;
+        }
+        free(payload);
+    }
+}
+
+static void process_payloads(c_client_t *client)
+{
+    p_payload_t *payload;
+
+    while (!TAILQ_EMPTY(&client->p_client->payloads)) {
+        payload = TAILQ_FIRST(&client->p_client->payloads);
+        TAILQ_REMOVE(&client->p_client->payloads, payload, entries);
+        client_logger(&payload->packet, client);
+        free(payload);
+    }
 }
 
 static void start_cli(c_client_t *client)
 {
-    p_packet_t packet = {
-        .type = INT16_MAX,
-        .data = {0}
-    };
+    p_packet_t packet = {INT16_MAX, {0}};
 
     if (!client->p_client) {
         fprintf(stdout, "Failed to connect to server\n");
@@ -152,11 +165,11 @@ static void start_cli(c_client_t *client)
     fprintf(stdout, "Connected to server, waiting for commands\n"
         "Type /help for a list of commands\n");
     while (is_running) {
-        p_client_listen(client->p_client, &packet);
-        process_priority_queue(&client->queue, client);
+        p_client_listen(client->p_client);
+        process_payloads(client);
         process_command(get_client_input(), client, &packet);
-        add_to_priority_queue(&packet, &client->queue);
     }
+    signal(SIGINT, SIG_DFL);
     wait_for_logout(client);
 }
 
@@ -171,7 +184,6 @@ int client(int ac, char **av)
         fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;
     }
-    TAILQ_INIT(&client->queue);
     client->p_client = p_client_create(av[1], atoi(av[2]));
     start_cli(client);
     if (client->p_client)

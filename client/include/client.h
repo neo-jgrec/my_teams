@@ -31,7 +31,6 @@ typedef struct {
 
 typedef struct {
     p_client_t *p_client;
-    queue_head_t queue;
     user_t user;
     context_t context;
 } c_client_t;
@@ -52,26 +51,6 @@ int client(int ac, char **av);
  * @param payload
  */
 void client_logger(const p_packet_t *payload, c_client_t *client);
-
-/**
- * @brief Set the payload to zero client object
- *
- * @param payload
- */
-void packet_to_zero(p_packet_t *payload);
-
-/**
- * @brief process the priority queue
- *
- */
-void process_priority_queue(queue_head_t *queue, c_client_t *client);
-
-/**
- * @brief add a payload to the priority queue
- *
- * @param payload
- */
-void add_to_priority_queue(p_packet_t *payload, queue_head_t *queue);
 
 /**
  * @brief process client input as arguments
