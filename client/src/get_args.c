@@ -20,6 +20,8 @@ static char *fill_line(const char *str, int *pos, char separator)
         if (*end == '"' || *end == '\'')
             in_quotes = !in_quotes;
     }
+    if (in_quotes)
+        return NULL;
     *pos += end - start;
     result = strndup(start, end - start);
     result[strlen(result) - 1] = (result[strlen(result) - 1] == '\n'
