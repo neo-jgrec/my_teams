@@ -8,6 +8,8 @@
 #include "client.h"
 #include "commands.h"
 #include "debug_print.h"
+#include "events.h"
+#include "events_structures.h"
 #include "logging_client.h"
 #include "protocol.h"
 
@@ -33,7 +35,7 @@ static const char *HELP = "USAGE:"
 static void handle_sigint(int sig)
 {
     (void)sig;
-    fprintf(stdout, "Exiting...\n");
+    fprintf(stdout, "\rExiting...\n");
     is_running = false;
 }
 
@@ -71,37 +73,17 @@ static void free_args(char **args)
 static bool format_args(char **args)
 {
     for (int i = 1; args[i]; i++) {
-        if (args[i][0] == '"' && args[i][strlen(args[i]) - 1] == '"') {
-            memmove(args[i], args[i] + 1, strlen(args[i]));
-            args[i][strlen(args[i]) - 1] = '\0';
-        } else {
-            fprintf(stdout, "Invalid argument: %s\n", args[i]);
+        if (args[i][0] != '"' || args[i][strlen(args[i]) - 1] != '"') {
+            fprintf(stdout, "Error in arguments : %s\n", args[i]);
             free_args(args);
-            args = NULL;
             return false;
         }
     }
-    return true;
-}
-
-static char **get_args_from_input(char *input)
-{
-    int space_count = 0;
-    char **args = NULL;
-    char *token = NULL;
-    int i = 0;
-
-    for (int j = 0; input[j]; j++)
-        if (input[j] == ' ')
-            space_count++;
-    args = malloc(sizeof(char *) * (space_count + 2));
-    token = strtok(input, " \n");
-    for (; token; i++) {
-        args[i] = strdup(token);
-        token = strtok(NULL, " \n");
+    for (int i = 1; args[i]; i++) {
+        memmove(args[i], args[i] + 1, strlen(args[i]));
+        args[i][strlen(args[i]) - 1] = '\0';
     }
-    args[i] = NULL;
-    return args;
+    return true;
 }
 
 static bool check_login(c_client_t *client)
@@ -135,43 +117,77 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
             && (!commands[i].need_login || check_login(client)))
             commands[i].func(args, (void *)client, p);
     free_args(args);
-    return;
+}
+
+static void wait_for_logout(c_client_t *client)
+{
+    p_payload_t *payload;
+
+    p_client_send_packet(
+        client->p_client,
+        EVT_DISCONNECT,
+        client->user.uuid,
+        UUID_LENGTH
+    );
+    while (p_client_listen(client->p_client)
+        && TAILQ_EMPTY(&client->p_client->payloads)) {
+        payload = TAILQ_FIRST(&client->p_client->payloads);
+        TAILQ_REMOVE(&client->p_client->payloads, payload, entries);
+        if (payload->packet.type == EVT_DISCONNECT) {
+            client_logger(&payload->packet, client);
+            return;
+        }
+        free(payload);
+    }
+}
+
+static void process_payloads(c_client_t *client)
+{
+    p_payload_t *payload;
+
+    while (!TAILQ_EMPTY(&client->p_client->payloads)) {
+        payload = TAILQ_FIRST(&client->p_client->payloads);
+        TAILQ_REMOVE(&client->p_client->payloads, payload, entries);
+        client_logger(&payload->packet, client);
+        free(payload);
+    }
 }
 
 static void start_cli(c_client_t *client)
 {
-    p_packet_t packet = {
-        .type = INT16_MAX,
-        .data = {0}
-    };
+    p_packet_t packet = {INT16_MAX, {0}};
 
     if (!client->p_client) {
         fprintf(stdout, "Failed to connect to server\n");
         return;
     }
+    signal(SIGINT, handle_sigint);
+    fprintf(stdout, "Connected to server, waiting for commands\n"
+        "Type /help for a list of commands\n");
     while (is_running) {
-        signal(SIGINT, handle_sigint);
-        p_client_listen(client->p_client, &packet);
-        process_priority_queue(&client->queue, client);
+        p_client_listen(client->p_client);
+        process_payloads(client);
         process_command(get_client_input(), client, &packet);
-        add_to_priority_queue(&packet, &client->queue);
     }
+    signal(SIGINT, SIG_DFL);
+    wait_for_logout(client);
 }
 
 int client(int ac, char **av)
 {
     int isHelpRequested = ac > 1 && (!strcmp(av[1], "--help")
         || !strcmp(av[1], "-h"));
-    c_client_t *client = malloc(sizeof(c_client_t));
+    c_client_t *client = calloc(1, sizeof(c_client_t));
+    client->context = (context_t){{0}, {0}, {0}};
 
     if (ac != 3 || isHelpRequested) {
         fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;
     }
-    TAILQ_INIT(&client->queue);
     client->p_client = p_client_create(av[1], atoi(av[2]));
     start_cli(client);
     if (client->p_client)
         p_client_close(client->p_client);
+    free(client);
     return 0;
 }

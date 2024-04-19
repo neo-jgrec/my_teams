@@ -13,23 +13,25 @@ SRC			:=	$(addprefix $(DIR)/,								\
 					main.c											\
 					client.c										\
 					logger.c										\
-					commands/help.c									\
-					commands/login.c								\
-					commands/logout.c								\
-					commands/users.c								\
-					commands/user.c									\
-					commands/subscribed.c							\
-					commands/use.c									\
-					commands/send.c									\
-					commands/messages.c								\
-					commands/subscribe.c							\
-					commands/unsubscribe.c							\
-					commands/create.c								\
-					commands/list.c									\
-					commands/info.c									\
-					queue/add.c										\
-					queue/process.c									\
-					utils/payload_to_zero.c							\
+					get_args.c										\
+				)
+
+DIR			+=	src/commands
+SRC			+=	$(addprefix $(lastword $(DIR))/,					\
+					help.c											\
+					login.c											\
+					logout.c										\
+					users.c											\
+					user.c											\
+					subscribed.c									\
+					use.c											\
+					send.c											\
+					messages.c										\
+					subscribe.c										\
+					unsubscribe.c									\
+					create.c										\
+					list.c											\
+					info.c											\
 				)
 
 FU_DIR		:=	tests/func

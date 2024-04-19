@@ -49,8 +49,8 @@ static void no_context(c_client_t *client, UNUSED char **args)
     team_create_t te = {0};
 
     memcpy(te.user_uuid, client->user.uuid, sizeof(te.user_uuid));
-    memcpy(te.team_name, args[1], sizeof(te.team_name));
-    memcpy(te.team_description, args[2], sizeof(te.team_description));
+    memcpy(te.team_name, args[1], strlen(args[1]));
+    memcpy(te.team_description, args[2], strlen(args[2]));
     p_client_send_packet(
         p_client,
         EVT_CREATE_TEAM,
@@ -65,8 +65,8 @@ static void team_context(c_client_t *client, char **args)
     channel_create_t c = {0};
 
     memcpy(c.team_uuid, client->context.team_uuid, sizeof(c.team_uuid));
-    memcpy(c.channel_name, args[1], sizeof(c.channel_name));
-    memcpy(c.channel_description, args[2], sizeof(c.channel_description));
+    memcpy(c.channel_name, args[1], strlen(c.channel_name));
+    memcpy(c.channel_description, args[2], strlen(c.channel_description));
     p_client_send_packet(
         p_client,
         EVT_CREATE_CHANNEL,
@@ -83,8 +83,8 @@ static void channel_context(c_client_t *client, char **args)
     memcpy(th.channel_uuid,
         client->context.channel_uuid, sizeof(th.channel_uuid));
     memcpy(th.user_uuid, client->user.uuid, sizeof(th.user_uuid));
-    memcpy(th.thread_title, args[1], sizeof(th.thread_title));
-    memcpy(th.thread_body, args[2], sizeof(th.thread_body));
+    memcpy(th.thread_title, args[1], strlen(th.thread_title));
+    memcpy(th.thread_body, args[2], strlen(th.thread_body));
     p_client_send_packet(
         p_client,
         EVT_CREATE_THREAD,
@@ -100,8 +100,8 @@ static void thread_context(c_client_t *client, char **args)
 
     memcpy(rep.thread_uuid,
         client->context.thread_uuid, sizeof(rep.thread_uuid));
-    memcpy(rep.user_uuid, client->user.uuid, sizeof(rep.user_uuid));
-    memcpy(rep.reply_body, args[1], sizeof(rep.reply_body));
+    memcpy(rep.user_uuid, client->user.uuid, strlen(rep.user_uuid));
+    memcpy(rep.reply_body, args[1], strlen(rep.reply_body));
     p_client_send_packet(
         p_client,
         EVT_CREATE_REPLY,

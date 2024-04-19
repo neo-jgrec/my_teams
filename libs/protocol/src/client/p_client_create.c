@@ -48,5 +48,6 @@ p_client_t *p_client_create(const char *ip, const int port)
     FD_ZERO(&client->master_write_fds);
     FD_SET(client->network_data.sockfd, &client->master_read_fds);
     FD_SET(client->network_data.sockfd, &client->master_write_fds);
+    TAILQ_INIT(&client->payloads);
     return client;
 }

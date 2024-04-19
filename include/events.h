@@ -71,6 +71,10 @@ typedef enum {
 
     EVT_ERROR,                       // Event: Error
     EVT_ERROR_UNKNOWN,               // Event: Error Unknown
+    EVT_ERROR_UNKNOWN_TEAM,          // Event: Error Unknown Team
+    EVT_ERROR_UNKNOWN_CHANNEL,       // Event: Error Unknown Channel
+    EVT_ERROR_UNKNOWN_THREAD,        // Event: Error Unknown Thread
+    EVT_ERROR_UNKNOWN_USER,          // Event: Error Unknown User
     EVT_ERROR_UNAUTHORIZED,          // Event: Error Unauthorized
     EVT_ERROR_ALREADY,               // Event: Error Already Subscribed
 } event_t;
