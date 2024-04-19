@@ -114,6 +114,24 @@ static bool load_private_messages(s_server_t *server, FILE *file)
     return true;
 }
 
+static bool load_subscribes(s_server_t *server, FILE *file)
+{
+    s_subscribe_t *subscribe;
+    uint32_t count;
+
+    if (!fread(&count, sizeof(uint32_t), 1, file))
+        return false;
+    DEBUG_PRINT("Loading %d subscribes\n", count);
+    for (uint32_t i = 0; i < count; i++) {
+        subscribe = calloc(1, sizeof(s_subscribe_t));
+        if (!subscribe || !fread(&subscribe->subscribe,
+            sizeof(subscribe_t), 1, file))
+            return false;
+        TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
+    }
+    return true;
+}
+
 void load(s_server_t *server)
 {
     FILE *file = fopen(SAVE_FILE, "r");
@@ -121,9 +139,10 @@ void load(s_server_t *server)
 
     if (!file)
         return;
-    ret = !load_users(server, file) || !load_teams(server, file) ||
-        !load_channels(server, file) || !load_threads(server, file) ||
-        !load_replies(server, file) || !load_private_messages(server, file);
+    ret = !load_users(server, file) || !load_teams(server, file)
+        || !load_channels(server, file) || !load_threads(server, file)
+        || !load_replies(server, file) || !load_private_messages(server, file)
+        || !load_subscribes(server, file);
     fclose(file);
     if (ret) {
         remove(SAVE_FILE);

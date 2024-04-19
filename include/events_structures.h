@@ -28,7 +28,8 @@ typedef struct {
 } user_t;
 
 /**
- * @details Struct request for EVT_LIST_USERS and EVT_INFO_USER
+ * @details Struct request for EVT_LIST_USERS, EVT_INFO_USER
+ * and EVT_LIST_SUBSCRIBED_IN_TEAM
  */
 typedef struct {
     char uuid[UUID_LENGTH];
@@ -38,7 +39,7 @@ typedef struct {
 
 /**
  * @details Struct response for EVT_CREATE_TEAM, EVT_INFO_TEAM,
- * EVT_LIST_TEAMS and EVT_TEAM_CREATE
+ * EVT_LIST_TEAMS and EVT_TEAM_CREATE, EVT_LIST_SUBSCRIBED_TEAMS
  */
 typedef struct {
     char uuid[UUID_LENGTH];
@@ -58,8 +59,8 @@ typedef struct {
 
 /**
  * @details Struct request for EVT_SUBSCRIBE
- * @details Struct response for EVT_LIST_SUBSCRIBED_IN_TEAM,
- * EVT_LIST_SUBSCRIBED_TEAMS, EVT_SUBSCRIBE and EVT_UNSUBSCRIBE
+ * @details Struct response for EVT_SUBSCRIBE
+ * and EVT_UNSUBSCRIBE
  */
 typedef struct {
     char user_uuid[UUID_LENGTH];
