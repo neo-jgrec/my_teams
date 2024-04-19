@@ -14,7 +14,18 @@
     #include "events_structures.h"
     #include "unused.h"
 
+    #include <stdio.h>
     #include <string.h>
+
+extern bool is_running;
+
+static inline void mt_server_close(UNUSED const p_packet_t *payload,
+    c_client_t *client)
+{
+    fprintf(stdout, "Server closed\n");
+    is_running = false;
+    client->user = (user_t){0};
+}
 
 static inline void mt_subscribe(const p_packet_t *payload,
     UNUSED c_client_t *client)

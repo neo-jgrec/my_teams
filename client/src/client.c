@@ -24,7 +24,7 @@
 #include <stddef.h>
 #include <signal.h>
 
-static const bool *is_running = (const bool *)1;
+const bool *is_running = (const bool *)1;
 
 static const char *HELP = "USAGE:"
 "\t./myteams_cli ip port\n"

@@ -188,6 +188,9 @@ static const struct {
     {EVT_ERROR_UNKNOWN_CHANNEL, mt_error_unknown_channel},
     {EVT_ERROR_UNKNOWN_THREAD, mt_error_unknown_thread},
     {EVT_ERROR_UNKNOWN_USER, mt_error_unknown_user},
+
+    {EVT_SERVER_CLOSE, mt_server_close},
+
     {INT16_MAX - 1, NULL}
 };
 
