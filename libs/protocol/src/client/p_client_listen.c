@@ -28,8 +28,8 @@ static p_payload_t *receive_packet(const int fd)
 
 static void *handle_payload(p_client_t *client, const int fd)
 {
-
     p_payload_t *payload = receive_packet(fd);
+    p_payload_t *tmp = NULL;
 
     if (payload) {
         payload->fd = fd;
@@ -37,7 +37,7 @@ static void *handle_payload(p_client_t *client, const int fd)
         return payload;
     }
     while (!TAILQ_EMPTY(&client->payloads)) {
-        p_payload_t *tmp = TAILQ_FIRST(&client->payloads);
+        tmp = TAILQ_FIRST(&client->payloads);
         TAILQ_REMOVE(&client->payloads, tmp, entries);
         free(tmp);
     }

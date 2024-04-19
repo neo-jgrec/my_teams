@@ -24,6 +24,10 @@ void cmd_login(char **args, void *data, UNUSED p_packet_t *packet)
         fprintf(stdout, "Invalid command\n");
         return;
     }
+    if (strlen(args[1]) > MAX_NAME_LENGTH) {
+        fprintf(stdout, "Error: Username too long\n");
+        return;
+    }
     fprintf(stdout, "Trying to log in with username: %s\n", args[1]);
     p_client_send_packet(
         p_client,
