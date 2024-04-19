@@ -15,6 +15,7 @@
     #include "events_structures.h"
     #include "unused.h"
     #include "logger2.h"
+    #include "logger_error.h"
 
     #include <string.h>
     #include <stdint.h>
@@ -180,6 +181,13 @@ static const struct {
     {EVT_INFO_TEAM, mt_team},
     {EVT_INFO_CHANNEL, mt_channel},
     {EVT_INFO_THREAD, mt_thread},
+
+    {EVT_ERROR_UNAUTHORIZED, mt_error_unauthorized},
+    {EVT_ERROR_ALREADY, mt_already_exist},
+    {EVT_ERROR_UNKNOWN_TEAM, mt_error_unknown_team},
+    {EVT_ERROR_UNKNOWN_CHANNEL, mt_error_unknown_channel},
+    {EVT_ERROR_UNKNOWN_THREAD, mt_error_unknown_thread},
+    {EVT_ERROR_UNKNOWN_USER, mt_error_unknown_user},
     {INT16_MAX - 1, NULL}
 };
 
