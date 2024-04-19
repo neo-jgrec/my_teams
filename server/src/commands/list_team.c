@@ -19,7 +19,7 @@ void s_server_event_list_teams(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_TEAMS), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (check_user_exist(server, payload->fd, body.uuid, EVT_LIST_TEAMS))
+    if (as_user(server, body.uuid))
         return;
     TAILQ_FOREACH(team, &server->teams, entries) {
         if (packet.data[0])
@@ -41,8 +41,7 @@ void s_server_event_list_channels(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_CHANNELS), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (!check_channel_exist(server, payload->fd, body.uuid,
-        EVT_LIST_CHANNELS))
+    if (!as_team(server, body.uuid))
         return;
     TAILQ_FOREACH(channel, &server->channels, entries) {
         if (strcmp(channel->channel.team_uuid, body.uuid))
@@ -66,7 +65,7 @@ void s_server_event_list_threads(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_THREADS), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (!check_thread_exist(server, payload->fd, body.uuid, EVT_LIST_THREADS))
+    if (!as_channel(server, body.uuid))
         return;
     TAILQ_FOREACH(channel, &server->channels, entries) {
         if (strcmp(channel->channel.uuid, body.uuid))
@@ -90,7 +89,7 @@ void s_server_event_list_replies(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_REPLIES), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (!check_user_exist(server, payload->fd, body.uuid, EVT_LIST_REPLIES))
+    if (!as_channel(server, body.uuid))
         return;
     TAILQ_FOREACH(reply, &server->replies, entries) {
         if (strcmp(reply->reply.thread_uuid, body.uuid))

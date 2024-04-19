@@ -41,6 +41,8 @@ void s_server_event_send_message(s_server_t *server,
     if (!message)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_SEND));
     memcpy(&body, payload->packet.data, sizeof(send_message_t));
+    if (!as_user(server, body.sender_uuid))
+        return;
     strcpy(message->message.sender_uuid, body.sender_uuid);
     strcpy(message->message.receiver_uuid, body.receiver_uuid);
     strcpy(message->message.body, body.message_body);
@@ -58,6 +60,8 @@ void s_server_event_subscribe(s_server_t *server,
     p_packet_t packet = {EVT_SUBSCRIBE, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(subscribe_t));
+    if (!as_user(server, body.user_uuid) || !as_team(server, body.team_uuid))
+        return;
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid))
@@ -80,6 +84,8 @@ void s_server_event_unsubscribe(s_server_t *server,
     p_packet_t packet = {EVT_UNSUBSCRIBE, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(unsubscribe_t));
+    if (!as_user(server, body.user_uuid) || !as_team(server, body.team_uuid))
+        return;
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid)) {

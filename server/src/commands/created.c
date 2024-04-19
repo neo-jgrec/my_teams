@@ -33,6 +33,8 @@ void s_server_event_team_created(s_server_t *server,
     if (!team)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_TEAM));
     memcpy(&body, payload->packet.data, sizeof(team_create_t));
+    if (!as_user(server, body.user_uuid))
+        return;
     get_uuid_no_malloc(team->team.uuid);
     strcpy(team->team.name, body.team_name);
     strcpy(team->team.description, body.team_description);
@@ -65,8 +67,7 @@ void s_server_event_channel_created(s_server_t *server,
     if (!channel)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_CHANNEL));
     memcpy(&body, payload->packet.data, sizeof(channel_create_t));
-    if (!check_team_exist(server, payload->fd, body.team_uuid,
-        EVT_CREATE_CHANNEL))
+    if (!as_team(server, body.team_uuid))
         return;
     get_uuid_no_malloc(channel->channel.uuid);
     strcpy(channel->channel.name, body.channel_name);
@@ -115,9 +116,8 @@ void s_server_event_thread_created(s_server_t *server,
     if (!thread)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
     memcpy(&body, payload->packet.data, sizeof(thread_create_t));
-    if (!check_channel_exist(server, payload->fd, body.channel_uuid,
-        EVT_CREATE_THREAD) || !check_team_exist(server, payload->fd,
-        body.channel_uuid, EVT_CREATE_THREAD))
+    if (!as_channel(server, body.channel_uuid)
+        || !as_user(server, body.user_uuid))
         return;
     set_thread(server, thread, &body);
     server_event_thread_created(body.channel_uuid, thread->thread.uuid,
@@ -168,9 +168,8 @@ void s_server_event_reply_created(s_server_t *server,
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
     memcpy(&body, payload->packet.data, sizeof(reply_create_t));
     set_reply(reply, &body);
-    if (!check_thread_exist(server, payload->fd, body.thread_uuid,
-        EVT_CREATE_REPLY) || !check_user_exist(server, payload->fd,
-        body.user_uuid, EVT_CREATE_REPLY))
+    if (!as_thread(server, body.thread_uuid)
+        || !as_user(server, body.user_uuid))
         return;
     TAILQ_INSERT_TAIL(&server->replies, reply, entries);
     ping_user_reply(server, &body);

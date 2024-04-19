@@ -74,6 +74,7 @@ typedef struct {
     TAILQ_HEAD(, s_logged_user_s) logged;
 
     p_server_t *socket;
+    int current_fd;
 } s_server_t;
 
 /**
@@ -323,44 +324,36 @@ bool is_in_threads(const s_server_t *server, const char *user_uuid,
 bool is_logged(const s_server_t *server, const char *user_uuid);
 
 /**
- * @brief Check if a team exists
+ * @brief Check if a team with a UUID exists
  * @param server The server
- * @param fd The client file descriptor
  * @param team_uuid The team UUID
- * @param type The packet type
+ * @return true if the team exists, false otherwise
  */
-bool check_team_exist(s_server_t *server, int fd, const char *team_uuid,
-    uint16_t type);
+bool as_team(const s_server_t *server, const char *team_uuid);
 
 /**
- * @brief Check if a channel exists
+ * @brief Check if a channel with a UUID exists
  * @param server The server
- * @param fd The client file descriptor
  * @param channel_uuid The channel UUID
- * @param type The packet type
+ * @return true if the channel exists, false otherwise
  */
-bool check_channel_exist(s_server_t *server, int fd, const char *channel_uuid,
-    uint16_t type);
+bool as_channel(const s_server_t *server, const char *channel_uuid);
 
 /**
- * @brief Check if a thread exists
+ * @brief Check if a thread with a UUID exists
  * @param server The server
- * @param fd The client file descriptor
  * @param thread_uuid The thread UUID
- * @param type The packet type
+ * @return true if the thread exists, false otherwise
  */
-bool check_thread_exist(s_server_t *server, int fd, const char *thread_uuid,
-    uint16_t type);
+bool as_thread(const s_server_t *server, const char *thread_uuid);
 
 /**
- * @brief Check if a user exists
+ * @brief Check if a user with a UUID exists
  * @param server The server
- * @param fd The client file descriptor
  * @param user_uuid The user UUID
- * @param type The packet type
+ * @return true if the user exists, false otherwise
  */
-bool check_user_exist(s_server_t *server, int fd, const char *user_uuid,
-    uint16_t type);
+bool as_user(const s_server_t *server, const char *user_uuid);
 
 /**
  * @brief Check if a UUID is allocated
@@ -369,6 +362,6 @@ bool check_user_exist(s_server_t *server, int fd, const char *user_uuid,
  * @param uuid The UUID
  * @param type The packet type
  */
-bool check_uuid(s_server_t *server, int fd, char **uuid, uint16_t type);
+bool check_uuid(const s_server_t *server, int fd, char **uuid, uint16_t type);
 
 #endif /* !SERVER_H_ */
