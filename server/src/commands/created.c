@@ -68,7 +68,7 @@ void s_server_event_channel_created(s_server_t *server,
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_CHANNEL));
     memcpy(&body, payload->packet.data, sizeof(channel_create_t));
     if (!as_team(server, body.team_uuid)
-        || !is_in_teams(server, body.team_uuid, body.team_uuid))
+        || !is_in_teams(server, body.user_uuid, body.team_uuid))
         return;
     get_uuid_no_malloc(channel->channel.uuid);
     strcpy(channel->channel.name, body.channel_name);
