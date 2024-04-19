@@ -117,7 +117,6 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
             && (!commands[i].need_login || check_login(client)))
             commands[i].func(args, (void *)client, p);
     free_args(args);
-    return;
 }
 
 static void wait_for_logout(c_client_t *client)
@@ -149,10 +148,10 @@ static void start_cli(c_client_t *client)
         fprintf(stdout, "Failed to connect to server\n");
         return;
     }
+    signal(SIGINT, handle_sigint);
     fprintf(stdout, "Connected to server, waiting for commands\n"
         "Type /help for a list of commands\n");
     while (is_running) {
-        signal(SIGINT, handle_sigint);
         p_client_listen(client->p_client, &packet);
         process_priority_queue(&client->queue, client);
         process_command(get_client_input(), client, &packet);
