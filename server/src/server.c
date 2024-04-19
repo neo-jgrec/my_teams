@@ -44,7 +44,9 @@ static void init_list(s_server_t *server)
 static void close_server(s_server_t *server)
 {
     s_logged_user_t *logged;
+    const p_packet_t packet = {EVT_SERVER_CLOSE, {0}};
 
+    p_server_send_packet(&packet, server->current_fd, server->socket);
     p_server_close(server->socket);
     while (!TAILQ_EMPTY(&server->logged)) {
         logged = TAILQ_FIRST(&server->logged);

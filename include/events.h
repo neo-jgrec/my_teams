@@ -77,6 +77,8 @@ typedef enum {
     EVT_ERROR_UNKNOWN_USER,          // Event: Error Unknown User
     EVT_ERROR_UNAUTHORIZED,          // Event: Error Unauthorized
     EVT_ERROR_ALREADY,               // Event: Error Already Subscribed
+
+    EVT_SERVER_CLOSE,                // Event: Server Close
 } event_t;
 
 #endif /* !EVENTS_H_ */
