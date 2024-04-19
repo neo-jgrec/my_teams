@@ -80,6 +80,10 @@ static bool format_args(char **args)
             return false;
         }
     }
+    for (int i = 1; args[i]; i++) {
+        memmove(args[i], args[i] + 1, strlen(args[i]));
+        args[i][strlen(args[i]) - 1] = '\0';
+    }
     return true;
 }
 
