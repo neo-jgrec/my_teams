@@ -77,13 +77,13 @@ void s_server_event_logged_out(s_server_t *server,
     user_t user_response = {0};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_user(server, body.uuid))
+        return;
     TAILQ_FOREACH(user, &server->logged, entries)
         if (!strcmp(body.uuid, user->user.uuid)) {
             TAILQ_REMOVE(&server->logged, user, entries);
             break;
         }
-    if (!user)
-        return SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, packet.type));
     server_event_user_logged_out(body.uuid);
     strcpy(user_response.uuid, user->user.uuid);
     strcpy(user_response.name, user->user.name);

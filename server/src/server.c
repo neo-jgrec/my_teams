@@ -21,6 +21,7 @@ static void s_listen(s_server_t *server)
     for (payload = TAILQ_FIRST(&server->socket->payloads); payload; payload =
         TAILQ_FIRST(&server->socket->payloads)) {
         TAILQ_REMOVE(&server->socket->payloads, payload, entries);
+        server->current_fd = payload->fd;
         if (payload->packet.type < NB_EVT)
             events[payload->packet.type].callback(server, payload);
         free(payload);
