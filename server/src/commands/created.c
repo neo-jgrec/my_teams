@@ -67,7 +67,8 @@ void s_server_event_channel_created(s_server_t *server,
     if (!channel)
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_CREATE_CHANNEL));
     memcpy(&body, payload->packet.data, sizeof(channel_create_t));
-    if (!as_team(server, body.team_uuid))
+    if (!as_team(server, body.team_uuid)
+        || !is_in_teams(server, body.team_uuid, body.team_uuid))
         return;
     get_uuid_no_malloc(channel->channel.uuid);
     strcpy(channel->channel.name, body.channel_name);
@@ -117,7 +118,8 @@ void s_server_event_thread_created(s_server_t *server,
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
     memcpy(&body, payload->packet.data, sizeof(thread_create_t));
     if (!as_channel(server, body.channel_uuid)
-        || !as_user(server, body.user_uuid))
+        || !as_user(server, body.user_uuid)
+        || !is_in_channels(server, body.user_uuid, body.channel_uuid))
         return;
     set_thread(server, thread, &body);
     server_event_thread_created(body.channel_uuid, thread->thread.uuid,
@@ -169,7 +171,8 @@ void s_server_event_reply_created(s_server_t *server,
     memcpy(&body, payload->packet.data, sizeof(reply_create_t));
     set_reply(reply, &body);
     if (!as_thread(server, body.thread_uuid)
-        || !as_user(server, body.user_uuid))
+        || !as_user(server, body.user_uuid)
+        || !is_in_threads(server, body.user_uuid, body.thread_uuid))
         return;
     TAILQ_INSERT_TAIL(&server->replies, reply, entries);
     ping_user_reply(server, &body);
