@@ -48,6 +48,10 @@ static void no_context(c_client_t *client, UNUSED char **args)
     p_client_t *p_client = client->p_client;
     team_create_t te = {0};
 
+    if (!args[1] || !args[2]) {
+        fprintf(stdout, "Error: Insufficient arguments\n");
+        return;
+    }
     memcpy(te.user_uuid, client->user.uuid, sizeof(te.user_uuid));
     memcpy(te.team_name, args[1], strlen(args[1]));
     memcpy(te.team_description, args[2], strlen(args[2]));
@@ -64,6 +68,10 @@ static void team_context(c_client_t *client, char **args)
     p_client_t *p_client = client->p_client;
     channel_create_t c = {0};
 
+    if (!args[1] || !args[2]) {
+        fprintf(stdout, "Error: Insufficient arguments\n");
+        return;
+    }
     memcpy(c.team_uuid, client->context.team_uuid, sizeof(c.team_uuid));
     memcpy(c.channel_name, args[1], strlen(c.channel_name));
     memcpy(c.channel_description, args[2], strlen(c.channel_description));
@@ -80,6 +88,10 @@ static void channel_context(c_client_t *client, char **args)
     p_client_t *p_client = client->p_client;
     thread_create_t th = {0};
 
+    if (!args[1] || !args[2]) {
+        fprintf(stdout, "Error: Insufficient arguments\n");
+        return;
+    }
     memcpy(th.channel_uuid,
         client->context.channel_uuid, sizeof(th.channel_uuid));
     memcpy(th.user_uuid, client->user.uuid, sizeof(th.user_uuid));
@@ -98,6 +110,10 @@ static void thread_context(c_client_t *client, char **args)
     p_client_t *p_client = client->p_client;
     reply_create_t rep = {0};
 
+    if (!args[1]) {
+        fprintf(stdout, "Error: Insufficient arguments\n");
+        return;
+    }
     memcpy(rep.thread_uuid,
         client->context.thread_uuid, sizeof(rep.thread_uuid));
     memcpy(rep.user_uuid, client->user.uuid, strlen(rep.user_uuid));

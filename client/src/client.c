@@ -178,8 +178,8 @@ int client(int ac, char **av)
     int isHelpRequested = ac > 1 && (!strcmp(av[1], "--help")
         || !strcmp(av[1], "-h"));
     c_client_t *client = calloc(1, sizeof(c_client_t));
-    client->context = (context_t){{0}, {0}, {0}};
 
+    client->context = (context_t){{0}, {0}, {0}};
     if (ac != 3 || isHelpRequested) {
         fprintf(isHelpRequested ? stdout : stderr, "%s", HELP);
         return isHelpRequested ? 0 : 84;

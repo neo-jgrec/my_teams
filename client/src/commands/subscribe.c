@@ -25,7 +25,8 @@ void cmd_subscribe(char **args, void *data, UNUSED p_packet_t *packet)
         fprintf(stdout, "Invalid command\n");
         return;
     }
-    memcpy(subscribe.team_uuid, ((c_client_t *)data)->context.team_uuid, UUID_LENGTH);
+    memcpy(subscribe.team_uuid, ((c_client_t *)data)->context.team_uuid,
+        UUID_LENGTH);
     memcpy(subscribe.user_uuid, ((c_client_t *)data)->user.uuid, UUID_LENGTH);
     p_client_send_packet(
         p_client,
