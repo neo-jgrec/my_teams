@@ -17,12 +17,14 @@
 static void no_args(c_client_t *client, UNUSED char **args)
 {
     p_client_t *p_client = client->p_client;
+    team_uuid_t team_uuid = {0};
 
+    memcpy(team_uuid.uuid, client->user.uuid, sizeof(team_uuid.uuid));
     p_client_send_packet(
         p_client,
         EVT_LIST_SUBSCRIBED_TEAMS,
-        NULL,
-        0
+        &team_uuid,
+        sizeof(team_uuid)
     );
 }
 
