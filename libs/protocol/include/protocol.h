@@ -56,6 +56,7 @@ typedef struct p_client_s {
     int sockfd;                         // Socket file descriptor
     p_network_data_t network_data;      // Network data
     TAILQ_ENTRY(p_client_s) entries;    // Entry for TAILQ list
+    TAILQ_HEAD(, p_payload_s) payloads; // List of payloads
 } p_client_t;
 
 /**
@@ -84,10 +85,9 @@ p_client_t *p_client_create(const char *ip, int port);
 /**
  * @brief Listen for incoming packets on the client.
  * @param client Pointer to the client.
- * @param packet Pointer to the packet to be filled.
- * @return True if a packet was received, false otherwise.
+ * @return Pointer to the received payload.
  */
-bool p_client_listen(p_client_t *client, p_packet_t *packet);
+p_payload_t *p_client_listen(p_client_t *client);
 
 /**
  * @brief Send a packet from the client.

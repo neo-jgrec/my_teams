@@ -8,6 +8,7 @@
 #ifndef LOGGER_H_
     #define LOGGER_H_
 
+
     #include "protocol.h"
     #include "client.h"
     #include "logging_client.h"
@@ -27,7 +28,7 @@ static inline void mt_log_client(const p_packet_t *payload, c_client_t *client)
 
     memcpy(&user, payload->data, sizeof(user_t));
     client->user = user;
-    client_event_logged_in(user.uuid, user.name);
+    // client_event_logged_in(user.uuid, user.name);
 }
 
 static inline void mt_logout_client(const p_packet_t *payload,

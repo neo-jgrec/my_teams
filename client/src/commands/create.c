@@ -51,12 +51,12 @@ static void no_context(c_client_t *client, UNUSED char **args)
     memcpy(te.user_uuid, client->user.uuid, sizeof(te.user_uuid));
     memcpy(te.team_name, args[1], sizeof(te.team_name));
     memcpy(te.team_description, args[2], sizeof(te.team_description));
-    p_client_send_packet(
-        p_client,
-        EVT_CREATE_TEAM,
-        &te,
-        sizeof(te)
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_CREATE_TEAM,
+    //     &te,
+    //     sizeof(te)
+    // );
 }
 
 static void team_context(c_client_t *client, char **args)
@@ -67,12 +67,12 @@ static void team_context(c_client_t *client, char **args)
     memcpy(c.team_uuid, client->context.team_uuid, sizeof(c.team_uuid));
     memcpy(c.channel_name, args[1], sizeof(c.channel_name));
     memcpy(c.channel_description, args[2], sizeof(c.channel_description));
-    p_client_send_packet(
-        p_client,
-        EVT_CREATE_CHANNEL,
-        &c,
-        sizeof(c)
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_CREATE_CHANNEL,
+    //     &c,
+    //     sizeof(c)
+    // );
 }
 
 static void channel_context(c_client_t *client, char **args)
@@ -85,12 +85,12 @@ static void channel_context(c_client_t *client, char **args)
     memcpy(th.user_uuid, client->user.uuid, sizeof(th.user_uuid));
     memcpy(th.thread_title, args[1], sizeof(th.thread_title));
     memcpy(th.thread_body, args[2], sizeof(th.thread_body));
-    p_client_send_packet(
-        p_client,
-        EVT_CREATE_THREAD,
-        &th,
-        sizeof(th)
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_CREATE_THREAD,
+    //     &th,
+    //     sizeof(th)
+    // );
 }
 
 static void thread_context(c_client_t *client, char **args)
@@ -102,12 +102,12 @@ static void thread_context(c_client_t *client, char **args)
         client->context.thread_uuid, sizeof(rep.thread_uuid));
     memcpy(rep.user_uuid, client->user.uuid, sizeof(rep.user_uuid));
     memcpy(rep.reply_body, args[1], sizeof(rep.reply_body));
-    p_client_send_packet(
-        p_client,
-        EVT_CREATE_REPLY,
-        &rep,
-        sizeof(rep)
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_CREATE_REPLY,
+    //     &rep,
+    //     sizeof(rep)
+    // );
 }
 
 void cmd_create(char **args, void *data, UNUSED p_packet_t *packet)

@@ -24,10 +24,10 @@ void cmd_subscribe(char **args, void *data, UNUSED p_packet_t *packet)
         fprintf(stdout, "Invalid command\n");
         return;
     }
-    p_client_send_packet(
-        p_client,
-        EVT_SUBSCRIBE,
-        args[1],
-        strlen(args[1])
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_SUBSCRIBE,
+    //     args[1],
+    //     strlen(args[1])
+    // );
 }

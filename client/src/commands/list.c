@@ -50,18 +50,18 @@ void cmd_list(UNUSED char **args, void *data, UNUSED p_packet_t *packet)
     context_t *context = &client->context;
 
     if (is_empty_context(context)) {
-        p_client_send_packet(p_client, EVT_LIST_TEAMS, NULL, 0);
+        // p_client_send_packet(p_client, EVT_LIST_TEAMS, NULL, 0);
     }
     if (is_team_context(context)) {
-        p_client_send_packet(p_client, EVT_LIST_CHANNELS, context->team_uuid,
-            UUID_LENGTH);
+        // p_client_send_packet(p_client, EVT_LIST_CHANNELS, context->team_uuid,
+        //     UUID_LENGTH);
     }
     if (is_channel_context(context)) {
-        p_client_send_packet(p_client, EVT_LIST_THREADS, context->channel_uuid,
-            UUID_LENGTH);
+        // p_client_send_packet(p_client, EVT_LIST_THREADS, context->channel_uuid,
+        //     UUID_LENGTH);
     }
     if (is_thread_context(context)) {
-        p_client_send_packet(p_client, EVT_LIST_REPLIES, context->thread_uuid,
-            UUID_LENGTH);
+        // p_client_send_packet(p_client, EVT_LIST_REPLIES, context->thread_uuid,
+        //     UUID_LENGTH);
     }
 }

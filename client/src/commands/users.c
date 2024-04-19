@@ -24,10 +24,10 @@ void cmd_users(char **args, void *data, UNUSED p_packet_t *packet)
         fprintf(stdout, "Invalid command\n");
         return;
     }
-    p_client_send_packet(
-        p_client,
-        EVT_LIST_USERS,
-        NULL,
-        0
-    );
+    // p_client_send_packet(
+    //     p_client,
+    //     EVT_LIST_USERS,
+    //     NULL,
+    //     0
+    // );
 }

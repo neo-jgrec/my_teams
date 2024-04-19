@@ -35,7 +35,7 @@ static const char *HELP = "USAGE:"
 static void handle_sigint(int sig)
 {
     (void)sig;
-    fprintf(stdout, "Exiting...\n");
+    fprintf(stdout, "\rExiting...\n");
     is_running = false;
 }
 
@@ -45,6 +45,7 @@ static char *get_client_input(void)
     ssize_t bytes_read = 0;
     int flags = 0;
 
+    input[0] = '\0';
     flags = fcntl(STDIN_FILENO, F_GETFL, 0);
     fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
     bytes_read = read(STDIN_FILENO, input, 8096 - 1);
@@ -107,13 +108,12 @@ static void process_command(char *input, c_client_t *client, p_packet_t *p)
     if (!format_args(args))
         return;
     command = args[0];
-    DEBUG_PRINT("Processing command: %s\n", command);
+    DEBUG_PRINT("Command: %s", command);
     for (int i = 0; commands[i].name; i++)
         if (!strcmp(commands[i].name, command) && commands[i].func
             && (!commands[i].need_login || check_login(client)))
             commands[i].func(args, (void *)client, p);
     free_args(args);
-    return;
 }
 
 static void wait_for_logout(c_client_t *client)
@@ -122,15 +122,13 @@ static void wait_for_logout(c_client_t *client)
         .type = INT16_MAX,
         .data = {0}
     };
-
-    p_client_send_packet(
-        client->p_client,
-        EVT_DISCONNECT,
-        client->user.uuid,
-        UUID_LENGTH
-    );
-    while (!p_client_listen(client->p_client, &packet)
-        && packet.type != EVT_DISCONNECT)
+    // p_client_send_packet(
+    //     client->p_client,
+    //     EVT_DISCONNECT,
+    //     client->user.uuid,
+    //     UUID_LENGTH
+    // );
+    while (!p_client_listen(client->p_client) && packet.type != EVT_DISCONNECT)
         client_logger(&packet, client);
 }
 
@@ -145,13 +143,13 @@ static void start_cli(c_client_t *client)
         fprintf(stdout, "Failed to connect to server\n");
         return;
     }
+    signal(SIGINT, handle_sigint);
     while (is_running) {
-        signal(SIGINT, handle_sigint);
-        p_client_listen(client->p_client, &packet);
+        p_client_listen(client->p_client);
         process_priority_queue(&client->queue, client);
         process_command(get_client_input(), client, &packet);
-        add_to_priority_queue(&packet, &client->queue);
     }
+    signal(SIGINT, SIG_DFL);
     wait_for_logout(client);
 }
 
