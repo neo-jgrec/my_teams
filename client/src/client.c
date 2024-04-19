@@ -149,6 +149,8 @@ static void start_cli(c_client_t *client)
         fprintf(stdout, "Failed to connect to server\n");
         return;
     }
+    fprintf(stdout, "Connected to server, waiting for commands\n"
+        "Type /help for a list of commands\n");
     while (is_running) {
         signal(SIGINT, handle_sigint);
         p_client_listen(client->p_client, &packet);
