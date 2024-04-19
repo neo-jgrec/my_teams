@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "debug_print.h"
 #include "server.h"
 
 bool is_in_teams(const s_server_t *server, const char *user_uuid,
@@ -18,6 +19,7 @@ bool is_in_teams(const s_server_t *server, const char *user_uuid,
         if (!strcmp(subscribe->subscribe.user_uuid, user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, team_uuid))
             return true;
+    DEBUG_PRINT("User %s is not in team %s\n", user_uuid, team_uuid);
     return false;
 }
 
@@ -29,6 +31,7 @@ bool is_in_channels(const s_server_t *server, const char *user_uuid,
     TAILQ_FOREACH(channel, &server->channels, entries)
         if (!strcmp(channel->channel.uuid, channel_uuid))
             return is_in_teams(server, user_uuid, channel->channel.team_uuid);
+    DEBUG_PRINT("User %s is not in channel %s\n", user_uuid, channel_uuid);
     return false;
 }
 
@@ -41,6 +44,7 @@ bool is_in_threads(const s_server_t *server, const char *user_uuid,
         if (!strcmp(thread->thread.uuid, thread_uuid))
             return is_in_channels(server, user_uuid,
                 thread->thread.channel_uuid);
+    DEBUG_PRINT("User %s is not in thread %s\n", user_uuid, thread_uuid);
     return false;
 }
 
@@ -51,5 +55,6 @@ bool is_logged(const s_server_t *server, const char *user_uuid)
     TAILQ_FOREACH(logged, &server->logged, entries)
         if (!strcmp(logged->user.uuid, user_uuid))
             return true;
+    DEBUG_PRINT("User %s is not logged\n", user_uuid);
     return false;
 }

@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "debug_print.h"
 #include "server.h"
 #include "events.h"
 
@@ -21,6 +22,7 @@ bool as_team(const s_server_t *server, const char *team_uuid)
             return true;
     memcpy(packet.data, team_uuid, UUID_LENGTH);
     p_server_send_packet(&packet, server->current_fd, server->socket);
+    DEBUG_PRINT("Unknown team\n");
     return false;
 }
 
@@ -34,6 +36,7 @@ bool as_channel(const s_server_t *server, const char *channel_uuid)
             return true;
     memcpy(packet.data, channel_uuid, UUID_LENGTH);
     p_server_send_packet(&packet, server->current_fd, server->socket);
+    DEBUG_PRINT("Unknown channel\n");
     return false;
 }
 
@@ -47,6 +50,7 @@ bool as_thread(const s_server_t *server, const char *thread_uuid)
             return true;
     memcpy(packet.data, thread_uuid, UUID_LENGTH);
     p_server_send_packet(&packet, server->current_fd, server->socket);
+    DEBUG_PRINT("Unknown thread\n");
     return false;
 }
 
@@ -60,6 +64,7 @@ bool as_user(const s_server_t *server, const char *user_uuid)
             return true;
     memcpy(packet.data, user_uuid, UUID_LENGTH);
     p_server_send_packet(&packet, server->current_fd, server->socket);
+    DEBUG_PRINT("Unknown user\n");
     return false;
 }
 
@@ -73,5 +78,6 @@ bool check_uuid(const s_server_t *server, const int fd, char **uuid,
         return true;
     free(*uuid);
     p_server_send_packet(&packet, fd, server->socket);
+    DEBUG_PRINT("Invalid UUID\n");
     return false;
 }
