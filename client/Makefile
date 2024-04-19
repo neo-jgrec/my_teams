@@ -66,7 +66,7 @@ CC			:=	gcc
 CFLAGS		:=	-iquote./include -iquote../include							\
 				-iquote../libs/protocol/include								\
 				-iquote../libs/myteams										\
-				-Wall -Wextra -g
+				-Wall -Wextra
 LDFLAGS		:=	-L../libs/myteams -lmyteams									\
 				-L../libs/protocol -lmyprotocol								\
 				-luuid
