@@ -115,6 +115,7 @@ typedef struct {
  * @details Struct request for EVT_CREATE_CHANNEL
  */
 typedef struct {
+    char user_uuid[UUID_LENGTH];
     char team_uuid[UUID_LENGTH];
     char channel_name[MAX_NAME_LENGTH];
     char channel_description[MAX_DESCRIPTION_LENGTH];
