@@ -10,6 +10,7 @@
 #include <time.h>
 
 #include "logging_server.h"
+#include "debug_print.h"
 #include "server.h"
 #include "events.h"
 
@@ -79,6 +80,10 @@ void s_server_event_channel_created(s_server_t *server,
     server_event_channel_created(body.team_uuid,
         channel->channel.uuid, body.channel_name);
     memcpy(packet.data, &channel->channel, sizeof(channel_t));
+    DEBUG_PRINT(
+        "UUID: %s\nTeam UUID: %s\nName: %s\nDescription: %s\n",
+        channel->channel.uuid, channel->channel.team_uuid,
+        channel->channel.name, channel->channel.description);
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
 
@@ -134,16 +139,15 @@ static void ping_user_reply(const s_server_t *server,
     s_logged_user_t *user;
     p_packet_t packet = {EVT_REPLY_CREATE, {0}};
     reply_ref_t reply;
-    s_team_t *team;
+    char *team_uuid;
 
-    TAILQ_FOREACH(team, &server->teams, entries)
-        if (!strcmp(body->thread_uuid, team->team.uuid))
-            memcpy(reply.team_uuid, team->team.uuid, UUID_LENGTH);
-    if (!reply.team_uuid[0])
-        return;
     memcpy(packet.data, body, sizeof(reply_create_t));
+    team_uuid = get_thread_team(server, body->thread_uuid);
+    if (!team_uuid)
+        return;
     TAILQ_FOREACH(user, &server->logged, entries)
         if (is_in_threads(server, user->user.uuid, body->thread_uuid)) {
+            memcpy(reply.team_uuid, team_uuid, UUID_LENGTH);
             memcpy(reply.user_uuid, body->user_uuid, UUID_LENGTH);
             memcpy(reply.thread_uuid, body->thread_uuid, UUID_LENGTH);
             memcpy(reply.reply_body, body->reply_body, MAX_BODY_LENGTH);

@@ -143,8 +143,8 @@ typedef struct {
 } thread_create_t;
 
 /**
- * @details Struct response for EVT_THREAD_CREATE, EVT_CREATE_THREAD and
- * EVT_INFO_THREAD
+ * @details Struct response for EVT_THREAD_CREATE, EVT_CREATE_THREAD,
+ * EVT_LIST_THREADS and EVT_INFO_THREAD
  */
 typedef struct {
     char uuid[UUID_LENGTH];

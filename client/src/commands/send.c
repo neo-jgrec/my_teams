@@ -27,8 +27,8 @@ void cmd_send(char **args, void *data, UNUSED p_packet_t *packet)
             (nb_args != 3) ? "Invalid command\n" : "Message too long\n");
         return;
     }
-    memcpy(m.receiver_uuid, args[1], sizeof(m.receiver_uuid));
-    memcpy(m.message_body, args[2], sizeof(m.message_body));
+    memcpy(m.receiver_uuid, args[1], strlen(args[1]));
+    memcpy(m.message_body, args[2], strlen(args[2]));
     memcpy(m.sender_uuid, ((c_client_t *)data)->user.uuid,
         sizeof(m.sender_uuid));
     p_client_send_packet(

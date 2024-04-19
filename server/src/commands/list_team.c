@@ -19,8 +19,6 @@ void s_server_event_list_teams(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_TEAMS), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (as_user(server, body.uuid))
-        return;
     TAILQ_FOREACH(team, &server->teams, entries) {
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
@@ -60,20 +58,20 @@ void s_server_event_list_channels(s_server_t *server,
 void s_server_event_list_threads(s_server_t *server,
     const p_payload_t *payload)
 {
-    s_channel_t *channel;
+    s_thread_t *thread;
     team_uuid_t body;
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_THREADS), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
     if (!as_channel(server, body.uuid))
         return;
-    TAILQ_FOREACH(channel, &server->channels, entries) {
-        if (strcmp(channel->channel.uuid, body.uuid))
+    TAILQ_FOREACH(thread, &server->threads, entries) {
+        if (strcmp(thread->thread.channel_uuid, body.uuid))
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
-        DEBUG_PRINT("List thread (title): %s\n", channel->channel.name);
-        memcpy(packet.data, &channel->channel, sizeof(channel_t));
+        DEBUG_PRINT("List thread (title): %s\n", thread->thread.title);
+        memcpy(packet.data, &thread->thread, sizeof(thread_t));
     }
     if (!packet.data[0])
         return SEND_TYPE(ERROR_PACKET(EVT_ERROR, EVT_LIST_THREADS));
@@ -89,7 +87,7 @@ void s_server_event_list_replies(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_REPLIES), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
-    if (!as_channel(server, body.uuid))
+    if (!as_thread(server, body.uuid))
         return;
     TAILQ_FOREACH(reply, &server->replies, entries) {
         if (strcmp(reply->reply.thread_uuid, body.uuid))

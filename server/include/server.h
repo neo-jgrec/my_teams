@@ -364,4 +364,12 @@ bool as_user(const s_server_t *server, const char *user_uuid);
  */
 bool check_uuid(const s_server_t *server, int fd, char **uuid, uint16_t type);
 
+/**
+ * @brief Check if a thread is in a team
+ * @param server The server
+ * @param thread_uuid The thread UUID
+ */
+char *get_thread_team(const s_server_t *server, const char *thread_uuid);
+
+
 #endif /* !SERVER_H_ */
