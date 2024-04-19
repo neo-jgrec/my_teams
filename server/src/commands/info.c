@@ -19,6 +19,8 @@ void s_server_event_get_user_info(s_server_t *server,
     p_packet_t packet = {EVT_INFO_USER, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_user(server, body.uuid))
+        return;
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.uuid, user->user.uuid)) {
             memcpy(response.uuid, user->user.uuid, UUID_LENGTH);
@@ -28,7 +30,6 @@ void s_server_event_get_user_info(s_server_t *server,
             p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_USER));
 }
 
 void s_server_event_get_team_info(s_server_t *server,
@@ -39,13 +40,14 @@ void s_server_event_get_team_info(s_server_t *server,
     p_packet_t packet = {EVT_INFO_TEAM, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_team(server, body.uuid))
+        return;
     TAILQ_FOREACH(team, &server->teams, entries)
         if (!strcmp(body.uuid, team->team.uuid)) {
             memcpy(packet.data, &team->team, sizeof(team_t));
             p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_TEAM));
 }
 
 void s_server_event_get_channel_info(s_server_t *server,
@@ -56,13 +58,14 @@ void s_server_event_get_channel_info(s_server_t *server,
     p_packet_t packet = {EVT_INFO_CHANNEL, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_channel(server, body.uuid))
+        return;
     TAILQ_FOREACH(channel, &server->channels, entries)
         if (!strcmp(body.uuid, channel->channel.uuid)) {
             memcpy(packet.data, &channel->channel, sizeof(channel_t));
             p_server_send_packet(&packet, payload->fd, server->socket);
             return;
         }
-    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_CHANNEL));
 }
 
 void s_server_event_get_thread_info(s_server_t *server,
@@ -73,10 +76,11 @@ void s_server_event_get_thread_info(s_server_t *server,
     p_packet_t packet = {EVT_INFO_THREAD, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_thread(server, body.uuid))
+        return;
     TAILQ_FOREACH(thread, &server->threads, entries)
         if (!strcmp(body.uuid, thread->thread.uuid)) {
             memcpy(packet.data, &thread->thread, sizeof(thread_t));
             p_server_send_packet(&packet, payload->fd, server->socket);
         }
-    SEND_TYPE(ERROR_PACKET(EVT_ERROR_UNKNOWN, EVT_INFO_THREAD));
 }

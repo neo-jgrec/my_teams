@@ -51,6 +51,8 @@ void s_server_event_list_messages(s_server_t *server,
     p_packet_t packet = {COMBINE(EVT_CONTINUE, EVT_LIST_MESSAGES), {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_user(server, body.uuid))
+        return;
     TAILQ_FOREACH(message, &server->private_messages, entries) {
         if (strcmp(message->message.sender_uuid, body.uuid)
             && strcmp(message->message.receiver_uuid, body.uuid))
@@ -75,13 +77,13 @@ void s_server_event_list_subscribed_users_in_team(s_server_t *server,
         {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_team(server, body.uuid))
+        return;
     TAILQ_FOREACH(subscribe, &server->subscribes, entries) {
         if (strcmp(subscribe->subscribe.team_uuid, body.uuid))
             continue;
         if (packet.data[0])
             p_server_send_packet(&packet, payload->fd, server->socket);
-        DEBUG_PRINT("List subscribe (user): %s\n",
-            subscribe->subscribe.user_uuid);
         memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
     }
     if (!packet.data[0])
@@ -99,6 +101,8 @@ void s_server_event_list_subscribed_teams(s_server_t *server,
         {0}};
 
     memcpy(&body, payload->packet.data, sizeof(team_uuid_t));
+    if (!as_user(server, body.uuid))
+        return;
     TAILQ_FOREACH(subscribe, &server->subscribes, entries) {
         if (strcmp(subscribe->subscribe.user_uuid, body.uuid))
             continue;
