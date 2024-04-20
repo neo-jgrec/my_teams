@@ -51,8 +51,8 @@ void s_server_event_send_message(s_server_t *server,
     strcpy(message->message.body, body.message_body);
     time(&message->message.timestamp);
     TAILQ_INSERT_TAIL(&server->private_messages, message, entries);
-    ping_user_message(server, &body);
     p_server_send_packet_type(EVT_SEND, payload->fd, server->socket);
+    ping_user_message(server, &body);
 }
 
 void s_server_event_subscribe(s_server_t *server,
@@ -93,11 +93,12 @@ void s_server_event_unsubscribe(s_server_t *server,
     TAILQ_FOREACH(subscribe, &server->subscribes, entries)
         if (!strcmp(subscribe->subscribe.user_uuid, body.user_uuid)
             && !strcmp(subscribe->subscribe.team_uuid, body.team_uuid)) {
-            TAILQ_REMOVE(&server->subscribes, subscribe, entries);
-            free(subscribe);
             memcpy(packet.data, &body, sizeof(unsubscribe_t));
             server_event_user_unsubscribed(body.team_uuid, body.user_uuid);
             p_server_send_packet(&packet, payload->fd, server->socket);
+            TAILQ_REMOVE(&server->subscribes, subscribe, entries);
+            free(subscribe);
+            break;
         }
     SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, packet.type));
 }

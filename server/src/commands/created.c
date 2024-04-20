@@ -39,10 +39,10 @@ void s_server_event_team_created(s_server_t *server,
     strcpy(team->team.name, body.team_name);
     strcpy(team->team.description, body.team_description);
     TAILQ_INSERT_TAIL(&server->teams, team, entries);
-    ping_user_team(server, &team->team);
     server_event_team_created(team->team.uuid, body.team_name, body.user_uuid);
     memcpy(packet.data, &team->team, sizeof(team_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
+    ping_user_team(server, &team->team);
 }
 
 static void ping_user_channel(const s_server_t *server,
@@ -75,11 +75,11 @@ void s_server_event_channel_created(s_server_t *server,
     strcpy(channel->channel.team_uuid, body.team_uuid);
     strcpy(channel->channel.description, body.channel_description);
     TAILQ_INSERT_TAIL(&server->channels, channel, entries);
-    ping_user_channel(server, &channel->channel);
     server_event_channel_created(body.team_uuid,
         channel->channel.uuid, body.channel_name);
     memcpy(packet.data, &channel->channel, sizeof(channel_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
+    ping_user_channel(server, &channel->channel);
 }
 
 static void ping_user_thread(const s_server_t *server,
@@ -104,7 +104,6 @@ static void set_thread(s_server_t *server, s_thread_t *thread,
     strcpy(thread->thread.body, body->thread_body);
     time(&thread->thread.timestamp);
     TAILQ_INSERT_TAIL(&server->threads, thread, entries);
-    ping_user_thread(server, &thread->thread);
 }
 
 void s_server_event_thread_created(s_server_t *server,
@@ -126,6 +125,7 @@ void s_server_event_thread_created(s_server_t *server,
         body.user_uuid, body.thread_title, body.thread_body);
     memcpy(packet.data, &thread->thread, sizeof(thread_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
+    ping_user_thread(server, &thread->thread);
 }
 
 static void ping_user_reply(const s_server_t *server,
@@ -174,9 +174,9 @@ void s_server_event_reply_created(s_server_t *server,
         || !is_in_threads(server, body.user_uuid, body.thread_uuid))
         return;
     TAILQ_INSERT_TAIL(&server->replies, reply, entries);
-    ping_user_reply(server, &body);
     server_event_reply_created(body.thread_uuid, body.user_uuid,
         body.reply_body);
     memcpy(packet.data, &reply->reply, sizeof(reply_t));
     p_server_send_packet(&packet, payload->fd, server->socket);
+    ping_user_reply(server, &body);
 }
