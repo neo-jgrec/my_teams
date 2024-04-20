@@ -49,14 +49,10 @@ void s_server_event_logged_in(s_server_t *server,
     const p_payload_t *payload)
 {
     s_user_t *user;
-    s_logged_user_t *logged;
     login_t body;
     p_packet_t packet = {EVT_LOGIN, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(login_t));
-    TAILQ_FOREACH(logged, &server->logged, entries)
-        if (!strcmp(body.user_name, logged->user.name))
-            return SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, packet.type));
     TAILQ_FOREACH(user, &server->users, entries)
         if (!strcmp(body.user_name, user->user.name)) {
             add_logged_user(server, payload, user);
