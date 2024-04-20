@@ -80,10 +80,6 @@ void s_server_event_channel_created(s_server_t *server,
     server_event_channel_created(body.team_uuid,
         channel->channel.uuid, body.channel_name);
     memcpy(packet.data, &channel->channel, sizeof(channel_t));
-    DEBUG_PRINT(
-        "UUID: %s\nTeam UUID: %s\nName: %s\nDescription: %s\n",
-        channel->channel.uuid, channel->channel.team_uuid,
-        channel->channel.name, channel->channel.description);
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
 
