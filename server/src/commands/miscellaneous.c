@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "logging_server.h"
 #include "server.h"
 #include "events.h"
 
@@ -28,6 +29,8 @@ static void ping_user_message(const s_server_t *server,
         if (strcmp(user->user.uuid, body->receiver_uuid))
             continue;
         memcpy(packet.data, body, sizeof(send_message_t));
+        server_event_private_message_sended(body->sender_uuid,
+            body->receiver_uuid, body->message_body);
         p_server_send_packet(&packet, user->user.socket, server->socket);
     }
 }
@@ -73,6 +76,7 @@ void s_server_event_subscribe(s_server_t *server,
     strcpy(subscribe->subscribe.team_uuid, body.team_uuid);
     TAILQ_INSERT_TAIL(&server->subscribes, subscribe, entries);
     memcpy(packet.data, &subscribe->subscribe, sizeof(subscribe_t));
+    server_event_user_subscribed(body.team_uuid, body.user_uuid);
     p_server_send_packet(&packet, payload->fd, server->socket);
 }
 
@@ -92,6 +96,7 @@ void s_server_event_unsubscribe(s_server_t *server,
             TAILQ_REMOVE(&server->subscribes, subscribe, entries);
             free(subscribe);
             memcpy(packet.data, &body, sizeof(unsubscribe_t));
+            server_event_user_unsubscribed(body.team_uuid, body.user_uuid);
             p_server_send_packet(&packet, payload->fd, server->socket);
         }
     SEND_TYPE(ERROR_PACKET(EVT_ERROR_ALREADY, packet.type));

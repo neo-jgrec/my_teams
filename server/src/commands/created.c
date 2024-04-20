@@ -10,7 +10,6 @@
 #include <time.h>
 
 #include "logging_server.h"
-#include "debug_print.h"
 #include "server.h"
 #include "events.h"
 

@@ -8,8 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "server.h"
+#include "logging_server.h"
 #include "debug_print.h"
+#include "server.h"
 
 static bool load_users(s_server_t *server, FILE *file)
 {
@@ -24,6 +25,7 @@ static bool load_users(s_server_t *server, FILE *file)
         if (!user || !fread(&user->user, sizeof(user_t), 1, file))
             return false;
         TAILQ_INSERT_TAIL(&server->users, user, entries);
+        server_event_user_loaded(user->user.uuid, user->user.name);
     }
     return true;
 }
