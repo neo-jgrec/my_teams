@@ -54,13 +54,15 @@ void s_server_event_logged_in(s_server_t *server,
     p_packet_t packet = {EVT_LOGIN, {0}};
 
     memcpy(&body, payload->packet.data, sizeof(login_t));
-    TAILQ_FOREACH(user, &server->users, entries)
-        if (!strcmp(body.user_name, user->user.name)) {
-            add_logged_user(server, payload, user);
-            memcpy(packet.data, &user->user, sizeof(user_t));
-            p_server_send_packet(&packet, payload->fd, server->socket);
-            return;
-        }
+    TAILQ_FOREACH(user, &server->users, entries) {
+        if (strcmp(body.user_name, user->user.name))
+            continue;
+        if (!add_logged_user(server, payload, user))
+            return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
+        memcpy(packet.data, &user->user, sizeof(user_t));
+        p_server_send_packet(&packet, payload->fd, server->socket);
+        return;
+    }
     new_user(server, payload, &body, &packet);
 }
 
