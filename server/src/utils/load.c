@@ -150,6 +150,5 @@ void load(s_server_t *server)
         remove(SAVE_FILE);
         clear_server(server);
         printf("Error loading server\n");
-    } else
-        printf("Server loaded\n");
+    }
 }

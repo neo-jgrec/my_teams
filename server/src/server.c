@@ -62,7 +62,6 @@ void server(const char *str_port)
         printf("Invalid port\n");
         exit(EXIT_FAILURE);
     }
-    printf("Server started on port %d\n", port);
     server.socket = p_server_create(port);
     if (!server.socket) {
         printf("Server creation failed\n");
@@ -73,5 +72,4 @@ void server(const char *str_port)
         s_listen(&server);
     close_server(&server);
     save(&server);
-    printf("Server closed\n");
 }
