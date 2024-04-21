@@ -29,14 +29,6 @@ static bool add_logged_user(s_server_t *server, const p_payload_t *payload,
     return true;
 }
 
-static void login_user(const s_server_t *server, const p_packet_t *packet)
-{
-    s_logged_user_t *logged;
-
-    TAILQ_FOREACH(logged, &server->logged, entries)
-        p_server_send_packet(packet, logged->user.socket, server->socket);
-}
-
 static void new_user(s_server_t *server, const p_payload_t *payload,
     const login_t *body, p_packet_t *packet)
 {
@@ -51,7 +43,7 @@ static void new_user(s_server_t *server, const p_payload_t *payload,
     TAILQ_INSERT_TAIL(&server->users, user, entries);
     memcpy(packet->data, &user->user, sizeof(user_t));
     server_event_user_created(user->user.uuid, user->user.name);
-    login_user(server, packet);
+    p_server_send_packet(packet, payload->fd, server->socket);
 }
 
 void s_server_event_logged_in(s_server_t *server,
@@ -68,7 +60,7 @@ void s_server_event_logged_in(s_server_t *server,
         if (!add_logged_user(server, payload, user))
             return SEND_TYPE(ERROR_PACKET(EVT_ERROR, packet.type));
         memcpy(packet.data, &user->user, sizeof(user_t));
-        login_user(server, &packet);
+        p_server_send_packet(&packet, payload->fd, server->socket);
         return;
     }
     new_user(server, payload, &body, &packet);
@@ -95,6 +87,5 @@ void s_server_event_logged_out(s_server_t *server,
     strcpy(user_response.name, user->user.name);
     memcpy(packet.data, &user_response, sizeof(user_t));
     free(user);
-    TAILQ_FOREACH(user, &server->logged, entries)
-        p_server_send_packet(&packet, user->user.socket, server->socket);
+    p_server_send_packet(&packet, payload->fd, server->socket);
 }
